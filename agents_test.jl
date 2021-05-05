@@ -4,8 +4,8 @@ using InteractiveDynamics
 using GLMakie
 
 
-sqrt_population = 20
-space = Agents.GridSpace((sqrt_population,sqrt_population);periodic=false, metric = :euclidean)
+population = 100
+space = Agents.GridSpace((10,10);periodic=false, metric = :euclidean)
 
 @agent IouAgent GridAgent{2} begin
     inertia::Float64 #inertia to keep own opinion
@@ -20,7 +20,7 @@ space = Agents.GridSpace((sqrt_population,sqrt_population);periodic=false, metri
     previous_opinion::Bool
 end
 
-function iou_model(space;numagents=sqrt_population*sqrt_population,opinion_range=5,inertia=0.5,initial_utility=0.0,utility_growth=0.0)
+function iou_model(space;numagents=population,opinion_range=5,inertia=0.5,initial_utility=0.0,utility_growth=0.0)
     local model = ABM(IouAgent,space,scheduler=Agents.fastest,properties = Dict(:opinion_range => opinion_range,:inertia => inertia,:utility_growth => utility_growth))
     for i in 1:numagents
         mood = rand(model.rng)
@@ -46,7 +46,7 @@ function agent_step!(agent,model)
         neighborsOpinion += neighbor.previous_opinion
         neighborCount+=1
     end
-    utility_mood = min(1,agent.previous_mood + agent.previous_utility)
+    utility_mood = max(0,min(1,agent.previous_mood + agent.previous_utility))
     if neighborCount>0
         neighborsOpinion /= neighborCount
         agent.new_mood = (1-agent.inertia)*neighborsOpinion+agent.inertia*utility_mood
