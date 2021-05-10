@@ -25,7 +25,7 @@ function modelHomoOeconomicus(
     maintenanceCostCombustionKM = 0.005,
     maintenanceCostElectricKM = 0.01,
     usedVehicleDiscount = 0.2, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
-    budget = priceElectricVehicle+priceCombustionVehicle # for now only dummy implementation
+    budget = 30000 # for now only dummy implementation
 )
     local model = ABM(
         homoOeconomicus,
@@ -59,7 +59,7 @@ function modelHomoOeconomicus(
             initialValue,
             initialValue,
             0,
-            model.budget
+            budget
         )
     end
     return model
@@ -71,8 +71,8 @@ function yearlyVehicleCost(
     vehicle,
     model
 )
-    fuelCostKM = a.vehicle == 1 ? model.fuelCostKM : model.powerCostKM
-    maintenanceCostKM = a.vehicle == 1 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM
+    fuelCostKM = vehicle == 1 ? model.fuelCostKM : model.powerCostKM
+    maintenanceCostKM = vehicle == 1 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM
     return yrlyKilometers * (fuelCostKM + maintenanceCostKM * vehicleAge)
 end
 
@@ -99,16 +99,16 @@ function agent_step!(agent, model)
             currentCost += yearlyVehicleCost(
                 agent.kilometersPerYear,
                 agent.vehicleAge + i_year,
-                model.fuelCostKM,
-                model.maintenanceCostCombustionKM,
+                agent.vehicle,
+                model
             )
         end
         if (agent.vehicle == 2)
             currentCost += yearlyVehicleCost(
                 agent.kilometersPerYear,
                 agent.vehicleAge + i_year,
-                model.powerCostKM,
-                model.maintenanceCostElectricKM,
+                agent.vehicle,
+                model
             )
         end
     end
@@ -116,24 +116,28 @@ function agent_step!(agent, model)
         newCombustionCost += yearlyVehicleCost(
             agent.kilometersPerYear,
             i_year,
-            model.fuelCostKM,
-            model.maintenanceCostCombustionKM,
+            agent.vehicle,
+            model
         )
         newElectricCost += yearlyVehicleCost(
             agent.kilometersPerYear,
             i_year,
-            model.powerCostKM,
-            model.maintenanceCostElectricKM,
+            agent.vehicle,
+            model
         )
     end
     #purchasing cost after selling old car
-    incomeSellingOldVehicle = agent.vehicleValue*(1-model.usedVehicleDiscount)
+    incomeSellingOldVehicle = agent.vehicleValue*(1.0-model.usedVehicleDiscount)
     newCombustionPurchase = model.priceCombustionVehicle - incomeSellingOldVehicle
     newElectricPurchase = model.priceElectricVehicle - incomeSellingOldVehicle
 
     # compare average cost
-    currentVehicleAverageCost =
-        (currentCost + agent.vehicleValue) / (feasibleYears - agent.vehicleAge)
+    if (agent.vehicleAge<feasibleYears)
+        currentVehicleAverageCost =
+            (currentCost + agent.vehicleValue) / (feasibleYears - agent.vehicleAge)
+    else
+        currentVehicleAverageCost = 1000000 # dummy implementation to enforce buying a new car at the end of useage time
+    end
     newCombustionAverageCost =
         (newCombustionCost + newCombustionPurchase) / feasibleYears
     newElectricAverageCost =
