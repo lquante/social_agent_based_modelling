@@ -24,13 +24,13 @@ function modelHomoOeconomicus(
     powerCostKM = 0.05,
     maintenanceCostCombustionKM = 0.005,
     maintenanceCostElectricKM = 0.01,
-    usedVehicleDiscount = 0.2, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
+    usedVehicleDiscount::Float64 = 0.8, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
     budget = 30000 # for now only dummy implementation
 )
     local model = ABM(
         homoOeconomicus,
         space,
-        scheduler = Agents.fastest,
+        scheduler = Agents.Schedulers.fastest,
         properties = Dict(
             :priceCombustionVehicle => priceCombustionVehicle,
             :priceElectricVehicle => priceElectricVehicle,
@@ -38,7 +38,7 @@ function modelHomoOeconomicus(
             :powerCostKM => powerCostKM,
             :maintenanceCostCombustionKM => maintenanceCostCombustionKM,
             :maintenanceCostElectricKM => maintenanceCostElectricKM,
-            :usedVehicleDiscount => usedVehicleDiscount
+            :usedVehicleDiscount => usedVehicleDiscount,
             :budget => budget # assumtpion for now: uniform budget
         ),
     )
@@ -116,18 +116,18 @@ function agent_step!(agent, model)
         newCombustionCost += yearlyVehicleCost(
             agent.kilometersPerYear,
             i_year,
-            agent.vehicle,
+            1,
             model
         )
         newElectricCost += yearlyVehicleCost(
             agent.kilometersPerYear,
             i_year,
-            agent.vehicle,
+            2,
             model
         )
     end
     #purchasing cost after selling old car
-    incomeSellingOldVehicle = agent.vehicleValue*(1.0-model.usedVehicleDiscount)
+    incomeSellingOldVehicle = agent.vehicleValue*model.usedVehicleDiscount
     newCombustionPurchase = model.priceCombustionVehicle - incomeSellingOldVehicle
     newElectricPurchase = model.priceElectricVehicle - incomeSellingOldVehicle
 
