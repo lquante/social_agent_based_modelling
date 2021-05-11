@@ -12,12 +12,9 @@ using GLMakie
     budget::Float64
 end
 
-population = 100
-space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean)
-
 function modelHomoOeconomicus(
-    space;
-    numagents = population,
+    space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean);
+    numagents = 100,
     priceCombustionVehicle = 10000,
     priceElectricVehicle = 20000,
     fuelCostKM = 0.1,
@@ -25,9 +22,9 @@ function modelHomoOeconomicus(
     maintenanceCostCombustionKM = 0.005,
     maintenanceCostElectricKM = 0.01,
     usedVehicleDiscount::Float64 = 0.8, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
-    budget = 30000 # for now only dummy implementation
+    budget = 1000000 # for now only dummy implementation
 )
-    local model = ABM(
+    model = ABM(
         homoOeconomicus,
         space,
         scheduler = Agents.Schedulers.fastest,
@@ -73,46 +70,30 @@ function yearlyVehicleCost(
 )
     fuelCostKM = vehicle == 1 ? model.fuelCostKM : model.powerCostKM
     maintenanceCostKM = vehicle == 1 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM
-    return yrlyKilometers * (fuelCostKM + maintenanceCostKM * vehicleAge)
+    return yrlyKilometers * (fuelCostKM +  maintenanceCostKM * vehicleAge)
 end
 
 function depreciateVehicleValue(purchaseValue, vehicleAge, feasibleYears)
-    return purchaseValue - (1 / feasibleYears) * purchaseValue * vehicleAge # very simple linear depreciation
+    return purchaseValue - vehicleAge / feasibleYears * purchaseValue # very simple linear depreciation
 end
 
 function agent_step!(agent, model)
     agent.vehicleAge = agent.vehicleAge + 1
-    # calculate cost of current car:
-    currentCost = yearlyVehicleCost(
-        agent.kilometersPerYear,
-        agent.vehicleAge,
-        agent.vehicle,
-        model
-    )
-    #calculate cost of current car vs. a new car:
     #assumption: all vehicles are assumed to last at least 300.000km before purchase of a new vehicle
     feasibleYears = cld(300000, agent.kilometersPerYear) # rounding up division
-    newCombustionCost = 0
-    newElectricCost = 0
-    for i_year = 1:(feasibleYears-agent.vehicleAge)
-        if (agent.vehicle == 1)
+    #calculate cost of current car vs. a new car:
+    currentCost = 0.0
+    newCombustionCost = 0.0
+    newElectricCost = 0.0
+    for i_year in 1:(feasibleYears-agent.vehicleAge)
             currentCost += yearlyVehicleCost(
                 agent.kilometersPerYear,
                 agent.vehicleAge + i_year,
                 agent.vehicle,
                 model
             )
-        end
-        if (agent.vehicle == 2)
-            currentCost += yearlyVehicleCost(
-                agent.kilometersPerYear,
-                agent.vehicleAge + i_year,
-                agent.vehicle,
-                model
-            )
-        end
     end
-    for i_year = 1:feasibleYears
+    for i_year in 1:feasibleYears
         newCombustionCost += yearlyVehicleCost(
             agent.kilometersPerYear,
             i_year,
@@ -130,11 +111,10 @@ function agent_step!(agent, model)
     incomeSellingOldVehicle = agent.vehicleValue*model.usedVehicleDiscount
     newCombustionPurchase = model.priceCombustionVehicle - incomeSellingOldVehicle
     newElectricPurchase = model.priceElectricVehicle - incomeSellingOldVehicle
-
     # compare average cost
     if (agent.vehicleAge<feasibleYears)
         currentVehicleAverageCost =
-            (currentCost + agent.vehicleValue) / (feasibleYears - agent.vehicleAge)
+            (currentCost) / (feasibleYears - agent.vehicleAge)
     else
         currentVehicleAverageCost = 1000000 # dummy implementation to enforce buying a new car at the end of useage time
     end
@@ -142,7 +122,6 @@ function agent_step!(agent, model)
         (newCombustionCost + newCombustionPurchase) / feasibleYears
     newElectricAverageCost =
         (newElectricCost + newElectricPurchase) / feasibleYears
-
     #make decision and update vehicle attributes
     new_vehicle = false # dummy variable
     if (
@@ -171,7 +150,7 @@ function agent_step!(agent, model)
         agent.vehicleValue = depreciateVehicleValue(
             agent.purchaseValue,
             agent.vehicleAge,
-            feasibileYears,
+            feasibleYears,
         )
     end
 end
@@ -183,20 +162,20 @@ function model_step!(model)
 end
 
 
-gaiaOeconomicus = modelHomoOeconomicus(space)
+gaiaOeconomicus = modelHomoOeconomicus()
 
 Agents.step!(gaiaOeconomicus, agent_step!, model_step!, 1)
 
 
 parange = Dict(
-    :priceCombustionVehicle => 5000:30000,
-    :priceElectricVehicle => 5000:30000,
-    :fuelCostKM => range(0.05, 0.5; step = 0.05),
-    :powerCostKM => range(0.05, 0.5; step = 0.05),
+    :priceCombustionVehicle => 5000:100000,
+    :priceElectricVehicle => 5000:100000,
+    :fuelCostKM => range(0.05, 0.5; step = 0.025),
+    :powerCostKM => range(0.05, 0.5; step = 0.025),
 )
 
-adata = [(:vehicleValue, mean), (:vehicle, mean)]
-alabels = ["vehicleValue", "avg. vehicle"]
+adata = [(:vehicleValue, mean), (:vehicle, mean), (:vehicleAge, mean)]
+alabels = ["vehicleValue", "avg. vehicle", "avg. vehicle age"]
 
 vehiclecolor(a) = a.vehicle == 1 ? :orange : :blue
 vehiclemarker(a) = a.vehicle == 1 ? :circle : :rect
