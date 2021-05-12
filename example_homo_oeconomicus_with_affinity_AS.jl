@@ -170,7 +170,7 @@ function agent_step!(agent, model)
     #store previous affinity
     agent.affinity_old = agent.affinity
     #compute new affinity
-    agent.affinity = agent.affinity_old + ((agent.affinity_old-vehicle_preference)/tau_a+influence)
+    agent.affinity = agent.affinity_old + ((vehicle_preference-agent.affinity_old)/tau_a+influence)
 
     if (new_vehicle == true)
         if (agent.affinity<=1.5)
