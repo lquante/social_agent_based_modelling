@@ -14,43 +14,20 @@ using GLMakie
     affinity_old::Float64
 end
 
-function modelHomoOeconomicus(
-    space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean);
-    numagents = 100,
-    priceCombustionVehicle = 10000,
-    priceElectricVehicle = 20000,
-    fuelCostKM = 0.1,
-    powerCostKM = 0.05,
-    maintenanceCostCombustionKM = 0.005,
-    maintenanceCostElectricKM = 0.01,
-    usedVehicleDiscount::Float64 = 0.8, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
-    budget = 1000000 # for now only dummy implementation
-)
-    model = ABM(
-        homoOeconomicus,
-        space,
-        scheduler = Agents.Schedulers.fastest,
-        properties = Dict(
-            :priceCombustionVehicle => priceCombustionVehicle,
-            :priceElectricVehicle => priceElectricVehicle,
-            :fuelCostKM => fuelCostKM,
-            :powerCostKM => powerCostKM,
-            :maintenanceCostCombustionKM => maintenanceCostCombustionKM,
-            :maintenanceCostElectricKM => maintenanceCostElectricKM,
-            :usedVehicleDiscount => usedVehicleDiscount,
-            :budget => budget # assumtpion for now: uniform budget
-        ),
-    )
+function get_vehicle_value(model,vehicle)
+    if vehicle == 1
+        return model.priceCombustionVehicle
+    end
+    if vehicle == 2
+        return model.priceElectricVehicle
+    end
+end
+
+function create_combustion_population(model,numagents,budget)
     for i = 1:numagents
         kilometersPerYear = 15000 + (7500 * (rand(model.rng) - 0.5)) #  diverse population with different millages
         initialVehicle = 1 # population of combustion engine owners
-        initialValue = 0.0
-        if initialVehicle == 1
-            initialValue = priceCombustionVehicle
-        end
-        if initialVehicle == 2
-            initialValue = priceElectricVehicle
-        end
+        initialValue = get_vehicle_value(model,initialVehicle)
         add_agent_single!(
             model,
             kilometersPerYear,
@@ -63,6 +40,89 @@ function modelHomoOeconomicus(
             1
         )
     end
+end
+
+
+function create_mixed_population(model,numagents,budget)
+    for i = 1:numagents
+        kilometersPerYear = 15000 + (7500 * (rand(model.rng) - 0.5)) #  diverse population with different millages
+        if (rand(model.rng)<0.5) # random 50/50 distribution of cars
+            initialVehicle = 1
+        else
+            initialVehicle = 2
+        end
+        initialValue = get_vehicle_value(model,initialVehicle)
+        add_agent_single!(
+            model,
+            kilometersPerYear,
+            initialVehicle,
+            initialValue,
+            initialValue,
+            0,
+            budget,
+            initialVehicle,
+            initialVehicle
+        )
+    end
+end
+
+function create_electric_minority(model,numagents,budget)
+
+    positions = Agents.positions(model)
+    minority_positions = [1,2,3,4,5,11,12,13,14,15,21,23,24,25,31,32,33,34,35]
+    for i = 1:numagents
+        kilometersPerYear = 15000 + (7500 * (rand(model.rng) - 0.5)) #  diverse population with different millages
+        if (i in minority_positions) # blocked population according to minortiy size
+            initialVehicle = 2
+        else
+            initialVehicle = 1
+        end
+        initialValue = get_vehicle_value(model,initialVehicle)
+        add_agent!((positions.iter[i][1],positions.iter[i][2]),
+            model,
+            kilometersPerYear,
+            initialVehicle,
+            initialValue,
+            initialValue,
+            0,
+            budget,
+            initialVehicle,
+            initialVehicle
+        )
+    end
+end
+
+
+function modelHomoOeconomicus(placementFunction,
+    space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean);
+    numagents = 100,
+    influence_factor = 0.5,
+    priceCombustionVehicle = 10000,
+    priceElectricVehicle = 20000,
+    fuelCostKM = 0.125,
+    powerCostKM = 0.05,
+    maintenanceCostCombustionKM = 0.0075,
+    maintenanceCostElectricKM = 0.01,
+    usedVehicleDiscount::Float64 = 0.8, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
+    budget = 1000000 # for now only dummy implementation
+)
+    model = ABM(
+        homoOeconomicus,
+        space,
+        scheduler = Agents.Schedulers.fastest,
+        properties = Dict(
+            :influence_factor => influence_factor,
+            :priceCombustionVehicle => priceCombustionVehicle,
+            :priceElectricVehicle => priceElectricVehicle,
+            :fuelCostKM => fuelCostKM,
+            :powerCostKM => powerCostKM,
+            :maintenanceCostCombustionKM => maintenanceCostCombustionKM,
+            :maintenanceCostElectricKM => maintenanceCostElectricKM,
+            :usedVehicleDiscount => usedVehicleDiscount,
+            :budget => budget # assumtpion for now: uniform budget
+        ),
+    )
+    placementFunction(model,numagents,budget)
     return model
 end
 
@@ -160,7 +220,7 @@ function agent_step!(agent, model)
     #compute the influence
     influence = 0
     for n in neighbours
-        influence += 0.2*(n.affinity_old-agent.affinity_old)
+        influence += model.influence_factor*(n.affinity_old-agent.affinity_old)
     end
 
     #set tau_pa to 3 at the moment
@@ -199,26 +259,28 @@ function model_step!(model)
     end
 end
 
-gaiaOeconomicus = modelHomoOeconomicus()
-
-Agents.step!(gaiaOeconomicus, agent_step!, model_step!, 1)
+gaiaOeconomicus = modelHomoOeconomicus(create_combustion_population)
+gaiaMixedOeconomicus = modelHomoOeconomicus(create_mixed_population)
+gaiaMinority = modelHomoOeconomicus(create_electric_minority)
+Agents.step!(gaiaMinority, agent_step!, model_step!, 1)
 
 
 parange = Dict(
+    :influenceFactor => range(0.00, 1; step = 0.01),
     :priceCombustionVehicle => 5000:100000,
     :priceElectricVehicle => 5000:100000,
     :fuelCostKM => range(0.05, 0.5; step = 0.025),
     :powerCostKM => range(0.05, 0.5; step = 0.025),
 )
 
-adata = [(:vehicleValue, mean), (:vehicle, mean), (:vehicleAge, mean)]
-alabels = ["vehicleValue", "avg. vehicle", "avg. vehicle age"]
+adata = [(:vehicleValue, mean), (:vehicle, mean), (:vehicleAge, mean),(:affinity, mean)]
+alabels = ["vehicleValue", "avg. vehicle", "avg. vehicle age","avg. affinity"]
 
 vehiclecolor(a) = a.vehicle == 1 ? :orange : :blue
 vehiclemarker(a) = a.vehicle == 1 ? :circle : :rect
 
 scene, adf, modeldf = abm_data_exploration(
-    gaiaOeconomicus,
+    gaiaMinority,
     agent_step!,
     model_step!,
     parange;
