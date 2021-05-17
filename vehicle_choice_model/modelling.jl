@@ -2,9 +2,8 @@ using Agents
 using Distributions
 
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
-function modelHomoOeconomicus(placementFunction,
-    space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean);
-    numagents = 100,
+function modelHomoOeconomicus(placementFunction;
+    space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     priceCombustionVehicle = 10000,
     priceElectricVehicle = 20000,
     fuelCostKM = 0.125,
@@ -44,6 +43,7 @@ function modelHomoOeconomicus(placementFunction,
             :A_s => A_s
         )
     )
+    numagents=length(space.s)
     placementFunction(model,numagents,budget)
     return model
 end
