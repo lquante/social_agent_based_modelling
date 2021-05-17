@@ -43,10 +43,10 @@ function create_combustion_population(model,numagents,budget)
 end
 
 
-function create_mixed_population(model,numagents,budget)
+function create_mixed_population(model,numagents,budget,mixing_share=0.5)
     for i = 1:numagents
         kilometersPerYear = 15000 + (7500 * (rand(model.rng) - 0.5)) #  diverse population with different millages
-        if (rand(model.rng)<0.5) # random 50/50 distribution of cars
+        if (rand(model.rng)<mixing_share) # random 50/50 distribution of cars
             initialVehicle = 1
         else
             initialVehicle = 2
@@ -66,10 +66,9 @@ function create_mixed_population(model,numagents,budget)
     end
 end
 
-function create_electric_minority(model,numagents,budget)
+function create_electric_minority(model,numagents,budget,minority_postions=[1,2,3,4,5,11,12,13,14,15,21,23,24,25,31,32,33,34,35])
 
     positions = Agents.positions(model)
-    minority_positions = [1,2,3,4,5,11,12,13,14,15,21,23,24,25,31,32,33,34,35]
     for i = 1:numagents
         kilometersPerYear = 15000 + (7500 * (rand(model.rng) - 0.5)) #  diverse population with different millages
         if (i in minority_positions) # blocked population according to minortiy size
@@ -223,14 +222,13 @@ function agent_step!(agent, model)
         influence += model.influence_factor*(n.affinity_old-agent.affinity_old)
     end
 
-    #set tau_pa to 3 at the moment
-    tau_pa=3
+    #set tau_pa to 5 at the moment
+    tau_pa=5
     tau_a=3
-    influence = influence/tau_pa
     #store previous affinity
     agent.affinity_old = agent.affinity
     #compute new affinity
-    agent.affinity = agent.affinity_old + ((vehicle_preference-agent.affinity_old)/tau_a+influence)
+    agent.affinity = min(2,max(1,agent.affinity_old + ((vehicle_preference-agent.affinity_old)/tau_a+influence/tau_pa)))
 
     if (new_vehicle == true)
         if (agent.affinity<=1.5)
@@ -262,7 +260,8 @@ end
 gaiaOeconomicus = modelHomoOeconomicus(create_combustion_population)
 gaiaMixedOeconomicus = modelHomoOeconomicus(create_mixed_population)
 gaiaMinority = modelHomoOeconomicus(create_electric_minority)
-Agents.step!(gaiaMinority, agent_step!, model_step!, 1)
+
+
 
 
 parange = Dict(
