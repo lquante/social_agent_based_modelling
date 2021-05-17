@@ -17,12 +17,14 @@ end
 
 "returns yearly running cost of vehicle usage, depending on agents yrly km, vehicle age, vehicle type and model parameters"
 function yearlyVehicleCost(
-    agent,
+    kilometersPerYear,
+    vehicleAge,
+    state,
     model
 )
-    fuelCostKM = agent.state == 0 ? model.fuelCostKM : model.powerCostKM
-    maintenanceCostKM = agent.state == 0 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM
-    return agent.yrlyKilometers * (fuelCostKM +  maintenanceCostKM * agent.vehicleAge)
+    fuelCostKM = state == 0 ? model.fuelCostKM : model.powerCostKM
+    maintenanceCostKM = state == 0 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM
+    return kilometersPerYear * (fuelCostKM +  maintenanceCostKM * vehicleAge)
 end
 
 "returns linearly depreciated value of the vehicle"
@@ -107,7 +109,7 @@ function calc_state_social_influence(position::Tuple{Int64, Int64},affinity::Flo
     neighbours=nearby_agents(position,model,1)
     influence=0
     for n in neighbours
-        influence += (n.state-affinity)
+        influence += model.social_influence_factor*(n.state-affinity)
     end
     influence /= model.tau_social
     return influence
@@ -118,7 +120,7 @@ function calc_affinity_social_influence(position::Tuple{Int64, Int64},affinity::
     neighbours=nearby_agents(position,model,1)
     influence=0
     for n in neighbours
-        influence += (n.affinity-affinity)
+        influence += model.social_influence_factor*(n.affinity-affinity)
     end
     influence /= model.tau_social
     return influence
@@ -126,7 +128,7 @@ end
 
 "returns influence of rational decision on decision"
 function calc_utility_influence(X::Float64, affinity::Float64, model)
-    A_hat=X/(X-model.X_s)
+    A_hat=X/(X+model.X_s)
     return (A_hat-affinity)/model.tau_rational
 end
 
@@ -146,7 +148,7 @@ function agent_step!(agent, model)
     #store previous affinity
     agent.affinity_old = agent.affinity
     #compute new affinity
-    agent.affinity = min(1,max(0,agent.affinity_old + (rational_optimum - agent.affinity_old)/model.tau_rational + social_affinity_influence + social_state_influence))
+    agent.affinity = min(1,max(0,agent.affinity_old + utility_influence + social_affinity_influence + social_state_influence))
 
     if (new_vehicle == true)
         if (agent.affinity<model.A_s)

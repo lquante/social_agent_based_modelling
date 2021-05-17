@@ -15,6 +15,7 @@ function modelHomoOeconomicus(placementFunction,
     budget = 1000000, # for now only dummy implementation,
 
     #general parameters
+    social_influence_factor = 0.2,
     affinity_distribution = Bernoulli(0.5),  # specify a distribution from which the starting affinity should be drawn
     tau_rational = 3, #inertia for the rational part
     tau_social = 3, #intertia for the social part
@@ -36,6 +37,7 @@ function modelHomoOeconomicus(placementFunction,
             :maintenanceCostElectricKM => maintenanceCostElectricKM,
             :usedVehicleDiscount => usedVehicleDiscount,
             :budget => budget,
+            :social_influence_factor => social_influence_factor,
             :tau_rational => tau_rational,
             :tau_social => tau_social, # assumtpion for now: uniform budget
             :X_s => X_s,
