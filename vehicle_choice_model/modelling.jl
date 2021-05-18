@@ -2,7 +2,7 @@ using Agents
 using Distributions
 
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
-function modelHomoOeconomicus(placementFunction;
+function modelVehicleOwners(placementFunction;
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     priceCombustionVehicle = 10000,
     priceElectricVehicle = 20000,
@@ -10,7 +10,7 @@ function modelHomoOeconomicus(placementFunction;
     powerCostKM = 0.05,
     maintenanceCostCombustionKM = 0.0075,
     maintenanceCostElectricKM = 0.01,
-    usedVehicleDiscount::Float64 = 0.8, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
+    usedVehicleDiscount::Float64 = 0.5, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
     budget = 1000000, # for now only dummy implementation,
 
     #general parameters
@@ -19,12 +19,14 @@ function modelHomoOeconomicus(placementFunction;
     tau_rational = 3, #inertia for the rational part
     tau_social = 3, #intertia for the social part
     #switching ratio
-    X_s=0.5,
+    X_s=1.0,
     #switching affinity
-    A_s=0.5
+    A_s=0.5,
+    lowerAffinityBound = 0.0,
+    upperAffinityBound = 1.0
 )
     model = ABM(
-        homoOeconomicus,
+        VehicleOwner,
         space,
         scheduler = Agents.Schedulers.fastest,
         properties = Dict(
@@ -40,7 +42,9 @@ function modelHomoOeconomicus(placementFunction;
             :tau_rational => tau_rational,
             :tau_social => tau_social, # assumtpion for now: uniform budget
             :X_s => X_s,
-            :A_s => A_s
+            :A_s => A_s,
+            :lowerAffinityBound => lowerAffinityBound,
+            :upperAffinityBound => upperAffinityBound
         )
     )
     numagents=length(space.s)
@@ -52,15 +56,5 @@ end
 function model_step!(model)
     for a in allagents(model)
         rand(model.rng)
-    end
-end
-
-"returns vehicle value for model and vehicle type"
-function get_vehicle_value(model,vehicle)
-    if vehicle == 0
-        return model.priceCombustionVehicle
-    end
-    if vehicle == 1
-        return model.priceElectricVehicle
     end
 end
