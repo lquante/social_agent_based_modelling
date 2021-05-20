@@ -1,13 +1,13 @@
 # example script to show basic model setup
-include("agent_functions.jl")
+include("agentFunctions.jl")
 include("modelling.jl")
-include("population_creation.jl")
+include("populationCreation.jl")
 include("visualization.jl")
 
 
-gaiaOeconomicus = modelVehicleOwners(create_combustion_population)
+gaiaOeconomicus = model_vehicle_owners(combustion_population)
 
-diverseGaia = modelVehicleOwners(create_electric_minority)
+diverseGaia = model_vehicle_owners(electric_minority)
 
 interactive_simulation(diverseGaia,agent_step!,model_step!)
 
@@ -18,6 +18,6 @@ Agents.step!(gaiaOeconomicus,agent_step!,model_step!,1) # stepping to test, whei
 
 space = Agents.GridSpace((100, 100); periodic = false, metric = :euclidean)
 
-mixedHugeGaia = modelVehicleOwners(create_mixed_population;space=space)
+mixedHugeGaia = model_vehicle_owners(mixed_population;space=space)
 
 interactive_simulation(mixedHugeGaia,agent_step!,model_step!)

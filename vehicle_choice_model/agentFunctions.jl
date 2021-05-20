@@ -13,7 +13,7 @@ using Agents
     state_old::Int
     affinity::Float64
     affinity_old::Float64
-    rational_optimum::Int
+    rationalOptimum::Int
 end
 
 "returns vehicle value for model and vehicle type"
@@ -22,7 +22,7 @@ function get_vehicle_value(vehicle,model)
 end
 
 "updates state and related variables of an VehicleOwner"
-function setState!(state::Int,agent::VehicleOwner,model)
+function set_state!(state::Int,agent::VehicleOwner,model)
     agent.state = state
     agent.vehicleValue = get_vehicle_value(state,model)
     agent.purchaseValue = agent.vehicleValue
@@ -30,7 +30,7 @@ function setState!(state::Int,agent::VehicleOwner,model)
 end
 
 "returns yearly running cost of vehicle usage, depending on agents yrly km, vehicle age, vehicle type and model parameters"
-function yearlyVehicleCost(
+function yearly_vehicle_cost(
     kilometersPerYear,
     vehicleAge,
     state,
@@ -38,40 +38,40 @@ function yearlyVehicleCost(
 )
     fuelCostKM = state == 0 ? model.fuelCostKM : model.powerCostKM
     maintenanceCostKM = state == 0 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM
-    return kilometersPerYear * (fuelCostKM +  (maintenanceCostKM * vehicleAge)) 
+    return kilometersPerYear * (fuelCostKM +  (maintenanceCostKM * vehicleAge))
 end
 
 "returns linearly depreciated value of the vehicle"
-function depreciateVehicleValue(agent::VehicleOwner, feasibleYears)
+function depreciate_vehicle_value(agent::VehicleOwner, feasibleYears)
     return agent.purchaseValue - agent.vehicleAge / feasibleYears * agent.purchaseValue # very simple linear depreciation
 end
 
 "computes rational decision for 0=combustion car or 1=electric car based on comparison of average cost"
-function rationalDecision(agent::VehicleOwner,model)
+function rational_decision(agent::VehicleOwner,model)
     feasibleYears = cld(300000, agent.kilometersPerYear) # rounding up division
     #calculate cost of current car vs. a new car:
     currentCost = 0.0
     newCombustionCost = 0.0
     newElectricCost = 0.0
-    for i_year in 1:(feasibleYears-agent.vehicleAge)
-            currentCost += yearlyVehicleCost(
+    for iYear in 1:(feasibleYears-agent.vehicleAge)
+            currentCost += yearly_vehicle_cost(
                 agent.kilometersPerYear,
-                agent.vehicleAge + i_year,
+                agent.vehicleAge + iYear,
                 agent.state,
                 model
             )
     end
 
-    for i_year in 1:feasibleYears
-        newCombustionCost += yearlyVehicleCost(
+    for iYear in 1:feasibleYears
+        newCombustionCost += yearly_vehicle_cost(
             agent.kilometersPerYear,
-            i_year,
+            iYear,
             0,
             model
         )
-        newElectricCost += yearlyVehicleCost(
+        newElectricCost += yearly_vehicle_cost(
             agent.kilometersPerYear,
-            i_year,
+            iYear,
             1,
             model
         )
@@ -92,70 +92,66 @@ function rationalDecision(agent::VehicleOwner,model)
         (newElectricCost + newElectricPurchase) / feasibleYears
 
     #compute rational decision
-    new_vehicle = false # dummy variable
+    newVehicle = false # dummy variable
     if (
             min(newCombustionAverageCost, newElectricAverageCost) <
             currentVehicleAverageCost
         )
             if (newCombustionAverageCost < newElectricAverageCost)
                 if (newCombustionPurchase<=agent.budget)
-                    new_vehicle=true
-                    vehicle_preference = 0
+                    newVehicle=true
+                    vehiclePreference = 0
                 end
             else
                 if (newElectricPurchase<=agent.budget)
-                    new_vehicle=true
-                    vehicle_preference = 1
+                    newVehicle=true
+                    vehiclePreference = 1
                 end
             end
     end
-    if (new_vehicle==false)
-        vehicle_preference = agent.state
+    if (newVehicle==false)
+        vehiclePreference = agent.state
     end
-    #cost_ratio to be used in the Chi framework
-    cost_ratio=newCombustionAverageCost/newElectricAverageCost
-    return new_vehicle, vehicle_preference, cost_ratio
+    #costRatio to be used in the Chi framework
+    costRatio=newCombustionAverageCost/newElectricAverageCost
+    return newVehicle, vehiclePreference, costRatio
 
 end
 
 "returns influence of rational decision on decision"
-function calc_utility_influence(costRatio::Float64, affinity::Float64, model)
-    A_hat=costRatio/(costRatio+model.X_s)
-    return (A_hat-affinity)/model.tau_rational
+function utility_influence(costRatio::Float64, affinity::Float64, model)
+    rationalAffinity=costRatio/(costRatio+model.switchingBias)
+    return (rationalAffinity-affinity)/model.tauRational
 end
 
 "returns social influence resulting from neighbours current state"
-function calc_state_social_influence(agent::VehicleOwner, model)
-    influence=0
+function state_social_influence(agent::VehicleOwner, model)
+    neighboursStateAffinityChange=0
     for n in nearby_agents(agent,model,1)
-        influence += model.social_influence_factor*(n.state_old-agent.affinity_old)
+        neighboursStateAffinityChange += model.socialInfluenceFactor*(n.state_old-agent.affinity_old)
     end
-    return influence / model.tau_social
+    return neighboursStateAffinityChange / model.tauSocial
 end
 
 "returns social influence resulting from neighbours current affinity"
-function calc_affinity_social_influence(agent::VehicleOwner, model)
-    influence=0
+function affinity_social_influence(agent::VehicleOwner, model)
+    neighboursAffinityAffinityChange=0
     for n in nearby_agents(agent,model,1)
-        influence += model.social_influence_factor*(n.affinity_old-agent.affinity_old)
+        neighboursAffinityAffinityChange += model.socialInfluenceFactor*(n.affinity_old-agent.affinity_old)
     end
-    return influence / model.tau_social
+    return neighboursAffinityAffinityChange / model.tauSocial
 end
 
 
 
 "step function for agents"
 function agent_step!(agent, model)
-    agent.vehicleAge = agent.vehicleAge + 1
+    agent.vehicleAge += 1
     #assumption: all vehicles are assumed to last at least 300.000km before purchase of a new vehicle
     feasibleYears = cld(300000, agent.kilometersPerYear) # rounding up division
 
-    new_vehicle, rational_optimum, cost_ratio = rationalDecision(agent,model)
-    agent.rational_optimum = rational_optimum
-    utility_influence = calc_utility_influence(cost_ratio,agent.affinity_old,model)
-
-    social_state_influence = calc_state_social_influence(agent,model)
-    social_affinity_influence = calc_affinity_social_influence(agent,model)
+    newVehicle, rationalOptimum, costRatio = rational_decision(agent,model)
+    agent.rationalOptimum = rationalOptimum
 
     #store previous affinity
     agent.affinity_old = agent.affinity
@@ -166,20 +162,20 @@ function agent_step!(agent, model)
         max(
             model.lowerAffinityBound,
             agent.affinity_old +
-            utility_influence +
-            social_affinity_influence +
-            social_state_influence
+            utility_influence(costRatio,agent.affinity_old,model) +
+            affinity_social_influence(agent,model) +
+            state_social_influence(agent,model)
         )
     )
 
-    if new_vehicle
-        if (agent.affinity<model.A_s)
-            setState!(0,agent,model)
+    if newVehicle
+        if (agent.affinity<model.switchingBoundary)
+            set_state!(0,agent,model)
         else
-            setState!(1,agent,model)
+            set_state!(1,agent,model)
         end
     else
-        agent.vehicleValue = depreciateVehicleValue(
+        agent.vehicleValue = depreciate_vehicle_value(
         agent, feasibleYears
         )
     end
