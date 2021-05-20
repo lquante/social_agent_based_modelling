@@ -11,7 +11,7 @@ function model_vehicle_owners(placementFunction;
     maintenanceCostCombustionKM = 0.0075,
     maintenanceCostElectricKM = 0.01,
     usedVehicleDiscount::Float64 = 0.5, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
-    budget = 1000000, # for now only dummy implementation,
+    budget = 5000, # for now only dummy implementation,
 
     #general parameters
     socialInfluenceFactor = 0.2,

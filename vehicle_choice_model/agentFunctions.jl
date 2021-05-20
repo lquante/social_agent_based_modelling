@@ -27,6 +27,7 @@ function set_state!(state::Int,agent::VehicleOwner,model)
     agent.vehicleValue = get_vehicle_value(state,model)
     agent.purchaseValue = agent.vehicleValue
     agent.vehicleAge = 0
+    agent.budget -= agent.purchaseValue
 end
 
 "returns yearly running cost of vehicle usage, depending on agents yrly km, vehicle age, vehicle type and model parameters"
@@ -110,6 +111,7 @@ function rational_decision(agent::VehicleOwner,model)
             end
     end
     if (newVehicle==false)
+        agent.budget += 5000 # linearly increasing budget until you get a car
         vehiclePreference = agent.state
     end
     #costRatio to be used in the Chi framework
@@ -119,10 +121,14 @@ function rational_decision(agent::VehicleOwner,model)
 end
 
 "returns influence of rational decision on decision"
-function utility_influence(costRatio::Float64, affinity::Float64, model)
+function smoothed_utility_influence(costRatio::Float64, affinity::Float64, model)
     rationalAffinity=costRatio/(costRatio+model.switchingBias)
     return (rationalAffinity-affinity)/model.tauRational
 end
+
+"step-function for rational decision"
+function stepwise_utility_influence(vehiclePreference::Int,affinity::Float64)
+    return (vehiclePreference-affinity)/model.tauRational
 
 "returns social influence resulting from neighbours current state"
 function state_social_influence(agent::VehicleOwner, model)
@@ -162,8 +168,8 @@ function agent_step!(agent, model)
         max(
             model.lowerAffinityBound,
             agent.affinity_old +
-            utility_influence(costRatio,agent.affinity_old,model) +
-            affinity_social_influence(agent,model) +
+            stepwise_utility_influence(agent.rationalOptimum,agent.affinity_old)
+            + affinity_social_influence(agent,model) +
             state_social_influence(agent,model)
         )
     )
