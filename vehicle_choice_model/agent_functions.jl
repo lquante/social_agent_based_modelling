@@ -38,7 +38,7 @@ function yearlyVehicleCost(
 )
     fuelCostKM = state == 0 ? model.fuelCostKM : model.powerCostKM
     maintenanceCostKM = state == 0 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM
-    return kilometersPerYear * (fuelCostKM +  (maintenanceCostKM * vehicleAge)) 
+    return kilometersPerYear * (fuelCostKM +  (maintenanceCostKM * vehicleAge))
 end
 
 "returns linearly depreciated value of the vehicle"
@@ -112,15 +112,31 @@ function rationalDecision(agent::VehicleOwner,model)
     if (new_vehicle==false)
         vehicle_preference = agent.state
     end
-    #cost_ratio to be used in the Chi framework
-    cost_ratio=newCombustionAverageCost/newElectricAverageCost
-    return new_vehicle, vehicle_preference, cost_ratio
+
+    return new_vehicle, vehicle_preference, newCombustionAverageCost, newElectricAverageCost
 
 end
 
-"returns influence of rational decision on decision"
-function calc_utility_influence(costRatio::Float64, affinity::Float64, model)
+"returns personal utility influence, based on cost benefit ratio"
+function calc_utility_influence_ratio(cost1::Float64, cost2::Float64, affinity::Float64, model)
+    costRatio=cost2/cost1
     A_hat=costRatio/(costRatio+model.X_s)
+    return (A_hat-affinity)/model.tau_rational
+end
+
+"returns personal utility influence, based on cost benefit difference"
+function calc_utility_influence_diff(cost1::Float64, cost2::Float64, affinity::Float64, model, type::String)
+    cost_diff=(cost2-cost1)/(cost2+cost1)
+
+    #Smooth transition with hyperbolic tangent function
+    if type=="smooth"
+        A_hat=0.5*(1+tanh(cost_diff))
+
+    #Step transition
+    elseif type=="step"
+        A_hat=Int(cost_diff>0)
+    end
+
     return (A_hat-affinity)/model.tau_rational
 end
 
@@ -143,16 +159,15 @@ function calc_affinity_social_influence(agent::VehicleOwner, model)
 end
 
 
-
 "step function for agents"
 function agent_step!(agent, model)
     agent.vehicleAge = agent.vehicleAge + 1
     #assumption: all vehicles are assumed to last at least 300.000km before purchase of a new vehicle
     feasibleYears = cld(300000, agent.kilometersPerYear) # rounding up division
 
-    new_vehicle, rational_optimum, cost_ratio = rationalDecision(agent,model)
+    new_vehicle, rational_optimum, cost_comb, cost_elec = rationalDecision(agent,model)
     agent.rational_optimum = rational_optimum
-    utility_influence = calc_utility_influence(cost_ratio,agent.affinity_old,model)
+    utility_influence = calc_utility_influence_diff(cost_elec, cost_comb, agent.affinity_old, model, "smooth")
 
     social_state_influence = calc_state_social_influence(agent,model)
     social_affinity_influence = calc_affinity_social_influence(agent,model)
@@ -167,7 +182,7 @@ function agent_step!(agent, model)
             model.lowerAffinityBound,
             agent.affinity_old +
             utility_influence +
-            social_affinity_influence +
+            #social_affinity_influence +
             social_state_influence
         )
     )

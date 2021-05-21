@@ -4,7 +4,6 @@ include("modelling.jl")
 include("population_creation.jl")
 include("visualization.jl")
 
-
 gaiaOeconomicus = modelVehicleOwners(create_combustion_population)
 
 diverseGaia = modelVehicleOwners(create_electric_minority)
