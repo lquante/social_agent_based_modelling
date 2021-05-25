@@ -114,21 +114,34 @@ function rational_decision(agent::VehicleOwner,model)
         agent.budget += 5000 # linearly increasing budget until you get a car
         vehiclePreference = agent.state
     end
-    #costRatio to be used in the Chi framework
-    costRatio=newCombustionAverageCost/newElectricAverageCost
-    return newVehicle, vehiclePreference, costRatio
+    return newVehicle, vehiclePreference, newCombustionAverageCost, newElectricAverageCost
 
 end
 
-"returns influence of rational decision on decision"
-function smoothed_utility_influence(costRatio::Float64, affinity::Float64, model)
-    rationalAffinity=costRatio/(costRatio+model.switchingBias)
+"returns personal utility influence, based on cost benefit ratio"
+function calc_utility_influence_ratio(cost1::Float64, cost2::Float64, affinity::Float64, model)
+    costRatio=cost2/cost1
+    rationalAffinity=costRatio/(costRatio++model.switchingBias)
     return (rationalAffinity-affinity)/model.tauRational
 end
 
-"step-function for rational decision"
-function stepwise_utility_influence(vehiclePreference::Int,affinity::Float64)
-    return (vehiclePreference-affinity)/model.tauRational
+"returns personal utility influence, based on one of the provided functions of cost difference"
+function calc_utility_influence_diff(cost1::Float64, cost2::Float64, affinity::Float64, model, diffFunction)
+    costDiff=(cost2-cost1)/(cost2+cost1)
+    rationalAffinity=diffFunction(costDiff)
+    return (rationalAffinity-affinity)/model.tauRational
+end
+
+function tanh_costDiff_rational_affinity(costDiff::Float64)
+    return 0.5*(1+tanh(costDiff))
+end
+
+function linear_costDiff_rational_affinity(costDiff::Float64)
+    return 0.5*(1+costDiff)
+end
+function step_costDiff_rational_affinity(costDiff::Float64)
+    return Int(costDiff>0)
+end
 
 "returns social influence resulting from neighbours current state"
 function state_social_influence(agent::VehicleOwner, model)
@@ -148,15 +161,13 @@ function affinity_social_influence(agent::VehicleOwner, model)
     return neighboursAffinityAffinityChange / model.tauSocial
 end
 
-
-
 "step function for agents"
 function agent_step!(agent, model)
     agent.vehicleAge += 1
     #assumption: all vehicles are assumed to last at least 300.000km before purchase of a new vehicle
     feasibleYears = cld(300000, agent.kilometersPerYear) # rounding up division
 
-    newVehicle, rationalOptimum, costRatio = rational_decision(agent,model)
+    newVehicle, rationalOptimum, averageCostCombustion, averageCostElectric = rational_decision(agent,model)
     agent.rationalOptimum = rationalOptimum
 
     #store previous affinity
@@ -168,9 +179,9 @@ function agent_step!(agent, model)
         max(
             model.lowerAffinityBound,
             agent.affinity_old +
-            stepwise_utility_influence(agent.rationalOptimum,agent.affinity_old)
-            + affinity_social_influence(agent,model) +
-            state_social_influence(agent,model)
+            calc_utility_influence_diff(averageCostElectric,averageCostCombustion,agent.affinity_old,model,tanh_costDiff_rational_affinity)
+            + affinity_social_influence(agent,model)
+            + state_social_influence(agent,model)
         )
     )
 
