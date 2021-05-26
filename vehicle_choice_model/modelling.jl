@@ -2,15 +2,15 @@ using Agents
 using Distributions
 
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
-function model_vehicle_owners(placementFunction;
+function model_car_owners(placementFunction;
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
-    priceCombustionVehicle = 10000,
-    priceElectricVehicle = 20000,
+    priceCombustionCar = 10000,
+    priceElectricCar = 20000,
     fuelCostKM = 0.125,
     powerCostKM = 0.05,
     maintenanceCostCombustionKM = 0.0075,
     maintenanceCostElectricKM = 0.01,
-    usedVehicleDiscount::Float64 = 0.5, #assumption: loss of 20% of vehicle value due to used vehicle market conditions
+    usedCarDiscount::Float64 = 0.5, #assumption: loss of 20% of car value due to used car market conditions
     budget = 5000, # for now only dummy implementation,
 
     #general parameters
@@ -24,17 +24,17 @@ function model_vehicle_owners(placementFunction;
     upperAffinityBound = 1.0
 )
     model = ABM(
-        VehicleOwner,
+        CarOwner,
         space,
         scheduler = Agents.Schedulers.fastest,
         properties = Dict(
-            :priceCombustionVehicle => priceCombustionVehicle,
-            :priceElectricVehicle => priceElectricVehicle,
+            :priceCombustionCar => priceCombustionCar,
+            :priceElectricCar => priceElectricCar,
             :fuelCostKM => fuelCostKM,
             :powerCostKM => powerCostKM,
             :maintenanceCostCombustionKM => maintenanceCostCombustionKM,
             :maintenanceCostElectricKM => maintenanceCostElectricKM,
-            :usedVehicleDiscount => usedVehicleDiscount,
+            :usedCarDiscount => usedCarDiscount,
             :budget => budget,
             :socialInfluenceFactor => socialInfluenceFactor,
             :tauRational => tauRational,

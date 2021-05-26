@@ -5,9 +5,9 @@ include("populationCreation.jl")
 include("visualization.jl")
 
 
-gaiaOeconomicus = model_vehicle_owners(combustion_population)
+gaiaOeconomicus = model_car_owners(combustion_population)
 
-diverseGaia = model_vehicle_owners(electric_minority)
+diverseGaia = model_car_owners(electric_minority)
 
 interactive_simulation(diverseGaia,agent_step!,model_step!)
 
@@ -18,6 +18,6 @@ Agents.step!(gaiaOeconomicus,agent_step!,model_step!,1) # stepping to test, whei
 
 space = Agents.GridSpace((100, 100); periodic = false, metric = :euclidean)
 
-mixedHugeGaia = model_vehicle_owners(mixed_population;space=space)
+mixedHugeGaia = model_car_owners(mixed_population;space=space)
 
 interactive_simulation(mixedHugeGaia,agent_step!,model_step!)
