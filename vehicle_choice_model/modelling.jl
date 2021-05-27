@@ -10,9 +10,8 @@ function model_car_owners(placementFunction;
     powerCostKM = 0.05,
     maintenanceCostCombustionKM = 0.0075,
     maintenanceCostElectricKM = 0.01,
-    usedCarDiscount::Float64 = 0.5, #assumption: loss of 20% of car value due to used car market conditions
-    budget = 200000, # for now only dummy implementation,
-
+    usedCarDiscount::Float64 = 0.5, #assumption: loss of 50% of car value due to used car market conditions
+    budget = 200000,
     #general parameters
     socialInfluenceFactor = 0.2,
     affinityDistribution = Bernoulli(0.5),  # specify a distribution from which the starting affinity should be drawn

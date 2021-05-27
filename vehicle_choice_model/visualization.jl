@@ -6,8 +6,8 @@ using GLMakie
 parange = Dict(
     :priceCombustionCar => 5000:100000,
     :priceElectricCar => 5000:100000,
-    :fuelCostKM => range(0.05, 0.5; step = 0.025),
-    :powerCostKM => range(0.05, 0.5; step = 0.025),
+    :fuelCostKM => range(0.0, 0.5; step = 0.025),
+    :powerCostKM => range(0.0, 0.5; step = 0.025),
 )
 
 adata = [(:state, mean),(:rationalOptimum, mean), (:carAge, mean),(:affinity, mean)]
