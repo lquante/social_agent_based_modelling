@@ -42,6 +42,20 @@ function yearly_car_cost(
     return kilometersPerYear * (fuelCostKM +  (maintenanceCostKM * carAge))
 end
 
+function multi_year_car_cost(kilometersPerYear, usageYears,
+    initialCarAge, state, model)
+    totalCost = 0.0
+    for iYear in 0:(usageYears-initialCarAge)
+        totalCost += yearly_car_cost(
+            kilometersPerYear,
+            initialCarAge+iYear,
+            state,
+            model
+        )
+    end
+    return totalCost
+end
+
 "returns linearly depreciated value of the car"
 function depreciate_car_value(agent::CarOwner, feasibleYears)
     return agent.purchaseValue - agent.carAge / feasibleYears * agent.purchaseValue # very simple linear depreciation
@@ -51,32 +65,24 @@ end
 function rational_decision(agent::CarOwner,model)
     feasibleYears = cld(300000, agent.kilometersPerYear) # rounding up division
     #calculate cost of current car vs. a new car:
-    currentCost = 0.0
-    newCombustionCost = 0.0
-    newElectricCost = 0.0
-    for iYear in 1:(feasibleYears-agent.carAge)
-            currentCost += yearly_car_cost(
-                agent.kilometersPerYear,
-                agent.carAge + iYear,
-                agent.state,
-                model
-            )
-    end
-
-    for iYear in 1:feasibleYears
-        newCombustionCost += yearly_car_cost(
-            agent.kilometersPerYear,
-            iYear,
+    currentCost = multi_year_car_cost(
+        agent.kilometersPerYear, feasibleYears,
+        agent.carAge,
+        agent.state,
+        model
+    )
+    newCombustionCost = multi_year_car_cost(
+        agent.kilometersPerYear, feasibleYears,
+            0,
             0,
             model
         )
-        newElectricCost += yearly_car_cost(
-            agent.kilometersPerYear,
-            iYear,
+    newElectricCost = multi_year_car_cost(
+        agent.kilometersPerYear, feasibleYears,
+            0,
             1,
             model
         )
-    end
     #purchasing cost after selling old car
     incomeSellingOldCar = agent.carValue*model.usedCarDiscount
     newCombustionPurchase = model.priceCombustionCar - incomeSellingOldCar
