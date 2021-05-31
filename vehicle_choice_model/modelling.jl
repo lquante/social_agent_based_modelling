@@ -13,7 +13,7 @@ function model_car_owners(placementFunction;
     usedCarDiscount::Float64 = 0.5, #assumption: loss of 50% of car value due to used car market conditions
     budget = 200000,
     #general parameters
-    socialInfluenceFactor = 0.2,
+    socialInfluenceFactor = 1, # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
     affinityDistribution = Bernoulli(0.5),  # specify a distribution from which the starting affinity should be drawn
     tauRational = 3, #inertia for the rational part
     tauSocial = 3, #intertia for the social part

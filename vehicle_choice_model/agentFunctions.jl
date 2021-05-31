@@ -131,7 +131,6 @@ end
 function tanh_costDiff(costDiff::Float64)
     return 0.5*(1+tanh(costDiff))
 end
-
 function linear_costDiff(costDiff::Float64)
     return 0.5*(1+costDiff)
 end
@@ -140,21 +139,37 @@ function step_costDiff(costDiff::Float64)
 end
 
 "returns social influence resulting from neighbours current state"
-function state_social_influence(agent::CarOwner, model)
-    neighboursStateAffinityChange=0
-    for n in nearby_agents(agent,model,1)
-        neighboursStateAffinityChange += model.socialInfluenceFactor*(n.state_old-agent.affinity_old)
+function state_social_influence(agent::CarOwner, model, neighboursMaximumDistance=1)
+    stateSocialInfluence = 0
+    for distance in 1:neighboursMaximumDistance
+        neighboursStateDiff = 0
+        neighbours = nearby_agents(agent,model,distance)
+        numberNeighbours = 0
+        for n in neighbours
+            neighboursStateDiff += (n.state_old-agent.affinity_old)
+            numberNeighbours +=1
+        end
+        neighboursStateDiff /= numberNeighbours # mean of neighbours opinion
+        stateSocialInfluence += neighboursStateDiff * model.socialInfluenceFactor/distance # decaying influence of more distanced neighbours
     end
-    return neighboursStateAffinityChange / model.tauSocial
+    return stateSocialInfluence / model.tauSocial
 end
 
 "returns social influence resulting from neighbours current affinity"
-function affinity_social_influence(agent::CarOwner, model)
-    neighboursAffinityAffinityChange=0
-    for n in nearby_agents(agent,model,1)
-        neighboursAffinityAffinityChange += model.socialInfluenceFactor*(n.affinity_old-agent.affinity_old)
+function affinity_social_influence(agent::CarOwner, model, neighboursMaximumDistance=1)
+    affinitySocialInfluence = 0
+    for distance in 1:neighboursMaximumDistance
+        neigboursAffinityDiff = 0
+        neighbours = nearby_agents(agent,model,distance)
+        numberNeighbours = 0
+        for n in neighbours
+            neigboursAffinityDiff += (n.affinity_old-agent.affinity_old)
+            numberNeighbours +=1
+        end
+        neigboursAffinityDiff /= numberNeighbours # mean of neighbours opinion
+        affinitySocialInfluence += neigboursAffinityDiff * model.socialInfluenceFactor^distance # decaying influence of more distanced neighbours
     end
-    return neighboursAffinityAffinityChange / model.tauSocial
+    return affinitySocialInfluence / model.tauSocial
 end
 
 "step function for agents"
@@ -175,8 +190,7 @@ function agent_step!(agent, model)
         max(
             model.lowerAffinityBound,
             agent.affinity_old +
-            calc_utility_influence_diff(averageCostElectric,averageCostCombustion,agent.affinity_old,model,tanh_costDiff)
-            + affinity_social_influence(agent,model)
+            calc_utility_influence_diff(averageCostElectric,averageCostCombustion,agent.affinity_old,model,step_costDiff)
             + state_social_influence(agent,model)
         )
     )

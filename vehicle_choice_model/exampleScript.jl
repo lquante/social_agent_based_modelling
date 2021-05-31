@@ -5,8 +5,6 @@ include("populationCreation.jl")
 include("visualization.jl")
 
 
-gaiaOeconomicus = model_car_owners(combustion_population)
-
 diverseGaia = model_car_owners(electric_minority)
 
 interactive_simulation(diverseGaia,agent_step!,model_step!)
