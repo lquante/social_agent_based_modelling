@@ -44,7 +44,7 @@ end
 "yielding population with a share of electric cars"
 function mixed_population(model,numagents,budget;population_split=0.25)
     for i = 1:numagents
-        initial_car = (rand(model.rng)<population_split) ? 0 : 1
+        initialCar = (rand(model.rng)<population_split) ? 0 : 1
         starting_affinity= affinityRandomization(model,initialCar)
         initialValue = get_car_value(initialCar,model)
         add_agent_single!(
