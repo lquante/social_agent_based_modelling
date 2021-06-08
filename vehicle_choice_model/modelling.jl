@@ -20,14 +20,13 @@ function model_car_owners(placementFunction;
     switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
     switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
-    upperAffinityBound = 1.0
-)
+    upperAffinityBound = 1.0)
+
+
     model = ABM(
         CarOwner,
-        space,
-        scheduler = Agents.Schedulers.fastest,
-        properties = Dict(
-            :priceCombustionCar => priceCombustionCar,
+        space;
+        properties = Dict(:priceCombustionCar => priceCombustionCar,
             :priceElectricCar => priceElectricCar,
             :fuelCostKM => fuelCostKM,
             :powerCostKM => powerCostKM,
@@ -37,12 +36,11 @@ function model_car_owners(placementFunction;
             :budget => budget,
             :socialInfluenceFactor => socialInfluenceFactor,
             :tauRational => tauRational,
-            :tauSocial => tauSocial, # assumtpion for now: uniform budget
+            :tauSocial => tauSocial,
             :switchingBias => switchingBias,
             :switchingBoundary => switchingBoundary,
             :lowerAffinityBound => lowerAffinityBound,
-            :upperAffinityBound => upperAffinityBound
-        )
+            :upperAffinityBound => upperAffinityBound)
     )
     numagents=length(space.s)
     placementFunction(model,numagents,budget)
