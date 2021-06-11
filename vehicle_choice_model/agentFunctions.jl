@@ -123,7 +123,8 @@ end
 
 "returns personal utility influence, based on one of the provided functions of cost difference"
 function calc_utility_influence_diff(costSubtrahend::Float64, costMinuend::Float64 , affinity::Float64, model, diffSmoothingFunction)
-    costDiff=(costMinuend-costSubtrahend)/(costMinuend+costSubtrahend)
+    #costDiff=(costMinuend-costSubtrahend)/(costMinuend+costSubtrahend)
+    costDiff=(costMinuend-costSubtrahend)
     rationalAffinity=diffSmoothingFunction(costDiff)
     return (rationalAffinity-affinity)/model.tauRational
 end
@@ -135,7 +136,7 @@ function linear_costDiff(costDiff::Float64)
     return 0.5*(1+costDiff)
 end
 function step_costDiff(costDiff::Float64)
-    return Int(costDiff>0)
+    return Int(costDiff>=0)
 end
 
 "returns social influence resulting from neighbours current state"
@@ -152,6 +153,30 @@ function state_social_influence(agent::CarOwner, model, neighboursMaximumDistanc
         neighboursStateDiff /= numberNeighbours # mean of neighbours opinion
         stateSocialInfluence += neighboursStateDiff * model.socialInfluenceFactor/distance # decaying influence of more distanced neighbours
     end
+    stateSocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is between -1/1
+    return stateSocialInfluence / model.tauSocial
+end
+
+"returns social influence resulting from neighbours current state"
+#edit which ensures as distance is increased, the same agents are not counted multiple times
+function state_social_influence2(agent::CarOwner, model, neighboursMaximumDistance=1)
+    stateSocialInfluence = 0
+    counted=[agent.id]
+    for distance in 1:neighboursMaximumDistance
+        neighboursStateDiff = 0
+        neighbours = nearby_agents(agent,model,distance)
+        numberNeighbours = 0
+        for n in neighbours
+            if !(n.id in counted)
+                neighboursStateDiff += (n.state_old-agent.affinity_old)
+                numberNeighbours +=1
+                counted=append!(counted,n.id)
+            end
+        end
+        neighboursStateDiff /= numberNeighbours # mean of neighbours opinion
+        stateSocialInfluence += neighboursStateDiff * model.socialInfluenceFactor/distance # decaying influence of more distanced neighbours
+    end
+    stateSocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is between -1/1
     return stateSocialInfluence / model.tauSocial
 end
 
@@ -167,8 +192,9 @@ function affinity_social_influence(agent::CarOwner, model, neighboursMaximumDist
             numberNeighbours +=1
         end
         neigboursAffinityDiff /= numberNeighbours # mean of neighbours opinion
-        affinitySocialInfluence += neigboursAffinityDiff * model.socialInfluenceFactor^distance # decaying influence of more distanced neighbours
+        affinitySocialInfluence += neigboursAffinityDiff * model.socialInfluenceFactor/distance # decaying influence of more distanced neighbours
     end
+    affinitySocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is -1/1
     return affinitySocialInfluence / model.tauSocial
 end
 
@@ -190,8 +216,8 @@ function agent_step!(agent, model)
         max(
             model.lowerAffinityBound,
             agent.affinity_old +
-            calc_utility_influence_diff(averageCostElectric,averageCostCombustion,agent.affinity_old,model,step_costDiff)
-            + state_social_influence(agent,model)
+            calc_utility_influence_diff(averageCostElectric,averageCostCombustion,agent.affinity_old,model,tanh_costDiff)
+            + state_social_influence2(agent,model)
         )
     )
     if newCar

@@ -5,10 +5,10 @@ using Distributions
 function model_car_owners(placementFunction;
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     priceCombustionCar = 10000,
-    priceElectricCar = 20000,
-    fuelCostKM = 0.125,
+    priceElectricCar = 10000,
+    fuelCostKM = 0.05,
     powerCostKM = 0.05,
-    maintenanceCostCombustionKM = 0.0075,
+    maintenanceCostCombustionKM = 0.01,
     maintenanceCostElectricKM = 0.01,
     usedCarDiscount::Float64 = 0.5, #assumption: loss of 50% of car value due to used car market conditions
     budget = 200000,
@@ -16,7 +16,7 @@ function model_car_owners(placementFunction;
     socialInfluenceFactor = 1, # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
     affinityDistribution = Bernoulli(0.5),  # specify a distribution from which the starting affinity should be drawn
     tauRational = 3, #inertia for the rational part
-    tauSocial = 3, #intertia for the social part
+    tauSocial = 1, #intertia for the social part
     switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
     switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
