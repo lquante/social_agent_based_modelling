@@ -17,6 +17,6 @@ seed!(mixedHugeGaia,19956060601032517)
 
 interactive_simulation(mixedHugeGaia,agent_step!,model_step!)
 
-video_recording(mixedHugeGaia,agent_step!,model_step!,"test.mp4","Test model for scenario",framerate=2)
+video_recording(mixedHugeGaia,agent_step!,model_step!,"test.mp4","Test model for scenario")
 
 Agents.step!(mixedHugeGaia,agent_step!,model_step!,1)
