@@ -32,3 +32,18 @@ function interactive_simulation(model,agent_step!,model_step!)
     )
 
 end
+
+"creates a video for a given model, possibly using scenarios parameter to change parameters"
+
+function video_recording(model,agent_step!,model_step!,filename,title)
+    video = abm_video(filename,
+        model,
+        agent_step!,model_step!;
+        ac = carcolor,
+        am = carmarker,
+        as = 4,
+        title = title,
+        framerate = 4, frames = 1000
+    )
+    return video
+end
