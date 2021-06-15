@@ -1,5 +1,6 @@
 using Agents
 using Distributions
+using YAML
 
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
 function model_car_owners(placementFunction;
@@ -20,7 +21,9 @@ function model_car_owners(placementFunction;
     switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
     switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
-    upperAffinityBound = 1.0)
+    upperAffinityBound = 1.0,
+    scenarios=false,
+    timepoint=0)
 
 
     model = ABM(
@@ -40,16 +43,28 @@ function model_car_owners(placementFunction;
             :switchingBias => switchingBias,
             :switchingBoundary => switchingBoundary,
             :lowerAffinityBound => lowerAffinityBound,
-            :upperAffinityBound => upperAffinityBound)
+            :upperAffinityBound => upperAffinityBound,
+            :scenarios => scenarios,
+            :timepoint=>timepoint)
     )
     numagents=length(space.s)
     placementFunction(model,numagents,budget)
     return model
 end
 
-"stepping function for updating model paramters, ATM doing nothing"
+"stepping function for updating model parameters based on scenarios *.yml file"
 function model_step!(model)
-    for a in allagents(model)
-        rand(model.rng)
+    model.timepoint += 1
+    if model.scenarios != false
+        scenario_dict = YAML.load_file(model.scenarios)
+        if (model.timepoint in keys(scenario_dict["timepoints"]))
+            timepoint_dict = scenario_dict["timepoints"][model.timepoint]
+            variableSymbol = Symbol(timepoint_dict["variable"])
+            if timepoint_dict["change"]["relative"]
+                model.properties[variableSymbol] *= timepoint_dict["change"]["change"]
+            else
+                model.properties[variableSymbol] += timepoint_dict["change"]["change"]
+            end
+        end
     end
 end

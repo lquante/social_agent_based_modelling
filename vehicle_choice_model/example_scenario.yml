@@ -1,0 +1,17 @@
+scenarioname: "increasing electric vehicle subsidies"
+timepoints:
+  1:
+    variable: priceElectricCar
+    change:
+      relative: true
+      change: 0.9
+  10:
+    variable: priceElectricCar
+    change:
+      relative: false
+      change: -1000
+  20:
+    variable: priceElectricCar
+    change:
+      relative: true
+      change: 0.85
