@@ -3,7 +3,7 @@ using Distributions
 using YAML
 
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
-function model_car_owners(placementFunction;
+function model_car_owners(placementFunction;rng=Random.seed!(1234),
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     priceCombustionCar = 10000,
     priceElectricCar = 10000,
@@ -28,7 +28,7 @@ function model_car_owners(placementFunction;
 
     model = ABM(
         CarOwner,
-        space;
+        space; rng,
         properties = Dict(:priceCombustionCar => priceCombustionCar,
             :priceElectricCar => priceElectricCar,
             :fuelCostKM => fuelCostKM,

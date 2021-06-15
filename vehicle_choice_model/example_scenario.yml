@@ -10,12 +10,31 @@ timepoints:
     change:
       relative: false
       change: +1000
-  20:
+
+  200:
     variable: priceElectricCar
     change:
       relative: true
-      change: 1
-  200:
+      change: 1.05
+
+  400:
+    variable: priceElectricCar
+    change:
+      relative: true
+      change: 0.9
+
+  420:
+    variable: priceElectricCar
+    change:
+      relative: false
+      change: -2500
+
+  450:
+    variable: priceElectricCar
+    change:
+      relative: false
+      change: +4500
+  500:
     variable: priceElectricCar
     change:
       relative: true

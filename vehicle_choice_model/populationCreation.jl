@@ -1,6 +1,7 @@
 using Agents
 using Distributions
 
+
 function millageRandomization(model)
     return 15000 + (7500 * (rand(model.rng) - 0.5)) #  diverse population with different millages
 end
@@ -12,7 +13,7 @@ end
 "returns affinity relative to initial state, using a one-sided normal distribuition"
 function affinityRandomization(model,state)
     d = Normal(0,1/6)
-    normal =   rand(d)
+    normal =   rand(model.rng,d)
     return (state==0) ? state+abs(normal) : state-abs(normal) # assuming binary state space of 0 or 1
 end
 
