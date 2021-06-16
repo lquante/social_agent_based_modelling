@@ -12,7 +12,7 @@ function model_car_owners(placementFunction;rng=Random.seed!(1234),
     maintenanceCostCombustionKM = 0.01,
     maintenanceCostElectricKM = 0.01,
     usedCarDiscount::Float64 = 0.5, #assumption: loss of 50% of car value due to used car market conditions
-    budget = 200000,
+    budget = Inf, #for now ignoring budget limitations
     #general parameters
     socialInfluenceFactor = 1, # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
     affinityDistribution = Bernoulli(0.5),  # specify a distribution from which the starting affinity should be drawn

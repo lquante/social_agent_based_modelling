@@ -7,7 +7,7 @@ function millageRandomization(model)
 end
 
 function incomeRandomization(model)
-    return 5000 #  diverse population with different incomes
+    return 5000 #  diverse population with different incomes could be enabled here
 end
 
 "returns affinity relative to initial state, using a one-sided normal distribuition"
