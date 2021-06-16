@@ -17,7 +17,7 @@ carcolor(a) = a.state == 0 ? :orange : :blue
 carmarker(a) = a.state == 0 ? :circle : :rect
 
 "creates an interactive simulation to explore parameter settings"
-function interactive_simulation(model,agent_step!,model_step!)
+function interactive_simulation(model,agent_step!,model_step!;args...)
 
     scene, adf, modeldf = abm_data_exploration(
         model,
@@ -28,7 +28,22 @@ function interactive_simulation(model,agent_step!,model_step!)
         am = carmarker,
         as = 4,
         adata = adata,
-        alabels = alabels,
+        alabels = alabels,args...
     )
+end
 
+"creates a video for a given model, possibly using scenarios parameter to change parameters"
+
+function video_recording(model,agent_step!,model_step!,filename,title;args...)
+    video = abm_video(filename,
+        model,
+        agent_step!,model_step!;
+        ac = carcolor,
+        am = carmarker,
+        as = 4,
+        title = title,
+        framerate = 50, frames = 1000,
+        args...
+    )
+    return video
 end
