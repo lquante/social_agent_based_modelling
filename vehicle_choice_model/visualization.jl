@@ -35,7 +35,7 @@ end
 
 "creates a video for a given model, possibly using scenarios parameter to change parameters"
 
-function video_recording(model,agent_step!,model_step!,filename,title)
+function video_recording(model,agent_step!,model_step!,filename,title;args...)
     video = abm_video(filename,
         model,
         agent_step!,model_step!;
@@ -43,7 +43,10 @@ function video_recording(model,agent_step!,model_step!,filename,title)
         am = carmarker,
         as = 4,
         title = title,
-        framerate = 4, frames = 1000
+        framerate = 50, frames = 1000,
+        args...
     )
+    ylims!((0,1))
+    yticks!(ytickrange=(0,1),yticklabels=0:0.25:1.1)
     return video
 end
