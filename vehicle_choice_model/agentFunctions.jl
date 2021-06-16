@@ -122,9 +122,8 @@ function calc_utility_influence_ratio(costDenominator::Float64, costNumerator::F
 end
 
 "returns personal utility influence, based on one of the provided functions of cost difference"
-function calc_utility_influence_diff(costSubtrahend::Float64, costMinuend::Float64 , affinity::Float64, model, diffSmoothingFunction)
-    #costDiff=(costMinuend-costSubtrahend)/(costMinuend+costSubtrahend)
-    costDiff=(costMinuend-costSubtrahend)
+function calc_utility_influence_diff(costSubtrahend::Float64, costMinuend::Float64 , affinity::Float64, model, diffSmoothingFunction,costDiffScale=2500)
+    costDiff=(costMinuend-costSubtrahend)/costDiffScale
     rationalAffinity=diffSmoothingFunction(costDiff)
     return (rationalAffinity-affinity)/model.tauRational
 end
@@ -142,7 +141,7 @@ end
 
 "returns social influence resulting from neighbours current state"
 #edit which ensures as distance is increased, the same agents are not counted multiple times
-function state_social_influence(agent::CarOwner, model, neighboursMaximumDistance=1)
+function state_social_influence(agent::CarOwner, model, neighboursMaximumDistance=2)
     stateSocialInfluence = 0
     counted=[agent.id]
     for distance in 1:neighboursMaximumDistance
