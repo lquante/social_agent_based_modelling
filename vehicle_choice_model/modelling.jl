@@ -9,8 +9,8 @@ function model_car_owners(placementFunction;rng=Random.seed!(1234),
     priceElectricCar = 10000,
     fuelCostKM = 0.05,
     powerCostKM = 0.05,
-    maintenanceCostCombustionKM = 0.01,
-    maintenanceCostElectricKM = 0.01,
+    maintenanceCostCombustionKM = 0, # for now ignored for simplicity
+    maintenanceCostElectricKM = 0,# for now ignored for simplicity
     usedCarDiscount::Float64 = 0.5, #assumption: loss of 50% of car value due to used car market conditions
     budget = Inf, #for now ignoring budget limitations
     #general parameters
