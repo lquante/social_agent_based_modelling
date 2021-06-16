@@ -1,4 +1,4 @@
-scenarioname: "increasing electric vehicle subsidies"
+scenarioname: "increasing electric vehicle subsidies, decreasing in the end again"
 timepoints:
   1:
     variable: priceElectricCar
