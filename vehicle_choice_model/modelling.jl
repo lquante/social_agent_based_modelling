@@ -22,8 +22,10 @@ function model_car_owners(placementFunction;rng=Random.seed!(1234),
     switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
     upperAffinityBound = 1.0,
-    scenarios=false,
-    timepoint=0)
+    scenario=false,
+    timepoint=0,
+    decisionGap=0,
+    summaryStats=false) # bool to switch on collection)
 
 
     model = ABM(
@@ -42,29 +44,78 @@ function model_car_owners(placementFunction;rng=Random.seed!(1234),
             :tauSocial => tauSocial,
             :switchingBias => switchingBias,
             :switchingBoundary => switchingBoundary,
+            :decisionGap => decisionGap,
             :lowerAffinityBound => lowerAffinityBound,
             :upperAffinityBound => upperAffinityBound,
-            :scenarios => scenarios,
-            :timepoint=>timepoint)
-    )
+            :scenario => scenario,
+            :timepoint=>timepoint,
+            :summaryStats=>summaryStats, # bool to switch on collection
+            #some vectors to store time evolution of summary stats
+            :meanState=>fill(0.0,0),
+            :meanAffinity=>fill(0.0,0),
+            :switchingAgents=>fill(0,0)
+    ))
     numagents=length(space.s)
     placementFunction(model,numagents,budget)
     return model
 end
 
-"stepping function for updating model parameters based on scenarios *.yml file"
+"stepping function for updating model parameters"
 function model_step!(model)
     model.timepoint += 1
-    if model.scenarios != false
-        scenario_dict = YAML.load_file(model.scenarios)
-        if (model.timepoint in keys(scenario_dict["timepoints"]))
-            timepoint_dict = scenario_dict["timepoints"][model.timepoint]
-            variableSymbol = Symbol(timepoint_dict["variable"])
-            if timepoint_dict["change"]["relative"]
-                model.properties[variableSymbol] *= timepoint_dict["change"]["change"]
-            else
-                model.properties[variableSymbol] += timepoint_dict["change"]["change"]
-            end
+    if model.scenario != false
+        apply_scenario!(model)
+    end
+    if model.summaryStats
+        # collecting some summary stats to detect stable states
+        push!(model.meanState,mean(get_state_matrix(model)))
+        push!(model.meanAffinity,mean(get_affinity_matrix(model)))
+        push!(switichingAgents,sum(abs.(get_agent_property_matrix(model,"state_old")-get_agent_property_matrix(model,"state"))))
+    end
+end
+
+
+"function to interpret scenario *.yml file"
+
+function apply_scenario!(model)
+    scenario_dict = YAML.load_file(model.scenario)
+    if (model.timepoint in keys(scenario_dict["timepoints"]))
+        timepoint_dict = scenario_dict["timepoints"][model.timepoint]
+        variableSymbol = Symbol(timepoint_dict["variable"])
+        if timepoint_dict["change"]["relative"]
+            model.properties[variableSymbol] *= timepoint_dict["change"]["change"]
+        else
+            model.properties[variableSymbol] += timepoint_dict["change"]["change"]
         end
     end
+end
+
+"function to get a matrix of all values of a property of the agents"
+
+function get_agent_property_matrix(model,agentProperty)
+    position_matrix = model.space.s
+    property_matrix = zeros(size(position_matrix))
+    for i_position in position_matrix
+        agent = model.agents[i_position[1]]
+        property_matrix[agent.pos[1],agent.pos[2]] = get_property(agent,agentProperty)
+    end
+    return property_matrix
+end
+
+function get_affinity_matrix(model)
+    position_matrix = model.space.s
+    property_matrix = zeros(size(position_matrix))
+    for i_position in position_matrix
+        agent = model.agents[i_position[1]]
+        property_matrix[agent.pos[1],agent.pos[2]] = agent.affinity
+    end
+    return property_matrix
+end
+
+function get_state_matrix(model)
+    return get_agent_property_matrix(model,"state")
+end
+"primitive helper function, TB improved"
+function get_property(agent,agent_property::String)
+    return eval(Meta.parse(string("agent.",agent_property)))
 end

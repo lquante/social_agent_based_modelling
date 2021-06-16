@@ -208,7 +208,11 @@ function agent_step!(agent, model)
         )
     )
     if newCar
-        (agent.affinity<model.switchingBoundary) ? set_state!(0,agent,model) : set_state!(1,agent,model)
+        if agent.state_old==0
+            (agent.affinity<model.switchingBoundary+model.decisionGap) ? set_state!(0,agent,model) : set_state!(1,agent,model)
+        else
+            (agent.affinity<model.switchingBoundary-model.decisionGap) ? set_state!(0,agent,model) : set_state!(1,agent,model)
+        end
     else
         agent.carValue = depreciate_car_value(agent, lifetime)
     end
