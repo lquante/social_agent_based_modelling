@@ -15,4 +15,4 @@ Random.seed!(seed)
 mixedHugeGaia = model_car_owners(mixed_population;rng=rng,space=Agents.GridSpace((50, 50); periodic = true, metric = :euclidean))
 
 # if you want to start an interactive simulation, run this line
-interactive_simulation(mixedHugeGaia,agent_step!,model_step!,heatarray=get_affinity_matrix))
+interactive_simulation(mixedHugeGaia,agent_step!,model_step!,heatarray=get_affinity_matrix)
