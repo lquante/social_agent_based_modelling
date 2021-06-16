@@ -17,15 +17,15 @@ using Agents
     rationalOptimum::Int
 end
 
-"returns car value for model and car type"
-function get_car_value(car,model)
+"returns car price for model and car type"
+function get_car_price(car,model)
         return (car == 0 ? model.priceCombustionCar : model.priceElectricCar)
 end
 
 "updates state and related variables of an CarOwner"
 function set_state!(state::Int,agent::CarOwner,model)
     agent.state = state
-    agent.carValue = get_car_value(state,model)
+    agent.carValue = get_car_price(state,model)
     agent.purchaseValue = agent.carValue
     agent.carAge = 0
     agent.budget -= agent.purchaseValue
