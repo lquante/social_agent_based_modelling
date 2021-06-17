@@ -24,7 +24,7 @@ end
 
 "yielding population with a share of electric cars"
 function mixed_population(model,numagents,budget;combustionShare=0.5)
-    @distributed for i = 1:numagents
+    @distributed for i in 1:numagents
         starting_affinity = (rand(model.rng)<combustionShare) ? 0 : 1 # just assuming Bernoulli distr for now
         initialCar = (starting_affinity<model.switchingBoundary+model.decisionGap) ? 0 : 1
         initialValue = get_car_price(initialCar,model)
