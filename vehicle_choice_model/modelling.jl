@@ -7,6 +7,7 @@ import Base.get
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
 function model_car_owners(placementFunction;seed=1234,
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
+    kwargsPlacement = (),
     priceCombustionCar = 10000,
     priceElectricCar = 10000,
     fuelCostKM = 0.05,
@@ -57,7 +58,7 @@ function model_car_owners(placementFunction;seed=1234,
         space;rng=(Random.seed!(seed)),
         properties = properties
     )
-    placementFunction(model,length(space.s),budget)
+    placementFunction(model,length(space.s),budget;kwargsPlacement...)
     return model
 end
 
