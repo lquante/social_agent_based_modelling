@@ -1,20 +1,20 @@
 using Agents
 using Distributions
-
+using Distributed
 
 function millageRandomization(model)
     return 15000 + (7500 * (rand(model.rng) - 0.5)) #  diverse population with different millages
 end
 
 function incomeRandomization(model)
-    return 5000 #  diverse population with different incomes could be enabled here
+    return 5000 + (2500 * (rand(model.rng) - 0.5)) #  diverse population with different incomes could be enabled here
 end
 
 "returns affinity relative to initial state, using a one-sided normal distribuition"
 function affinityRandomization(model,state)
     d = Normal(0,1/6)
     normal =   rand(model.rng,d)
-    return (state==0) ? state+abs(normal) : state-abs(normal) # assuming binary state space of 0 or 1
+    return (state===0) ? state+abs(normal) : state-abs(normal) # assuming binary state space of 0 or 1
 end
 
 "yielding population with only combustion cars"
@@ -24,11 +24,12 @@ end
 
 "yielding population with a share of electric cars"
 function mixed_population(model,numagents,budget;combustionShare=0.5)
-    for i = 1:numagents
+    positions = Agents.positions(model)
+    for i_position in positions.iter
         starting_affinity = (rand(model.rng)<combustionShare) ? 0 : 1 # just assuming Bernoulli distr for now
-        initialCar = (starting_affinity<model.switchingBoundary+model.decisionGap) ? 0 : 1
+        initialCar = (starting_affinity<(model.switchingBoundary+model.decisionGap)) ? 0 : 1
         initialValue = get_car_price(initialCar,model)
-        add_agent_single!(
+        add_agent!((i_position[1],i_position[2]),
             model,
             #case specific parameters
             millageRandomization(model),
@@ -36,13 +37,13 @@ function mixed_population(model,numagents,budget;combustionShare=0.5)
             initialValue,
             0,
             budget,
-            incomeRandomization(model),
+            5000, # assuming constant income (irrelevant due to infinite budget)
             #general parameters
             initialCar,
             initialCar,
             starting_affinity,
             starting_affinity,
-            0,
+            0, # rational optimum not yet known
         )
     end
 end
@@ -63,13 +64,13 @@ function electric_minority(model,numagents,budget;electric_positions = [1,2,3,4,
             initialValue,
             0,
             budget,
-            incomeRandomization(model),
+            5000, # assuming constant income (irrelevant due to infinite budget)
             #general parameters
             initialCar,
             initialCar,
             starting_affinity,
             starting_affinity,
-            0,
+            0, # rational optimum not yet known
         )
     end
 end

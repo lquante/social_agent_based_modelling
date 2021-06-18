@@ -2,6 +2,7 @@ using Agents
 using Distributions
 using Random
 using YAML
+import Base.get
 
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
 function model_car_owners(placementFunction;seed=1234,
@@ -17,7 +18,6 @@ function model_car_owners(placementFunction;seed=1234,
     budget = Inf, #for now ignoring budget limitations
     #general parameters
     socialInfluenceFactor = 1, # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
-    affinityDistribution = Bernoulli(0.5),  # specify a distribution from which the starting affinity should be drawn
     tauRational = 3, #inertia for the rational part
     tauSocial = 1, #intertia for the social part
     switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
@@ -27,13 +27,9 @@ function model_car_owners(placementFunction;seed=1234,
     scenario=false,
     timepoint=0,
     decisionGap=0,
-    summaryStats=false) # bool to switch on collection)
+    summaryStats=false)
 
-    rng = Random.seed!(seed)
-    model = ABM(
-        CarOwner,
-        space; rng,
-        properties = Dict(:priceCombustionCar => priceCombustionCar,
+	properties = Dict(:priceCombustionCar => priceCombustionCar,
             :priceElectricCar => priceElectricCar,
             :fuelCostKM => fuelCostKM,
             :powerCostKM => powerCostKM,
@@ -56,9 +52,13 @@ function model_car_owners(placementFunction;seed=1234,
             :meanState=>fill(0.0,0),
             :meanAffinity=>fill(0.0,0),
             :switchingAgents=>fill(0,0)
-    ))
-    numagents=length(space.s)
-    placementFunction(model,numagents,budget;kwargsPlacement...)
+    )
+    model = ABM(
+        CarOwner,
+        space;rng=(Random.seed!(seed)),
+        properties = properties
+    )
+    placementFunction(model,length(space.s),budget;kwargsPlacement...)
     return model
 end
 
@@ -93,17 +93,6 @@ function apply_scenario!(model)
 end
 
 "function to get a matrix of all values of a property of the agents"
-
-function get_agent_property_matrix(model,agentProperty)
-    position_matrix = model.space.s
-    property_matrix = zeros(size(position_matrix))
-    for i_position in position_matrix
-        agent = model.agents[i_position[1]]
-        property_matrix[agent.pos[1],agent.pos[2]] = get_property(agent,agentProperty)
-    end
-    return property_matrix
-end
-
 function get_affinity_matrix(model)
     position_matrix = model.space.s
     property_matrix = zeros(size(position_matrix))
@@ -115,9 +104,11 @@ function get_affinity_matrix(model)
 end
 
 function get_state_matrix(model)
-    return get_agent_property_matrix(model,"state")
-end
-"primitive helper function, TB improved"
-function get_property(agent,agent_property::String)
-    return eval(Meta.parse(string("agent.",agent_property)))
+	position_matrix = model.space.s
+    property_matrix = zeros(size(position_matrix))
+    for i_position in position_matrix
+        agent = model.agents[i_position[1]]
+        property_matrix[agent.pos[1],agent.pos[2]] = agent.state
+    end
+    return property_matrix
 end
