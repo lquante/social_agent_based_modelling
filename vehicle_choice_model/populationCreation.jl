@@ -14,7 +14,7 @@ end
 function affinityRandomization(model,state)
     d = Normal(0,1/6)
     normal =   rand(model.rng,d)
-    return (state==0) ? state+abs(normal) : state-abs(normal) # assuming binary state space of 0 or 1
+    return (state===0) ? state+abs(normal) : state-abs(normal) # assuming binary state space of 0 or 1
 end
 
 "yielding population with only combustion cars"
@@ -24,7 +24,7 @@ end
 
 "yielding population with a share of electric cars"
 function mixed_population(model,numagents,budget;combustionShare=0.5)
-    @distributed for i in 1:numagents
+    for i in 1:numagents
         starting_affinity = (rand(model.rng)<combustionShare) ? 0 : 1 # just assuming Bernoulli distr for now
         initialCar = (starting_affinity<model.switchingBoundary+model.decisionGap) ? 0 : 1
         initialValue = get_car_price(initialCar,model)
@@ -42,7 +42,7 @@ function mixed_population(model,numagents,budget;combustionShare=0.5)
             initialCar,
             starting_affinity,
             starting_affinity,
-            0,
+            0, # rational optimum not yet known
         )
     end
 end
@@ -51,7 +51,7 @@ end
 function electric_minority(model,numagents,budget;electric_positions = [1,2,3,4,5,6,7,31,32,33,34,35,36,37,61,62,63,64,65,66,67,91,92,93,94,95,96,97,121,122,123,124,125,126,127])
     positions = Agents.positions(model)
     electric_positions = [1,2,3,4,5,6,7,31,32,33,34,35,36,37,61,62,63,64,65,66,67,91,92,93,94,95,96,97,121,122,123,124,125,126,127]
-    @distributed for i = 1:numagents
+    for i = 1:numagents
         initialCar = (i in electric_positions) ? 1 : 0 # blocked population according to minortiy size
         starting_affinity= affinityRandomization(model,initialCar)
         initialValue = get_car_price(initialCar,model)
@@ -69,7 +69,7 @@ function electric_minority(model,numagents,budget;electric_positions = [1,2,3,4,
             initialCar,
             starting_affinity,
             starting_affinity,
-            0,
+            0, # rational optimum not yet known
         )
     end
 end
