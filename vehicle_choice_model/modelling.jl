@@ -2,42 +2,62 @@ using Agents
 using Distributions
 using Random
 using YAML
-
-"creating custom data strucure to avoid dictionary with varying types (see https://juliadynamics.github.io/Agents.jl/stable/performance_tips/#Performance-Tips)"
-Base.@kwdef mutable struct Parameters
-	priceCombustionCar::Float32 = 10000
-    priceElectricCar::Float32 = 10000
-    fuelCostKM::Float32 = 0.05
-    powerCostKM::Float32 = 0.05
-    maintenanceCostCombustionKM::Float32 = 0 # for now ignored for simplicity
-    maintenanceCostElectricKM::Float32 = 0# for now ignored for simplicity
-    usedCarDiscount::Float32 = 0.5 #assumption: loss of 50% of car value due to used car market conditions
-    budget::Float32 = Inf #for now ignoring budget limitations
-    #general parameters
-    socialInfluenceFactor::Float32 = 1 # weight of neighbours opinion declining with distance of neighbours (if more than first-order neighbours considered)
-    tauRational::Float32 = 3 #inertia for the rational part
-    tauSocial::Float32 = 1 #intertia for the social part
-    switchingBias::Float32 =1.0 #bias to switching if <1 bias towards state 1 if >1 bias towards state 0
-    switchingBoundary::Float32 = 0.5 # bound for affinity to switch state
-    lowerAffinityBound::Float32 = 0.0
-    upperAffinityBound::Float32 = 1.0
-    scenario::Bool = false
-    timepoint::Int = 0
-    decisionGap::Float32 = 0
-    summaryStats::Bool = false
-end
+import Base.get
 
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
 function model_car_owners(placementFunction;seed=1234,
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
-    args ...)
-	properties = Parameters(args ...)
+    priceCombustionCar = 10000,
+    priceElectricCar = 10000,
+    fuelCostKM = 0.05,
+    powerCostKM = 0.05,
+    maintenanceCostCombustionKM = 0, # for now ignored for simplicity
+    maintenanceCostElectricKM = 0,# for now ignored for simplicity
+    usedCarDiscount::Float64 = 0.5, #assumption: loss of 50% of car value due to used car market conditions
+    budget = Inf, #for now ignoring budget limitations
+    #general parameters
+    socialInfluenceFactor = 1, # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
+    tauRational = 3, #inertia for the rational part
+    tauSocial = 1, #intertia for the social part
+    switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
+    switchingBoundary=0.5, # bound for affinity to switch state
+    lowerAffinityBound = 0.0,
+    upperAffinityBound = 1.0,
+    scenario=false,
+    timepoint=0,
+    decisionGap=0,
+    summaryStats=false)
+
+	properties = Dict(:priceCombustionCar => priceCombustionCar,
+            :priceElectricCar => priceElectricCar,
+            :fuelCostKM => fuelCostKM,
+            :powerCostKM => powerCostKM,
+            :maintenanceCostCombustionKM => maintenanceCostCombustionKM,
+            :maintenanceCostElectricKM => maintenanceCostElectricKM,
+            :usedCarDiscount => usedCarDiscount,
+            :budget => budget,
+            :socialInfluenceFactor => socialInfluenceFactor,
+            :tauRational => tauRational,
+            :tauSocial => tauSocial,
+            :switchingBias => switchingBias,
+            :switchingBoundary => switchingBoundary,
+            :decisionGap => decisionGap,
+            :lowerAffinityBound => lowerAffinityBound,
+            :upperAffinityBound => upperAffinityBound,
+            :scenario => scenario,
+            :timepoint=>timepoint,
+            :summaryStats=>summaryStats, # bool to switch on collection
+            #some vectors to store time evolution of summary stats
+            :meanState=>fill(0.0,0),
+            :meanAffinity=>fill(0.0,0),
+            :switchingAgents=>fill(0,0)
+    )
     model = ABM(
         CarOwner,
         space;rng=(Random.seed!(seed)),
         properties = properties
     )
-    placementFunction(model,length(space.s),properties.budget)
+    placementFunction(model,length(space.s),budget)
     return model
 end
 
@@ -72,17 +92,6 @@ function apply_scenario!(model)
 end
 
 "function to get a matrix of all values of a property of the agents"
-
-function get_agent_property_matrix(model,agentProperty)
-    position_matrix = model.space.s
-    property_matrix = zeros(size(position_matrix))
-    for i_position in position_matrix
-        agent = model.agents[i_position[1]]
-        property_matrix[agent.pos[1],agent.pos[2]] = get_property(agent,agentProperty)
-    end
-    return property_matrix
-end
-
 function get_affinity_matrix(model)
     position_matrix = model.space.s
     property_matrix = zeros(size(position_matrix))
@@ -94,9 +103,11 @@ function get_affinity_matrix(model)
 end
 
 function get_state_matrix(model)
-    return get_agent_property_matrix(model,"state")
-end
-"primitive helper function, TB improved"
-function get_property(agent,agent_property::String)
-    return eval(Meta.parse(string("agent.",agent_property)))
+	position_matrix = model.space.s
+    property_matrix = zeros(size(position_matrix))
+    for i_position in position_matrix
+        agent = model.agents[i_position[1]]
+        property_matrix[agent.pos[1],agent.pos[2]] = agent.state
+    end
+    return property_matrix
 end
