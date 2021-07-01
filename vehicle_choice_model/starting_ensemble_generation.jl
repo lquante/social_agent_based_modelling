@@ -10,6 +10,7 @@ using CSV
 using Glob
 using Plots
 using Distributions
+using ProgressMeter
 #generate 100 random seeds
 Random.seed!(1234)
 seeds = rand(1234:9999,100)
@@ -72,10 +73,10 @@ end
 
 #generate models
 #default is tau_social = 3, tau_rational = 6
-for p_combustion in p_combustion_range
+@showprogress 1 "P Variation..." for p_combustion in p_combustion_range
         print(p_combustion)
         ensemble_results = DataFrame(Seed = seeds, P_Combustion = p_combustion, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
-        for i = 1:100
+        @showprogress 1 "Seed Variation..." for i = 1:100
                 space = Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean)
                 mixedHugeGaia = model_car_owners(mixed_population;kwargsPlacement=(combustionShare=p_combustion,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,fuelCostKM=0,powerCostKM=0,priceCombustionCar=5000,priceElectricCar=5000)
                 converged = false

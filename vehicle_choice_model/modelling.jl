@@ -8,28 +8,29 @@ import Base.get
 function model_car_owners(placementFunction;seed=1234,
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     kwargsPlacement = (),
-    priceCombustionCar = 10000,
-    priceElectricCar = 10000,
+	carLifetimeKilometers = 300000.,
+    priceCombustionCar = 10000.,
+    priceElectricCar = 10000.,
     fuelCostKM = 0.05,
     powerCostKM = 0.05,
-    maintenanceCostCombustionKM = 0, # for now ignored for simplicity
-    maintenanceCostElectricKM = 0,# for now ignored for simplicity
+    maintenanceCostCombustionKM = 0., # for now ignored for simplicity
+    maintenanceCostElectricKM = 0.,# for now ignored for simplicity
     usedCarDiscount::Float64 = 0.5, #assumption: loss of 50% of car value due to used car market conditions
     budget = Inf, #for now ignoring budget limitations
     #general parameters
-    socialInfluenceFactor = 1, # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
-    tauRational = 3, #inertia for the rational part
-    tauSocial = 1, #intertia for the social part
+    socialInfluenceFactor = 1., # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
+    tauRational = 3., #inertia for the rational part
+    tauSocial = 1., #intertia for the social part
     switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
     switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
     upperAffinityBound = 1.0,
-    scenario=false,
-    timepoint=0,
-    decisionGap=0,
-    summaryStats=false)
+    scenario=0.,
+    timepoint=0.,
+    decisionGap=0.)
 
-	properties = Dict(:priceCombustionCar => priceCombustionCar,
+	properties = Dict(:carLifetimeKilometers => carLifetimeKilometers,
+			:priceCombustionCar => priceCombustionCar,
             :priceElectricCar => priceElectricCar,
             :fuelCostKM => fuelCostKM,
             :powerCostKM => powerCostKM,
@@ -46,12 +47,7 @@ function model_car_owners(placementFunction;seed=1234,
             :lowerAffinityBound => lowerAffinityBound,
             :upperAffinityBound => upperAffinityBound,
             :scenario => scenario,
-            :timepoint=>timepoint,
-            :summaryStats=>summaryStats, # bool to switch on collection
-            #some vectors to store time evolution of summary stats
-            :meanState=>fill(0.0,0),
-            :meanAffinity=>fill(0.0,0),
-            :switchingAgents=>fill(0,0)
+            :timepoint=>timepoint
     )
     model = ABM(
         CarOwner,
@@ -67,12 +63,6 @@ function model_step!(model)
     model.timepoint += 1
     if model.scenario != false
         apply_scenario!(model)
-    end
-    if model.summaryStats
-        # collecting some summary stats to detect stable states
-        push!(model.meanState,mean(get_state_matrix(model)))
-        push!(model.meanAffinity,mean(get_affinity_matrix(model)))
-        push!(switichingAgents,sum(abs.(get_agent_property_matrix(model,"state_old")-get_agent_property_matrix(model,"state"))))
     end
 end
 

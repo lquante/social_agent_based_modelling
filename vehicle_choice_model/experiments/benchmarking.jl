@@ -28,3 +28,8 @@ tagent=test.agents[23]
 @benchmark state_social_influence(tagent,test,2)
 
 @benchmark init_test = initialize(;seed=1234,space=Agents.GridSpace(spaceDims;periodic=true,metric = :euclidean))
+
+@code_warntype initialize(;seed=1234,space=Agents.GridSpace(spaceDims;periodic=true,metric = :euclidean))
+@code_warntype agent_step!(tagent,test)
+@code_warntype old_state_social_influence(tagent,test,2)
+@code_warntype state_social_influence(tagent,test,2)

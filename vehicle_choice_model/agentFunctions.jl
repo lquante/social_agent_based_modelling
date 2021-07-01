@@ -18,7 +18,7 @@ end
 
 "returns car price for model and car type"
 function get_car_price(car::Int,model::AgentBasedModel)
-        return Float64(car === 0 ? model.priceCombustionCar : model.priceElectricCar)
+        return car === 0 ? model.priceCombustionCar : model.priceElectricCar
 end
 
 "updates state and related variables of an CarOwner, ignoring budget due to overhead"
@@ -66,7 +66,7 @@ function multi_year_car_cost(kilometersPerYear, usageYears,initialCarAge, state,
     maintenanceCostKM = (state ===0 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM)
     fuelCosts = kilometersPerYear*fuelCostKM*(usageYears-initialCarAge)
     # assuming linear weighting of maintenance costs by increasing age
-    maintenanceCosts = kilometersPerYear*maintenanceCostKM*(usageYears-initialCarAge)*sum(initialCarAge:usageYears)
+    maintenanceCosts= kilometersPerYear*maintenanceCostKM*(usageYears-initialCarAge)*sum(initialCarAge:usageYears)
     return fuelCosts+maintenanceCosts
 end
 
@@ -76,20 +76,18 @@ function average_car_cost(kilometersPerYear, usageYears,initialCarAge, state, mo
 end
 
 "returns linearly depreciated value of the car"
-function depreciate_car_value(agent::CarOwner)
-    #assumption: all cars are assumed to last at least 300.000km before purchase of a new car
-    lifetime = cld(300000, agent.kilometersPerYear) # rounding up division
+function depreciate_car_value(agent::CarOwner,model)
+    lifetime = cld(model.carLifetimeKilometers, agent.kilometersPerYear)
     return agent.purchaseValue - agent.carAge / lifetime * agent.purchaseValue # very simple linear depreciation
 end
 
 "computes rational decision for 0=combustion car or 1=electric car based on comparison of average cost"
 function rational_decision(agent::CarOwner,model)
-    #assumption: all cars are assumed to last at least 300.000km before purchase of a new car
-    lifetime = cld(300000, agent.kilometersPerYear) # rounding up division
     #purchasing cost after selling old car
     incomeSellingOldCar = agent.carValue*model.usedCarDiscount
     newCombustionPurchase = model.priceCombustionCar - incomeSellingOldCar
     newElectricPurchase = model.priceElectricCar - incomeSellingOldCar
+    lifetime = cld(model.carLifetimeKilometers, agent.kilometersPerYear)
     if (agent.carAge<lifetime)
         currentCarAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,agent.carAge,agent.state,model)
     else
@@ -237,6 +235,6 @@ function agent_step!(agent, model)
             (agent.affinity<model.switchingBoundary-model.decisionGap) ? update_state!(0,agent,model) : update_state!(1,agent,model)
         end
     else
-        agent.carValue = depreciate_car_value(agent)
+        agent.carValue = depreciate_car_value(agent,model)
     end
 end
