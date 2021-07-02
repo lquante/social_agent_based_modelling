@@ -88,13 +88,14 @@ function rational_decision(agent::CarOwner,model)
     newCombustionPurchase = model.priceCombustionCar - incomeSellingOldCar
     newElectricPurchase = model.priceElectricCar - incomeSellingOldCar
     lifetime = cld(model.carLifetimeKilometers, agent.kilometersPerYear)
+    remainingLifetime = lifetime-agent.carAge
     if (agent.carAge<lifetime)
-        currentCarAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,agent.carAge,agent.state,model)
+        currentCarAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,agent.carAge,agent.state,model)+ incomeSellingOldCar / remainingLifetime
     else
         currentCarAverageCost = Inf #infinite cost to enforce buying a new car at the end of lifetime
     end
-    newCombustionAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,0,0,model)
-    newElectricAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,0,1,model)
+    newCombustionAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,0,0,model) + newCombustionPurchase/lifetime
+    newElectricAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,0,1,model) + newElectricPurchase/lifetime
     #compute rational decision
     combustionCostEfficient = newCombustionAverageCost < currentCarAverageCost
     electricCostEfficient = newElectricAverageCost < currentCarAverageCost
@@ -103,11 +104,13 @@ function rational_decision(agent::CarOwner,model)
     newCar = false
     carPreference = agent.state # remain with old car
     agent.budget += agent.income
-
-    if (combustionCostEfficient || electricCostEfficient)
-        carPreference = (newCombustionAverageCost < newElectricAverageCost) ? 0 : 1 # preference independent of budget constraint
-        if (combustionCostEfficient && newCombustionPurchase<agent.budget) || (electricCostEfficient && newElectricPurchase<agent.budget)
-            newCar = true
+    # use car at least for half of the liftime:
+    if (agent.carAge >= cld(lifetime,2))
+        if (combustionCostEfficient || electricCostEfficient)
+            carPreference = (newCombustionAverageCost < newElectricAverageCost) ? 0 : 1 # preference independent of budget constraint
+            if (combustionCostEfficient && newCombustionPurchase<agent.budget) || (electricCostEfficient && newElectricPurchase<agent.budget)
+                newCar = true
+            end
         end
     end
     return newCar, carPreference, newCombustionAverageCost, newElectricAverageCost
