@@ -8,7 +8,7 @@ import Base.get
 function model_car_owners(placementFunction;seed=1234,
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     kwargsPlacement = (),
-	carLifetimeKilometers = 300000.,
+	#carLifetimeKilometers = 300000., reverting this change to be able to use preconverged models
     priceCombustionCar = 10000.,
     priceElectricCar = 10000.,
     fuelCostKM = 0.05,
@@ -29,7 +29,7 @@ function model_car_owners(placementFunction;seed=1234,
     timepoint=0.,
     decisionGap=0.)
 
-	properties = Dict(:carLifetimeKilometers => carLifetimeKilometers,
+	properties = Dict(#:carLifetimeKilometers => carLifetimeKilometers,
 			:priceCombustionCar => priceCombustionCar,
             :priceElectricCar => priceElectricCar,
             :fuelCostKM => fuelCostKM,

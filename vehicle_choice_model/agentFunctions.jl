@@ -77,7 +77,8 @@ end
 
 "returns linearly depreciated value of the car"
 function depreciate_car_value(agent::CarOwner,model)
-    lifetime = cld(model.carLifetimeKilometers, agent.kilometersPerYear)
+    carLifetimeKilometers = 300000
+    lifetime = cld(carLifetimeKilometers, agent.kilometersPerYear)
     return agent.purchaseValue - agent.carAge / lifetime * agent.purchaseValue # very simple linear depreciation
 end
 
@@ -87,7 +88,8 @@ function rational_decision(agent::CarOwner,model)
     incomeSellingOldCar = agent.carValue*model.usedCarDiscount
     newCombustionPurchase = model.priceCombustionCar - incomeSellingOldCar
     newElectricPurchase = model.priceElectricCar - incomeSellingOldCar
-    lifetime = cld(model.carLifetimeKilometers, agent.kilometersPerYear)
+    carLifetimeKilometers = 300000
+    lifetime = cld(carLifetimeKilometers, agent.kilometersPerYear)
     remainingLifetime = lifetime-agent.carAge
     if (agent.carAge<lifetime)
         currentCarAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,agent.carAge,agent.state,model)+ incomeSellingOldCar / remainingLifetime
