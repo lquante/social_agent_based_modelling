@@ -1,3 +1,5 @@
+using DrWatson
+@quickactivate "Social Agent Based Modelling"
 using Agents
 using Distributions
 using Distributed
@@ -26,26 +28,31 @@ end
 function mixed_population(model,numagents,budget;combustionShare=0.5)
     positions = Agents.positions(model)
     for i_position in positions.iter
-        starting_affinity = (rand(model.rng)<combustionShare) ? 0 : 1 # just assuming Bernoulli distr for now
-        initialCar = (starting_affinity<(model.switchingBoundary+model.decisionGap)) ? 0 : 1
-        initialValue = get_car_price(initialCar,model)
-        add_agent!((i_position[1],i_position[2]),
-            model,
-            #case specific parameters
-            millageRandomization(model),
-            initialValue,
-            initialValue,
-            0,
-            budget,
-            5000, # assuming constant income (irrelevant due to infinite budget)
-            #general parameters
-            initialCar,
-            initialCar,
-            starting_affinity,
-            starting_affinity,
-            0, # rational optimum not yet known
-        )
+        create_random_agent(model,budget,i_position,combustionShare)
     end
+end
+
+
+function create_random_agent(model,budget,position,combustionShare)
+    starting_affinity = (rand(model.rng)<combustionShare) ? 0 : 1 # just assuming Bernoulli distr for now
+    initialCar = (starting_affinity<(model.switchingBoundary+model.decisionGap)) ? 0 : 1
+    initialValue = get_car_price(initialCar,model)
+    add_agent!((position[1],position[2]),
+        model,
+        #case specific parameters
+        millageRandomization(model),
+        initialValue,
+        initialValue,
+        0,
+        budget,
+        5000, # assuming constant income (irrelevant due to infinite budget)
+        #general parameters
+        initialCar,
+        initialCar,
+        starting_affinity,
+        starting_affinity,
+        0, # rational optimum not yet known
+    )
 end
 
 "yielding population with electric cars in the electric positions parameter"

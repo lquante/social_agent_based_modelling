@@ -1,3 +1,5 @@
+using DrWatson
+@quickactivate "Social Agent Based Modelling"
 using Agents
 using Statistics
 using InteractiveDynamics

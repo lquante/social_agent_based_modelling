@@ -1,7 +1,9 @@
-include("agentFunctions.jl")
-include("modelling.jl")
-include("populationCreation.jl")
-include("visualization.jl")
+using DrWatson
+@quickactivate "Social Agent Based Modelling"
+include(srcdir("vehicle_choice_model/agentFunctions.jl"))
+include(srcdir("vehicle_choice_model/modelling.jl"))
+include(srcdir("vehicle_choice_model/populationCreation.jl"))
+include(srcdir("vehicle_choice_model/visualization.jl"))
 using Random
 using Serialization
 using DataFrames,DataFramesMeta

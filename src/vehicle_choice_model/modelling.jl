@@ -1,4 +1,5 @@
-using Agents
+using DrWatson
+@quickactivate "Social Agent Based Modelling"
 using Distributions
 using Random
 using YAML
@@ -15,7 +16,7 @@ function model_car_owners(placementFunction;seed=1234,
     powerCostKM = 0.05,
     maintenanceCostCombustionKM = 0., # for now ignored for simplicity
     maintenanceCostElectricKM = 0.,# for now ignored for simplicity
-    usedCarDiscount::Float64 = 0.5, #assumption: loss of 50% of car value due to used car market conditions
+    usedCarDiscount = 0.5, #assumption: loss of 50% of car value due to used car market conditions
     budget = Inf, #for now ignoring budget limitations
     #general parameters
     socialInfluenceFactor = 1., # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
@@ -86,7 +87,7 @@ end
 function get_affinity_matrix(model)
     position_matrix = model.space.s
     property_matrix = zeros(size(position_matrix))
-    for i_position in position_matrix
+    @inbounds for i_position in position_matrix
         agent = model.agents[i_position[1]]
         property_matrix[agent.pos[1],agent.pos[2]] = agent.affinity
     end
@@ -96,7 +97,7 @@ end
 function get_state_matrix(model)
 	position_matrix = model.space.s
     property_matrix = zeros(size(position_matrix))
-    for i_position in position_matrix
+    @inbounds for i_position in position_matrix
         agent = model.agents[i_position[1]]
         property_matrix[agent.pos[1],agent.pos[2]] = agent.state
     end

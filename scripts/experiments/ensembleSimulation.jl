@@ -1,12 +1,14 @@
 # script to run huge ensemble simulations
+using DrWatson
+@quickactivate "Social Agent Based Modelling"
 using Distributed
 using Random
 using BenchmarkTools
 addprocs(Sys.CPU_THREADS-1)
 @everywhere begin
-    include("../agentFunctions.jl")
-    include("../modelling.jl")
-    include("../populationCreation.jl")
+    include(srcdir("vehicle_choice_model/agentFunctions.jl"))
+    include(srcdir("vehicle_choice_model/modelling.jl"))
+    include(srcdir("vehicle_choice_model/populationCreation.jl"))
 end
 # create initialize function for model creation, needed for paramscan methods:
 @everywhere begin

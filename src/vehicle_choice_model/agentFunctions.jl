@@ -1,3 +1,5 @@
+using DrWatson
+@quickactivate "Social Agent Based Modelling"
 using Agents
 "create an agent for 2d grid space"
 @agent CarOwner GridAgent{2} begin
@@ -144,13 +146,11 @@ function step_costDiff(costDiff::Float64)
 end
 
 
-"returns social influence resulting from neighbours current state"
-#edit which ensures as distance is increased, the same agents are not counted multiple times
 function state_social_influence(agent::CarOwner, model::AgentBasedModel, neighboursMaximumDistance=2.)
     stateSocialInfluence = 0.
     numberNeighbours = 0
     neighbours = nearby_agents(agent,model,neighboursMaximumDistance)
-    for n in neighbours
+    @inbounds for n in neighbours
         stateSocialInfluence += (n.state_old-agent.affinity_old)/edistance(n,agent,model) #scaling by exact distance
         numberNeighbours +=1
     end
@@ -163,7 +163,7 @@ function affinity_social_influence(agent::CarOwner, model::AgentBasedModel, neig
     affinitySocialInfluence = 0.
     numberNeighbours = 0
     neighbours = nearby_agents(agent,model,neighboursMaximumDistance)
-    for n in neighbours
+    @inbounds for n in neighbours
         affinitySocialInfluence += (n.affinity_old-agent.affinity_old)/edistance(n,agent,model) #scaling by exact distance
         numberNeighbours +=1
     end

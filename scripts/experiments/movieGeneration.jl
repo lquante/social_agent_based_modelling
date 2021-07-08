@@ -1,15 +1,15 @@
 # script to create videos of model evolution
-include("../agentFunctions.jl")
-include("../modelling.jl")
-include("../populationCreation.jl")
-include("../visualization.jl")
-using Random
-
+using DrWatson
+@quickactivate "Social Agent Based Modelling"
+include(srcdir("vehicle_choice_model/agentFunctions.jl"))
+include(srcdir("vehicle_choice_model/modelling.jl"))
+include(srcdir("vehicle_choice_model/populationCreation.jl"))
+include(srcdir("vehicle_choice_model/visualization.jl"))
 # set random number seed
 seed = 1234
 # create normal sized model for interactive run
 # defaults: starting with 50/50 population
-mixedHugeGaia = model_car_owners(mixed_population;seed=seed,space=Agents.GridSpace((100, 100); periodic = true, metric = :euclidean))
+mixedHugeGaia = model_car_owners(mixed_population;seed=seed,space=Agents.GridSpace((1000, 1000); periodic = true, metric = :euclidean))
 #video recording of simulation, heatmap of affinity still experimental
 path = "vehicle_choice_model/experiments/videos/test.mp4"
 title = "Test video"
