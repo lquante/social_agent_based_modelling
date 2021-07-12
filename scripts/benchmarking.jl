@@ -8,9 +8,9 @@ using Profile
 using Random
 using Traceur
 
-include(srcdir("vehicle_choice_model/agentFunctions.jl"))
-include(srcdir("vehicle_choice_model/modelling.jl"))
-include(srcdir("vehicle_choice_model/populationCreation.jl"))
+include(srcdir("agentFunctions.jl"))
+include(srcdir("modelling.jl"))
+include(srcdir("populationCreation.jl"))
 
 #end
 # create initialize function for model creation, needed for paramscan methods:

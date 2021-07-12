@@ -1,10 +1,10 @@
 # example script to run basic model setup interactivly
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
-include(srcdir("vehicle_choice_model/agentFunctions.jl"))
-include(srcdir("vehicle_choice_model/modelling.jl"))
-include(srcdir("vehicle_choice_model/populationCreation.jl"))
-include(srcdir("vehicle_choice_model/visualization.jl"))
+include(srcdir("agentFunctions.jl"))
+include(srcdir("modelling.jl"))
+include(srcdir("populationCreation.jl"))
+include(srcdir("visualization.jl"))
 
 
 # set random number seed
