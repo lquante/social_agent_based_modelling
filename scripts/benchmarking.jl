@@ -11,6 +11,8 @@ using Traceur
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
 include(srcdir("populationCreation.jl"))
+include(srcdir("hysteresisFunctions.jl"))
+
 
 #end
 # create initialize function for model creation, needed for paramscan methods:
@@ -38,3 +40,12 @@ tagent=test.agents[23]
 @code_warntype old_state_social_influence(tagent,test,2)
 @code_warntype state_social_influence(tagent,test,2)
 @code_warntype mixed_population(test,10000,Inf)
+
+test_vector = fill(1,10000000)
+@benchmark conv_test = check_conversion(test_vector,1)
+@benchmark conv_test_all = check_conversion_all(test_vector,1)
+@benchmark conv_test_allequal = check_conversion_allequal(test_vector,1)
+
+
+@benchmark osc_test = check_conversion_osc(test_vector,20)
+@benchmark osc_test = check_conversion_osc_recursive(test_vector,20)
