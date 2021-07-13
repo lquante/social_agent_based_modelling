@@ -151,3 +151,6 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
     mkpath(storage_path)
     CSV.write(storage_path, hysteresis_results)
 end
+
+#utility function, splits an array into n chunks
+chunk(arr, n) = [arr[i:min(i + n - 1, end)] for i in 1:n:length(arr)]
