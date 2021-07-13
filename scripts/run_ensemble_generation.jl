@@ -15,12 +15,10 @@ seeds = rand(1234:9999,100)
 #sample p_combustion from normal distribution
 p_normal_dist = truncated(Normal(0.5, 0.05), 0.3, 0.6)
 p_combustion_range = rand(p_normal_dist, 100)
-
 plot_combustion_share_histogram(p_combustion_range, plotsdir("histogram_p_combustion.png"))
 
 for p in p_combustion_range
     runpath = datadir(savename("model_generation_",@ntuple p))
-    mkpath(runpath)
-    print(scriptsdir("run_single_model_generation.jl")*" --$p")
-    schedule_script(script=scriptsdir("run_single_model_generation.jl")*"--%p",workdir=runpath)
+    mkpath(runpath
+    schedule_script(script=scriptsdir("run_single_model_generation.jl")*"--$p",workdir=runpath,queue="short",qos="standard",time="0-12:00:00")
 end
