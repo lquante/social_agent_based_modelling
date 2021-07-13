@@ -44,14 +44,14 @@ end
 
 
 "Recursive conversion checker which can account for oscillating behaviour up to a period p, defaults to 5, pmax=1 gives check_conversion"
-function check_conversion_osc_recursive(state_vec,pstart=1,pmax=5)
+function check_conversion_osc_recursive(state_vec;pstart=1,pmax=5)
         if check_conversion_allequal(state_vec,pstart)
                 return true
         end
         if pstart > pmax
                 return false
         else
-                check_conversion_osc(state_vec,pstart +1,pmax)
+                check_conversion_osc_recursive(state_vec,pstart=pstart+1,pmax=pmax)
         end
 end
 
