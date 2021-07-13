@@ -3,9 +3,8 @@ using DrWatson
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
 include(srcdir("populationCreation.jl"))
-include(srcdir("visualization.jl"))
 include(srcdir("hysteresisFunctions.jl"))
-
+include(srcdir("slurm.jl"))
 
 Random.seed!(1234)
 seeds = rand(1234:9999,100)
@@ -19,4 +18,9 @@ p_combustion_range = rand(p_normal_dist, 100)
 
 plot_combustion_share_histogram(p_combustion_range, plotsdir("histogram_p_combustion.png"))
 
-generate_ensemble(p_combustion_range,datadir();step_length=50,gridsize = 30, models_per_p = 100,seeds = rand(1234:9999,100),store_model = false, model_directory = "")
+for p in p_combustion_range
+    runpath = datadir(savename("model_generation_",@ntuple p))
+    mkpath(runpath)
+    print(scriptsdir("run_single_model_generation.jl")*" --$p")
+    schedule_script(script=scriptsdir("run_single_model_generation.jl")*"--%p",workdir=runpath)
+end

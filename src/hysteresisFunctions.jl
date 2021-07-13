@@ -4,7 +4,6 @@ using Random
 using Serialization
 using DataFrames,DataFramesMeta
 using CSV
-using Glob
 using Plots
 using Distributions
 using ProgressMeter
@@ -13,7 +12,6 @@ using ProgressMeter
 the path needs to be specified with .png at the end"
 function plot_combustion_share_histogram(p_combustion, path)
     Plots.histogram(p_combustion_range,xlabel="p_CombustionShare",ylabel="Count" )
-    mkpath(path)
     png(path)
 end
 
@@ -99,13 +97,13 @@ function generate_ensemble(p_combustion,summary_results_directory;step_length=50
                                 parameters = (p_combustion=p_combustion,seed=seeds[i])
                                 filename = savename("model",parameters,".bin")
                                 storage_path=joinpath(model_directory,filename)
-                                mkpath(storage_path)
+                                mkpath(model_directory)
                                 serialize(storage_path, mixedHugeGaia)
                         end
                 end
         end
         filename = savename("ensemble_overview",(p_combustion=p_combustion),".csv")
         storage_path=joinpath(summary_results_directory,filename)
-        mkpath(storage_path)
+        mkpath(summary_results_directory)
         CSV.write(storage_path, ensemble_results)
 end
