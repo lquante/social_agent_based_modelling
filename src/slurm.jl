@@ -10,14 +10,11 @@ function schedule_script(;
         time="0-12:00:00",
         notify=true,
         partition="standard",
-        prelimitseconds=60 * 60,
         qos="short",
         workdir=".",
         memory=60000)
 
-    logdir = workdir
     mkpath(workdir)
-    mkpath(logdir)
 
     other_options = ""
     if notify
@@ -32,13 +29,13 @@ function schedule_script(;
     #SBATCH --ntasks=1
     #SBATCH --cpus-per-task=$cpus
     #SBATCH --mem=$memory
-    #SBATCH --error=$logdir/$output.txt
+    #SBATCH --error=$workdir/$output.txt
     #SBATCH --exclusive
     #SBATCH --export=ALL,OMP_PROC_BIND=FALSE,OMP_NUM_THREADS=$cpus
     #SBATCH --job-name=$jobname
     #SBATCH --nice=0
     #SBATCH --nodes=1
-    #SBATCH --output=$logdir/$output.txt
+    #SBATCH --output=$workdir/$output.txt
     #SBATCH --partition=$partition
     #SBATCH --qos=$qos
     #SBATCH --time=$time
@@ -51,5 +48,6 @@ function schedule_script(;
     io = open("sbatch.sh", "w")
     println(io, batch)
     close(io)
-    run(`sbatch sbatch.sh `)
+    run(`sbatch sbatch.sh`)
+    rm("sbatch.sh")
 end
