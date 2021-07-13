@@ -3,7 +3,6 @@ using DrWatson
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
 include(srcdir("populationCreation.jl"))
-include(srcdir("visualization.jl"))
 include(srcdir("hysteresisFunctions.jl"))
 include(srcdir("slurm.jl"))
 
