@@ -19,6 +19,6 @@ plot_combustion_share_histogram(p_combustion_range, plotsdir("histogram_p_combus
 
 for p in p_combustion_range
     runpath = datadir(savename("model_generation_",@ntuple p))
-    mkpath(runpath
+    mkpath(runpath)
     schedule_script(script=scriptsdir("run_single_model_generation.jl")*"--$p",workdir=runpath)
 end
