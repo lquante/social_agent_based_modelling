@@ -52,5 +52,4 @@ function schedule_script(;
     println(io, batch)
     close(io)
     run(`sbatch sbatch.sh `)
-    rm("sbatch.sh")
 end
