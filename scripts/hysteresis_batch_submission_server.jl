@@ -19,7 +19,7 @@ all_model_files = get_model_files("/p/projects/compacts/projects/DeMo/ensemble_9
 all_model_file_chunks = chunk(all_model_files, 100)
 
 run_number =1
-for  file_chunk in all_file_chunks
+for  file_chunk in all_model_file_chunks
     for inc in incentives
         #where we wanna store the stuff
         runpath = datadir("/p/projects/compacts/projects/DeMo/hysteresis_900"*string(run_number))
