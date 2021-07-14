@@ -42,7 +42,6 @@ function set_state!(state::Int,agent::CarOwner)
     agent.state = state
 end
 
-=======
 function set_carValue!(carValue,agent::CarOwner)
     agent.carValue = carValue
 end
@@ -124,26 +123,26 @@ function rational_decision(agent::CarOwner,model)
 end
 
 "returns personal utility influence, based on cost benefit ratio"
-function calc_utility_influence_ratio(costDenominator::Float64, costNumerator::Float64, affinity::Float64, model)
+function calc_utility_influence_ratio(costDenominator::Real, costNumerator::Real, affinity::Real, model)
     costRatio=costNumerator/costDenominator
     rationalAffinity=costRatio/(costRatio+model.switchingBias)
     return (rationalAffinity-affinity)/model.tauRational
 end
 
 "returns personal utility influence, based on one of the provided functions of cost difference"
-function calc_utility_influence_diff(costSubtrahend::Float64, costMinuend::Float64 , affinity::Float64, model, diffSmoothingFunction = tanh_costDiff,costDiffScale::Float64=2500.)
+function calc_utility_influence_diff(costSubtrahend::Real, costMinuend::Real , affinity::Real, model, diffSmoothingFunction = tanh_costDiff,costDiffScale::Real=2500.)
     costDiff=(costMinuend-costSubtrahend)/costDiffScale
     rationalAffinity=diffSmoothingFunction(costDiff)
     return (rationalAffinity-affinity)/model.tauRational
 end
 
-function tanh_costDiff(costDiff::Float64)
+function tanh_costDiff(costDiff::Real)
     return 0.5*(1+tanh(costDiff))
 end
-function linear_costDiff(costDiff::Float64)
+function linear_costDiff(costDiff::Real)
     return 0.5*(1+costDiff)
 end
-function step_costDiff(costDiff::Float64)
+function step_costDiff(costDiff::Real)
     return Int(costDiff>=0)
 end
 

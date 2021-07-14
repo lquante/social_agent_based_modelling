@@ -1,5 +1,6 @@
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
+using Agents
 using Distributions
 using Random
 using YAML
