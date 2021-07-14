@@ -65,7 +65,7 @@ end
 
 "generates an ensemble of starting models
 # Arguments
--'p_combustion': set of probabilities specifying the likelihood for a combustion car
+-'p_combustion_range': set of probabilities specifying the likelihood for a combustion car
 -'summary_results_directory': where the summaries of the ensemble runs should be stored
 -'step_length': how many steps each model should take before checking conversion
 -'gridsize': size of the considered grid, number of agents is gridsize squared
@@ -74,7 +74,7 @@ end
 To always get the same seeds insert them manually and specify Random.seed!(XXXX)
 -'store_model': if the models should be stored (serialized) to be used as a starting ensemble later
 -'model_directory': the directory for the storage of the models. If store_model is true and no path is specified there will be an error"
-function generate_ensemble(p_combustion,summary_results_directory;step_length=50,gridsize = 30, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
+function generate_ensemble(p_combustion_range,summary_results_directory;step_length=50,gridsize = 30, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
         if store_model==true && model_directory == ""
                 return("Error: Please specify a model storage path!")
         end
@@ -109,3 +109,49 @@ function generate_ensemble(p_combustion,summary_results_directory;step_length=50
         mkpath(summary_results_directory)
         CSV.write(storage_path, ensemble_results)
 end
+
+#gets all .bin files from the folder that holds the pre-converged models
+function get_model_files(path)
+        file_list = glob("*.bin",path)
+        return(file_list)
+end
+
+"performs incentive hysteresis
+# Arguments
+-'all_model_files': File names of the preconverged models
+-'incentive variable': model property that is to be changed
+-'incentive': value the incentive variable is to be changed to
+-'results_storage_path': directory path where the final csv should be stored
+-'step_length': how many steps each model should take before checking conversion"
+
+function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50)
+    hysteresis_results = DataFrame(Index = 1:length(all_model_files), Start_State_Average = -9999.0, Start_Affinity_Average = -9999.0, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
+    step_length = 50
+    counter = 1
+    @showprogress for f in all_model_files
+        model=deserialize(f)
+        #Call the model with 0 steps to get the current state and affinity. This is a bit hacky maybe there is a better way? Couldn't think of one for now
+        agent_df_start, model_df_start = run!(model, agent_step!,model_step!, 0; adata = [(:state, mean),(:affinity,mean)])
+        hysteresis_results[hysteresis_results.Index .== counter,:Start_State_Average].=agent_df_start[end,"mean_state"]
+        hysteresis_results[hysteresis_results.Index .== counter,:Start_Affinity_Average].=agent_df_start[end,"mean_affinity"]
+        #set incentive
+        model.properties[incentive_variable ] = incentive
+        #let it converge
+        converged = false
+        while converged == false
+                        agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
+                        converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
+        end
+
+        hysteresis_results[hysteresis_results.Index .== counter,:Final_State_Average].=agent_df[end,"mean_state"]
+        hysteresis_results[hysteresis_results.Index .== counter,:Final_Affinity_Average].=agent_df[end,"mean_affinity"]
+        counter = counter +1
+    end
+    filename = "hysteresis_overview_incentive_variable_"* string(incentive_variable)*"_incentive_"*string(incentive)*".csv"
+    storage_path=joinpath(summary_results_directory,filename)
+    mkpath(storage_path)
+    CSV.write(storage_path, hysteresis_results)
+end
+
+#utility function, splits an array into n chunks
+chunk(arr, n) = [arr[i:min(i + n - 1, end)] for i in 1:n:length(arr)]
