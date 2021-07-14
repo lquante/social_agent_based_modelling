@@ -1,12 +1,8 @@
 # script to run huge ensemble simulations
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
-using Distributed
 using ProgressMeter
 using BenchmarkTools
-using Profile
-using Random
-using Traceur
 
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
@@ -48,4 +44,4 @@ test_vector = fill(1,10000000)
 
 
 @benchmark osc_test = check_conversion_osc(test_vector,20)
-@benchmark osc_test = check_conversion_osc_recursive(test_vector,20)
+@benchmark osc_test = check_conversion_osc_recursive(test_vector;pmax=20)

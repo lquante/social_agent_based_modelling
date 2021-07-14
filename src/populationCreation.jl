@@ -2,7 +2,6 @@ using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using Agents
 using Distributions
-using Distributed
 
 function millageRandomization(model)
     return 15000 + (7500 * (rand(model.rng) - 0.5)) #  diverse population with different millages
