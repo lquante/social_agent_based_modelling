@@ -22,5 +22,5 @@ for p in p_combustion_range
     params = (run=run_index,p=p)
     runpath = datadir(savename("model_generation_",params))
     mkpath(runpath)
-    schedule_script(script=scriptsdir("run_single_model_generation.jl")*"--$p",workdir=runpath)
+    schedule_script(script=scriptsdir("run_single_model_generation.jl")*" $p",workdir=runpath)
 end

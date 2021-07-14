@@ -84,6 +84,8 @@ function generate_ensemble(p_combustion,summary_results_directory;step_length=50
                         space = Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean)
                         mixedHugeGaia = model_car_owners(mixed_population;kwargsPlacement=(combustionShare=p_combustion,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,fuelCostKM=0,powerCostKM=0,priceCombustionCar=5000,priceElectricCar=5000)
                         converged = false
+                        agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
+                        converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
                         while converged == false
                                 agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
                                 converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
@@ -95,7 +97,7 @@ function generate_ensemble(p_combustion,summary_results_directory;step_length=50
                         #store model
                         if store_model == true
                                 parameters = (p_combustion=p_combustion,seed=seeds[i])
-                                filename = savename("model",parameters,".bin")
+                                filename = savename("model",parameters,"bin")
                                 storage_path=joinpath(model_directory,filename)
                                 mkpath(model_directory)
                                 serialize(storage_path, mixedHugeGaia)

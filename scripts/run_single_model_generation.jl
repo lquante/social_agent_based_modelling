@@ -14,6 +14,6 @@ Random.seed!(1234)
 #sample p_combustion from normal distribution
 p_normal_dist = truncated(Normal(0.5, 0.05), 0.3, 0.6)
 print(ARGS)
-p_combustion_range = [ARGS[1]]
+p_combustion_range = [parse(Float64,ARGS[1])]
 
 generate_ensemble(p_combustion_range,datadir();step_length=50,gridsize = 100, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = datadir("preconverged_models"))
