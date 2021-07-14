@@ -4,7 +4,6 @@ using Random
 using Serialization
 using DataFrames,DataFramesMeta
 using CSV
-using Glob
 using Plots
 using Distributions
 using ProgressMeter
@@ -85,6 +84,8 @@ function generate_ensemble(p_combustion_range,summary_results_directory;step_len
                         space = Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean)
                         mixedHugeGaia = model_car_owners(mixed_population;kwargsPlacement=(combustionShare=p_combustion,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,fuelCostKM=0,powerCostKM=0,priceCombustionCar=5000,priceElectricCar=5000)
                         converged = false
+                        agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
+                        converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
                         while converged == false
                                 agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
                                 converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
@@ -96,16 +97,16 @@ function generate_ensemble(p_combustion_range,summary_results_directory;step_len
                         #store model
                         if store_model == true
                                 parameters = (p_combustion=p_combustion,seed=seeds[i])
-                                filename = savename("model",parameters,".bin")
+                                filename = savename("model",parameters,"bin")
                                 storage_path=joinpath(model_directory,filename)
-                                mkpath(storage_path)
+                                mkpath(model_directory)
                                 serialize(storage_path, mixedHugeGaia)
                         end
                 end
         end
         filename = savename("ensemble_overview",(p_combustion=p_combustion),".csv")
         storage_path=joinpath(summary_results_directory,filename)
-        mkpath(storage_path)
+        mkpath(summary_results_directory)
         CSV.write(storage_path, ensemble_results)
 end
 
