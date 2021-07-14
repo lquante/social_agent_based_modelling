@@ -1,4 +1,3 @@
-"Script generating 100 models for same p_combustion with varying seeds"
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
 include(srcdir("agentFunctions.jl"))
