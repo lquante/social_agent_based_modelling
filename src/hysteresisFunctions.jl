@@ -97,17 +97,17 @@ function generate_ensemble(p_combustion_range,summary_results_directory;step_len
                         #store model
                         if store_model == true
                                 parameters = (p_combustion=p_combustion,seed=seeds[i])
-                                filename = savename("model",parameters,"bin")
+                                filename = savename("model",parameters,"bin",digits=10)
                                 storage_path=joinpath(model_directory,filename)
                                 mkpath(model_directory)
                                 serialize(storage_path, mixedHugeGaia)
                         end
                 end
+                filename = savename("ensemble_overview",(p_combustion=p_combustion),".csv",digits=10)
+                storage_path=joinpath(summary_results_directory,filename)
+                mkpath(summary_results_directory)
+                CSV.write(storage_path, ensemble_results)
         end
-        filename = savename("ensemble_overview",(p_combustion=p_combustion),".csv")
-        storage_path=joinpath(summary_results_directory,filename)
-        mkpath(summary_results_directory)
-        CSV.write(storage_path, ensemble_results)
 end
 
 #gets all .bin files from the folder that holds the pre-converged models
