@@ -25,6 +25,6 @@ for  file_chunk in all_model_file_chunks
         runpath = datadir("/p/projects/compacts/projects/DeMo/hysteresis_900"*string(run_number))
         mkpath(runpath)
         #put in test script and some parameters
-        schedule_script(script=scriptsdir("test.jl $file_chunk $inc $incentive_variable $runpath"),workdir=runpath)
+        schedule_script(script=scriptsdir("hysteresis_batch_server.jl $file_chunk $inc $incentive_variable $runpath"),workdir=runpath)
     end
 end

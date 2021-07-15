@@ -41,7 +41,7 @@ end
 function set_state!(state::Int,agent::CarOwner)
     agent.state = state
 end
-function set_carValue!(carValue::Int,agent::CarOwner)
+function set_carValue!(carValue::Int64,agent::CarOwner)
     agent.carValue = carValue
 end
 function set_purchaseValue!(purchaseValue::Float64,agent::CarOwner)
