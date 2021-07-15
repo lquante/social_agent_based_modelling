@@ -68,6 +68,11 @@ function model_step!(model)
     end
 end
 
+"initialize function for model creation, needed for paramscan methods"
+function initialize(;args ...)
+    return model_car_owners(mixed_population;args ...)
+end
+
 
 "function to interpret scenario *.yml file"
 
