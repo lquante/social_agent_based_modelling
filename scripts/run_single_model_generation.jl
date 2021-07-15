@@ -1,9 +1,12 @@
-using DrWatson
-@quickactivate "Social Agent Based Modelling"
-include(srcdir("agentFunctions.jl"))
-include(srcdir("modelling.jl"))
-include(srcdir("populationCreation.jl"))
-include(srcdir("hysteresisFunctions.jl"))
+using Distributed
+@everywhere using DrWatson
+@everywhere @quickactivate "Social Agent Based Modelling"
+@everywhere using Pkg
+@everywhere Pkg.instantiate()
+@everywhere include(srcdir("agentFunctions.jl"))
+@everywhere include(srcdir("modelling.jl"))
+@everywhere include(srcdir("populationCreation.jl"))
+@everywhere include(srcdir("hysteresisFunctions.jl"))
 
 Random.seed!(1234)
 

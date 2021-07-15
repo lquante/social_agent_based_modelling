@@ -8,7 +8,6 @@ function schedule_script(;
         cpus=1,
         jobname="julia_script_submission",
         time="0-12:00:00",
-        notify=true,
         partition="standard",
         qos="short",
         workdir=".",
@@ -16,17 +15,13 @@ function schedule_script(;
 
     mkpath(workdir)
 
-    other_options = ""
-    if notify
-        other_options * """#SBATCH --mail-type=END,FAIL,TIME_LIMIT\n"""
-    end
     output = """%j"""
     batch = """
     #!/usr/bin/env bash
     #SBATCH --account=$account
     #SBATCH --acctg-freq=energy=0
-    #SBATCH --constraint=haswell
     #SBATCH --ntasks=1
+    #SBATCH --exclusive
     #SBATCH --cpus-per-task=$cpus
     #SBATCH --mem=$memory
     #SBATCH --error=$workdir/$output.txt
@@ -39,10 +34,9 @@ function schedule_script(;
     #SBATCH --qos=$qos
     #SBATCH --time=$time
     #SBATCH --workdir=$workdir
-    $other_options
-
+    #SBATCH --mail-type=END,FAIL,TIME_LIMIT
     module load julia/1.6.1
-    julia -p $cpus $script """
+    srun -n 1 julia -p $cpus $script """
 
     io = open("sbatch.sh", "w")
     println(io, batch)

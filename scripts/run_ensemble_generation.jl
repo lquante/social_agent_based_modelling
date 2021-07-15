@@ -18,9 +18,9 @@ p_combustion_range = rand(p_normal_dist, 100)
 plot_combustion_share_histogram(p_combustion_range, plotsdir("histogram_p_combustion.png"))
 run_index = 0
 for p in p_combustion_range
-    global run_index +=1
+    run_index +=1
     params = (run=run_index,p=p)
-    runpath = datadir(savename("model_generation_",params))
+    runpath = datadir(savename("model_generation_",params;digits=10))
     mkpath(runpath)
-    schedule_script(script=scriptsdir("run_single_model_generation.jl")*" $p",workdir=runpath)
+    schedule_script(script=scriptsdir("run_single_model_generation.jl")*" $p",workdir=runpath,memory=16000)
 end
