@@ -103,7 +103,8 @@ function generate_ensemble(p_combustion_range,summary_results_directory;step_len
                                 serialize(storage_path, mixedHugeGaia)
                         end
                 end
-                filename = savename("ensemble_overview",@ntuple p_combustion,".csv",digits=10)
+                params = @ntuple p_combustion
+                filename = savename("ensemble_overview",params,".csv",digits=10)
                 storage_path=joinpath(summary_results_directory,filename)
                 mkpath(summary_results_directory)
                 CSV.write(storage_path, ensemble_results)
