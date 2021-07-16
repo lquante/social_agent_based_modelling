@@ -7,6 +7,7 @@ using Distributed
 @everywhere include(srcdir("modelling.jl"))
 @everywhere include(srcdir("populationCreation.jl"))
 @everywhere include(srcdir("hysteresisFunctions.jl"))
+@everywhere include(srcdir("slurm.jl"))
 
 
 
