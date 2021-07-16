@@ -1,10 +1,13 @@
-using DrWatson
-@quickactivate "Social Agent Based Modelling"
-include(srcdir("agentFunctions.jl"))
-include(srcdir("modelling.jl"))
-include(srcdir("populationCreation.jl"))
-include(srcdir("hysteresisFunctions.jl"))
-include(srcdir("slurm.jl"))
+using Distributed
+@everywhere using DrWatson
+@everywhere @quickactivate "Social Agent Based Modelling"
+@everywhere using Pkg
+@everywhere Pkg.instantiate()
+@everywhere include(srcdir("agentFunctions.jl"))
+@everywhere include(srcdir("modelling.jl"))
+@everywhere include(srcdir("populationCreation.jl"))
+@everywhere include(srcdir("hysteresisFunctions.jl"))
+
 
 #set price for incentive
 incentive_variable = :priceCombustionCar
