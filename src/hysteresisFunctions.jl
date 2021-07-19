@@ -117,6 +117,26 @@ function get_model_files(path)
         return(file_list)
 end
 
+
+#some plotting helper functions
+
+function load_results_data(path)
+        files=glob("*.csv", path)
+        ensemble_data_list = DataFrame.( CSV.File.( files ) )
+        ensemble_data = reduce(vcat, ensemble_data_list)
+        return(ensemble_data)
+end
+
+function plot_scatter(data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
+        Plots.scatter(ensemble_data.P_Combustion,variable,marker_z = ensemble_data.P_Combustion, xlabel = "p_CombustionShare",ylabel=y_lab)
+        png(path)
+end
+
+function plot_histogram(data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
+        Plots.histogram(ensemble_data.P_Combustion,variable, xlabel = "p_CombustionShare",ylabel=y_lab)
+        png(path)
+end
+
 "performs incentive hysteresis
 # Arguments
 -'all_model_files': File names of the preconverged models

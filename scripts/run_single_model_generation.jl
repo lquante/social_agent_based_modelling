@@ -2,7 +2,7 @@ using Distributed
 @everywhere using DrWatson
 @everywhere @quickactivate "Social Agent Based Modelling"
 @everywhere using Pkg
-@everywhere Pkg.instantiate()
+Pkg.instantiate()
 @everywhere include(srcdir("agentFunctions.jl"))
 @everywhere include(srcdir("modelling.jl"))
 @everywhere include(srcdir("populationCreation.jl"))
