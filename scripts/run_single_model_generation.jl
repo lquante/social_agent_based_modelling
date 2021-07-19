@@ -16,4 +16,4 @@ p_normal_dist = truncated(Normal(0.5, 0.05), 0.3, 0.6)
 print(ARGS)
 p_combustion_range = [parse(Float64,ARGS[1])]
 
-generate_ensemble(p_combustion_range,datadir();step_length=50,gridsize = 200, models_per_p = 50,seeds = rand(1234:9999,50),store_model = true, model_directory = datadir("preconverged_models_40000"))
+generate_ensemble(p_combustion_range,datadir();step_length=50,gridsize = 200, models_per_p = 100,seeds = rand(1234:9999,150)[51:150],store_model = true, model_directory = datadir("preconverged_models_40000"))
