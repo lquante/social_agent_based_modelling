@@ -6,6 +6,32 @@ using Random
 using YAML
 import Base.get
 
+"custom struct as a container of model parameters"
+Base.@kwdef mutable struct ModelParameters
+	#carLifetimeKilometers::Float64
+	priceCombustionCar::Float64
+	priceElectricCar::Float64
+	fuelCostKM::Float64
+	powerCostKM::Float64
+	maintenanceCostCombustionKM::Float64
+	maintenanceCostElectricKM::Float64
+	usedCarDiscount::Float64
+	budget::Float64
+	#general parameters
+	socialInfluenceFactor::Float64
+	tauRational::Float64
+	tauSocial::Float64
+	switchingBias::Float64
+	switchingBoundary::Float64
+	decisionGap::Float64
+	lowerAffinityBound::Float64
+	upperAffinityBound::Float64
+	scenario::Bool
+	timepoint::Int
+end
+
+
+
 "creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
 function model_car_owners(placementFunction;seed=1234,
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
@@ -31,25 +57,25 @@ function model_car_owners(placementFunction;seed=1234,
     timepoint=0.,
     decisionGap=0.)
 
-	properties = Dict(#:carLifetimeKilometers => carLifetimeKilometers,
-			:priceCombustionCar => priceCombustionCar,
-            :priceElectricCar => priceElectricCar,
-            :fuelCostKM => fuelCostKM,
-            :powerCostKM => powerCostKM,
-            :maintenanceCostCombustionKM => maintenanceCostCombustionKM,
-            :maintenanceCostElectricKM => maintenanceCostElectricKM,
-            :usedCarDiscount => usedCarDiscount,
-            :budget => budget,
-            :socialInfluenceFactor => socialInfluenceFactor,
-            :tauRational => tauRational,
-            :tauSocial => tauSocial,
-            :switchingBias => switchingBias,
-            :switchingBoundary => switchingBoundary,
-            :decisionGap => decisionGap,
-            :lowerAffinityBound => lowerAffinityBound,
-            :upperAffinityBound => upperAffinityBound,
-            :scenario => scenario,
-            :timepoint=>timepoint
+	properties = ModelParameters(#:carLifetimeKilometers => carLifetimeKilometers,
+			priceCombustionCar,
+            priceElectricCar,
+            fuelCostKM,
+            powerCostKM,
+            maintenanceCostCombustionKM,
+            maintenanceCostElectricKM,
+            usedCarDiscount,
+            budget,
+            socialInfluenceFactor,
+            tauRational,
+            tauSocial,
+            switchingBias,
+            switchingBoundary,
+            decisionGap,
+            lowerAffinityBound,
+            upperAffinityBound,
+            scenario,
+            timepoint
     )
     model = ABM(
         CarOwner,
