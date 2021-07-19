@@ -7,6 +7,7 @@ using CSV
 using Plots
 using Distributions
 using ProgressMeter
+using Glob
 
 "plots a histogram of the combustion share distribution
 the path needs to be specified with .png at the end"
@@ -127,12 +128,12 @@ function load_results_data(path)
         return(ensemble_data)
 end
 
-function plot_scatter(data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
+function plot_scatter(ensemble_data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
         Plots.scatter(ensemble_data.P_Combustion,variable,marker_z = ensemble_data.P_Combustion, xlabel = "p_CombustionShare",ylabel=y_lab)
         png(path)
 end
 
-function plot_histogram(data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
+function plot_histogram(ensemble_data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
         Plots.histogram(ensemble_data.P_Combustion,variable, xlabel = "p_CombustionShare",ylabel=y_lab)
         png(path)
 end
