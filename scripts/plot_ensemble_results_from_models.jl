@@ -26,10 +26,11 @@ for i_model_file in model_files
     global counter+=1
 end
 data = hysteresis_results
-storage_path = datadir
-safesave(joinpath(storage_path,ensmbleidentifier*".csv"), data)
+storage_path = datadir()
 ensembleidentifier = ARGS[2]
 plotpath = plotsdir(ensembleidentifier)
 mkpath(plotpath)
 plot_scatter(data,joinpath(plotpath,"scatter"))
 plot_histogram(data,joinpath(plotpath,"histogram"))
+
+safesave(joinpath(storage_path,ensembleidentifier*".csv"), data)

@@ -4,7 +4,7 @@ using Agents
 using Distributions
 using Random
 using YAML
-import Base.get
+include(srcdir("populationCreation.jl"))
 
 "custom struct as a container of model parameters"
 Base.@kwdef mutable struct ModelParameters
