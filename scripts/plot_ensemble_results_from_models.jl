@@ -1,7 +1,8 @@
 using Distributed
 @everywhere using DrWatson
+@everywhere using CSVFiles
 @everywhere @quickactivate "Social Agent Based Modelling"
-@everywhere include(srcdir("hysteresisFunctions.jl"))
+@everywhere include(srcdir("hysteresisFunctions.jl"))]
 @everywhere include(srcdir("agentFunctions.jl"))
 @everywhere include(srcdir("modelling.jl"))
 path = ARGS[1] # get path via script argument
@@ -25,6 +26,8 @@ for i_model_file in model_files
     global counter+=1
 end
 data = hysteresis_results
+storage_path = datadir
+safesave(joinpath(storage_path,ensmbleidentifier*".csv"), data)
 ensembleidentifier = ARGS[2]
 plotpath = plotsdir(ensembleidentifier)
 mkpath(plotpath)
