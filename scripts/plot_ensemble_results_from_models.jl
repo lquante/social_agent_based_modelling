@@ -1,8 +1,8 @@
 using Distributed
 @everywhere using DrWatson
-@everywhere using CSVFiles
 @everywhere @quickactivate "Social Agent Based Modelling"
-@everywhere include(srcdir("hysteresisFunctions.jl"))]
+@everywhere using CSVFiles
+@everywhere include(srcdir("hysteresisFunctions.jl"))
 @everywhere include(srcdir("agentFunctions.jl"))
 @everywhere include(srcdir("modelling.jl"))
 path = ARGS[1] # get path via script argument
