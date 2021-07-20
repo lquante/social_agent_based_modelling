@@ -32,7 +32,7 @@ function schedule_script(;
     #SBATCH --ntasks=1
     #SBATCH --cpus-per-task=$cpus
     #SBATCH --mem=$memory
-    #SBATCH --error=$logdir/$output.txt
+    #SBATCH --error=$logdir/error_$output.txt
     #SBATCH --exclusive
     #SBATCH --export=ALL,OMP_PROC_BIND=FALSE,OMP_NUM_THREADS=$cpus
     #SBATCH --job-name=$jobname

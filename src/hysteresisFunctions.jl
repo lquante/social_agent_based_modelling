@@ -122,6 +122,7 @@ function load_results_data(path)
         return(ensemble_data)
 end
 
+
 function plot_scatter(data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
         Plots.scatter(ensemble_data.P_Combustion,variable,marker_z = ensemble_data.P_Combustion, xlabel = "p_CombustionShare",ylabel=y_lab)
         png(path)
@@ -139,10 +140,13 @@ end
 -'results_storage_path': directory path where the final csv should be stored
 -'step_length': how many steps each model should take before checking conversion"
 
-function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50)
+function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50,batch_number = 1)
     hysteresis_results = DataFrame(Index = 1:length(all_model_files), Start_State_Average = -9999.0, Start_Affinity_Average = -9999.0, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
     step_length = 50
     counter = 1
+    print("I got here")
+    print(all_model_files)
+    print(typeof(all_model_files))
     @showprogress for f in all_model_files
         model=deserialize(f)
         #Call the model with 0 steps to get the current state and affinity. This is a bit hacky maybe there is a better way? Couldn't think of one for now
@@ -150,9 +154,10 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
         hysteresis_results[hysteresis_results.Index .== counter,:Start_State_Average].=agent_df_start[end,"mean_state"]
         hysteresis_results[hysteresis_results.Index .== counter,:Start_Affinity_Average].=agent_df_start[end,"mean_affinity"]
         #set incentive
-        model.properties[incentive_variable ] = incentive
+        model.properties[Symbol(incentive_variable) ] = incentive
         #let it converge
         converged = false
+        agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
         while converged == false
                         agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
                         converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
@@ -162,9 +167,9 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
         hysteresis_results[hysteresis_results.Index .== counter,:Final_Affinity_Average].=agent_df[end,"mean_affinity"]
         counter = counter +1
     end
-    filename = "hysteresis_overview_incentive_variable_"* string(incentive_variable)*"_incentive_"*string(incentive)*".csv"
-    storage_path=joinpath(summary_results_directory,filename)
-    mkpath(storage_path)
+    filename = "hysteresis_overview_incentive_variable_"* string(incentive_variable)*"_incentive_"*string(convert(Int,incentive))*"_batch_"*string(batch_number)*".csv"
+    storage_path=joinpath(results_storage_path,filename)
+    mkpath(results_storage_path)
     CSV.write(storage_path, hysteresis_results)
 end
 
