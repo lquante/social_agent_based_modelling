@@ -106,7 +106,7 @@ function generate_ensemble(p_combustion_range,summary_results_directory;step_len
                 end
                 min_seed= minimum(seeds)
                 max_seed= maximum(seeds)
-                params = @ntuple p_combustion, min_seed, max_seed
+                params = @ntuple p_combustion min_seed max_seed
                 filename = savename("ensemble_overview",params,".csv",digits=10)
                 storage_path=joinpath(summary_results_directory,filename)
                 mkpath(summary_results_directory)
