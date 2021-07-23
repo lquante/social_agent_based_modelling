@@ -29,7 +29,6 @@ end
 @inline function allequal_fast(x) #https://stackoverflow.com/questions/47564825/check-if-all-the-elements-of-a-julia-array-are-equal
     length(x) < 2 && return true
     e1 = x[1]
-    i = 2
     @inbounds for i=2:length(x)
         x[i] == e1 || return false
     end
@@ -39,8 +38,6 @@ end
 function check_conversion_allequal(state_vec,period=1)
         return allequal_fast(state_vec[1:period:end])
 end
-
-
 
 "Recursive conversion checker which can account for oscillating behaviour up to a period p, defaults to 5, pmax=1 gives check_conversion"
 function check_conversion_osc_recursive(state_vec;pstart=1,pmax=5)
@@ -86,10 +83,10 @@ function generate_ensemble(p_combustion_range,summary_results_directory;step_len
                         mixedHugeGaia = model_car_owners(mixed_population;kwargsPlacement=(combustionShare=p_combustion,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,fuelCostKM=0,powerCostKM=0,priceCombustionCar=5000,priceElectricCar=5000)
                         converged = false
                         agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
-                        converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
+                        converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
                         while converged == false
                                 agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
-                                converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
+                                converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
                         end
 
                         #add final values to dataframe
@@ -161,10 +158,11 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
         #set incentive
         model.properties[incentive_variable ] = incentive
         #let it converge
+        agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
         converged = false
         while converged == false
                         agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
-                        converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
+                        converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
         end
 
         hysteresis_results[hysteresis_results.Index .== counter,:Final_State_Average].=agent_df[end,"mean_state"]
