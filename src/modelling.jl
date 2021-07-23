@@ -30,9 +30,7 @@ Base.@kwdef mutable struct ModelParameters
 	timepoint::Int
 end
 
-
-
-"creating a model with default 10*10 gridspace and default parameters, which need to be calibrated more sophisticated"
+"creating a model with some plausible default parameters"
 function model_car_owners(placementFunction;seed=1234,
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     kwargsPlacement = (),
@@ -99,7 +97,6 @@ function initialize(;args ...)
     return model_car_owners(mixed_population;args ...)
 end
 
-
 "function to interpret scenario *.yml file"
 
 function apply_scenario!(model)
@@ -115,7 +112,7 @@ function apply_scenario!(model)
     end
 end
 
-"function to get a matrix of all values of a property of the agents"
+"function to get a matrix of all affinities of the agents"
 function get_affinity_matrix(model)
     position_matrix = model.space.s
     property_matrix = zeros(size(position_matrix))
@@ -126,6 +123,7 @@ function get_affinity_matrix(model)
     return property_matrix
 end
 
+"function to get a matrix of all states of the agents"
 function get_state_matrix(model)
 	position_matrix = model.space.s
     property_matrix = zeros(size(position_matrix))

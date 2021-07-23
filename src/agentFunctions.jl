@@ -23,13 +23,6 @@ function get_car_price(car::Int,model::AgentBasedModel)
         return car === 0 ? model.priceCombustionCar : model.priceElectricCar
 end
 
-"updates state and related variables of an CarOwner, ignoring budget due to overhead"
-function update_state_woBudget!(state::Int,agent::CarOwner,model)
-    set_state!(state,agent)
-    set_carValue!(get_car_price(state,model),agent)
-    set_purchaseValue!(agent.carValue,agent)
-    set_carAge!(0,agent)
-end
 "updates state and related variables of an CarOwner"
 function update_state!(state::Int,agent::CarOwner,model)
     set_state!(state,agent)
@@ -51,11 +44,11 @@ end
 function set_carAge!(carAge::Int,agent::CarOwner)
     agent.carAge = carAge
 end
-function update_budget!(budgetChange,agent::CarOwner)
-    agent.budget -= budgetChange
-end
 function set_budget!(budget,agent::CarOwner)
     agent.budget = budget
+end
+function update_budget!(budgetReduction,agent::CarOwner)
+    set_budget!(agent.budget-budgetReduction,agent)
 end
 
 "returns yearly running cost of car usage, depending on agents yrly km, car age, car type and model parameters"
@@ -146,7 +139,7 @@ function step_costDiff(costDiff::Real)
     return Int(costDiff>=0)
 end
 
-
+"returns social influence based on neighbours state"
 function state_social_influence(agent::CarOwner, model::AgentBasedModel, neighboursMaximumDistance=2.)
     stateSocialInfluence = 0.
     numberNeighbours = 0
@@ -160,6 +153,7 @@ function state_social_influence(agent::CarOwner, model::AgentBasedModel, neighbo
     return stateSocialInfluence / model.tauSocial * model.socialInfluenceFactor
 end
 
+"returns social influence based on neighbours affinity"
 function affinity_social_influence(agent::CarOwner, model::AgentBasedModel, neighboursMaximumDistance=2.)
     affinitySocialInfluence = 0.
     numberNeighbours = 0
@@ -173,6 +167,7 @@ function affinity_social_influence(agent::CarOwner, model::AgentBasedModel, neig
     return affinitySocialInfluence / model.tauSocial * model.socialInfluenceFactor
 end
 
+"old, slower function to calculate social influence based on neighbours state"
 function old_state_social_influence(agent::CarOwner, model, neighboursMaximumDistance=1)
     stateSocialInfluence = 0
     counted=[agent.id]
@@ -194,7 +189,7 @@ function old_state_social_influence(agent::CarOwner, model, neighboursMaximumDis
     return stateSocialInfluence / model.tauSocial * model.socialInfluenceFactor
 end
 
-"returns social influence resulting from neighbours current affinity"
+"old, slower function returns social influence resulting from neighbours current affinity"
 function old_affinity_social_influence(agent::CarOwner, model, neighboursMaximumDistance=1)
     affinitySocialInfluence = 0
     counted=[agent.id]
