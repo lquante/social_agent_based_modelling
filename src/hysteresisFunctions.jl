@@ -123,15 +123,16 @@ function load_results_data(path)
 end
 
 
-function plot_scatter(data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
-        Plots.scatter(ensemble_data.P_Combustion,variable,marker_z = ensemble_data.P_Combustion, xlabel = "p_CombustionShare",ylabel=y_lab)
+function plot_scatter(data, path; variable = data.Final_State_Average, y_lab = "Final State Average",marker_z = data.P_Combustion)
+        Plots.scatter(data.P_Combustion,variable,marker_z = marker_z, xlabel = "p_CombustionShare",ylabel=y_lab)
         png(path)
 end
 
-function plot_histogram(data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
-        Plots.histogram(ensemble_data.P_Combustion,variable, xlabel = "p_CombustionShare",ylabel=y_lab)
+function plot_histogram(data, path; variable = data.Final_State_Average, y_lab = "Final State Average")
+        Plots.histogram(data.P_Combustion,variable, xlabel = "p_CombustionShare",ylabel=y_lab)
         png(path)
 end
+
 "performs incentive hysteresis
 # Arguments
 -'all_model_files': File names of the preconverged models
@@ -141,7 +142,7 @@ end
 -'step_length': how many steps each model should take before checking conversion"
 
 function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50,batch_number = 1)
-    hysteresis_results = DataFrame(Index = 1:length(all_model_files), Start_State_Average = -9999.0, Start_Affinity_Average = -9999.0, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
+    hysteresis_results = DataFrame(Index = 1:length(all_model_files), Start_State_Average = -9999.0, Start_Affinity_Average = -9999.0, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0,incentive_variable = incentive_variable, incentive = incentive)
     step_length = 50
     counter = 1
     print("I got here")

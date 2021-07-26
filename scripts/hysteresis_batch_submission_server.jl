@@ -11,7 +11,7 @@ using Distributed
 incentive_variable = :priceCombustionCar
 #incentives = [5000:100:10000;]
 incentive_variable = :priceCombustionCar
-incentives = [5050]
+incentives = [5050,6050,7050,8050,9050,10050]
 #data frame for results
 
 all_model_files = get_model_files("/p/projects/compacts/projects/DeMo/ensemble_900_agents/")
@@ -19,7 +19,7 @@ model_path = "/p/projects/compacts/projects/DeMo/ensemble_900_agents/"
 #split files into chucks of max 100 files each
 all_model_file_chunks = chunk(all_model_files, 100)
 
-run_number =1
+run_number =3
 for  i = 1:length(all_model_file_chunks)
     chunk_number = i
     for inc in incentives

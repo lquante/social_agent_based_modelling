@@ -7,11 +7,11 @@ function schedule_script(;
         autorelease=true,
         cpus=1,
         jobname="test_script_submission",
-        time="4:00:00",
+        time="12:00:00",
         notify=true,
-        partition="priority",
+        partition="standard",
         prelimitseconds=60 * 60,
-        qos="priority",
+        qos="short",
         workdir=".",
         memory=60000)
 
