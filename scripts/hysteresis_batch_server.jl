@@ -15,7 +15,7 @@ println(ARGS[3])
 print("Arg 4 ")
 println(ARGS[4])
 print("Arg 5 ")
-print(ARGS[5])
+println(ARGS[5])
 
 all_model_files = get_model_files(ARGS[1])
 

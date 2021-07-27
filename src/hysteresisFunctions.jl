@@ -158,8 +158,9 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
         agent_df_start, model_df_start = run!(model, agent_step!,model_step!, 0; adata = [(:state, mean),(:affinity,mean)])
         hysteresis_results[hysteresis_results.Index .== counter,:Start_State_Average].=agent_df_start[end,"mean_state"]
         hysteresis_results[hysteresis_results.Index .== counter,:Start_Affinity_Average].=agent_df_start[end,"mean_affinity"]
-        #set incentive
-        model.properties[Symbol(incentive_variable) ] = incentive
+        #set incentive using meta programming
+        propertyToChange = Meta.parse("model.properties."*incentive_variable)
+        eval(propertyToChange) = incentive
         #let it converge
         converged = false
         agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])

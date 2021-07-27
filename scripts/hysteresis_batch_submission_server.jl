@@ -9,23 +9,23 @@ using Distributed
 
 #set price for incentive
 incentive_variable = :priceCombustionCar
-#incentives = [5000:100:10000;]
-incentive_variable = :priceCombustionCar
-incentives = [5050,6050,7050,8050,9050,10050]
+incentives = [5050]
 #data frame for results
 
-all_model_files = get_model_files("/p/projects/compacts/projects/DeMo/ensemble_900_agents/")
-model_path = "/p/projects/compacts/projects/DeMo/ensemble_900_agents/"
+model_path = datadir("preconverged_models_40000")
+all_model_files = get_model_files(model_path)
 #split files into chucks of max 100 files each
 all_model_file_chunks = chunk(all_model_files, 100)
-
-run_number =3
-for  i = 1:length(all_model_file_chunks)
+run_number = 0
+for  i in 1:length(all_model_file_chunks)
     chunk_number = i
     for inc in incentives
         #where we wanna store the stuff
-        runpath = datadir("/p/projects/compacts/projects/DeMo/hysteresis_900"*string(run_number))
+        runpath = datadir("hysteresis_40000_"*string(run_number))
+        params = @ntuple chunk_number inc
+        jobname=savename("hysteresis",params)
         mkpath(runpath)
-        schedule_script(script=scriptsdir("hysteresis_batch_server.jl")*" $model_path"*" $incentive_variable"*" $inc"*" $runpath"*" $chunk_number",workdir=runpath)
+        schedule_script(script=scriptsdir("hysteresis_batch_server.jl")*" $model_path"*" $incentive_variable"*" $inc"*" $runpath"*" $chunk_number",
+        workdir=runpath,time="0-24:00:00",jobname="")
     end
 end
