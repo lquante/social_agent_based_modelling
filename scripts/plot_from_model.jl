@@ -6,6 +6,7 @@ using Distributed
 @everywhere include(srcdir("hysteresisFunctions.jl"))
 @everywhere include(srcdir("agentFunctions.jl"))
 @everywhere include(srcdir("modelling.jl"))
+@everywhere include(srcdir("clusterDetection.jl"))
 path = ARGS[1] # get path via script argument
 ensembleidentifier = ARGS[2]
 if (ispath(path)==false)
@@ -21,7 +22,7 @@ Random.seed!(1234)
 model_files = get_model_files(path)
 random_models = rand(1:length(model_files),100)
 mkpath(plotsdir(ensembleidentifier))
-Threads.@threads for i_random_model in random_models
+for i_random_model in random_models
     i_model_file = model_files[i_random_model]
     model_params = parse_savename(i_model_file)[2]
     i_model= deserialize(i_model_file)
@@ -35,4 +36,14 @@ Threads.@threads for i_random_model in random_models
     affinities= heatmap(affinity_matrix,color=blackgreen_continous,size=figsize,xlabel="affinity")
     filename=savename("affinity_matrix",model_params,"png")
     savefig(affinities,plotsdir(joinpath(ensembleidentifier,filename)))
+
+    # plot cluster sizes
+    electric_clusters = histogram(cluster_sizes(find_state_clusters(state_matrix)[2]))
+    filename=savename("electric_clusters",model_params,"png")
+    savefig(electric_clusters,plotsdir(joinpath(ensembleidentifier,filename)))
+
+    combustion_clusters = histogram(cluster_sizes(find_state_clusters(state_matrix,invert=true)[2]))
+    filename=savename("combustion_clusters",model_params,"png")
+    savefig(combustion_clusters,plotsdir(joinpath(ensembleidentifier,filename)))
+
 end
