@@ -36,7 +36,7 @@ function schedule_script(;
     #SBATCH --workdir=$workdir
     #SBATCH --mail-type=END,FAIL,TIME_LIMIT
     module load julia/1.6.1
-    srun -n 1 julia -p $cpus $script """
+    julia -p $cpus $script """
 
     io = open("sbatch.sh", "w")
     println(io, batch)
