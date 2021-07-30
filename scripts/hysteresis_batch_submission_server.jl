@@ -9,13 +9,13 @@ using Distributed
 
 #set price for incentive
 incentive_variable = :priceCombustionCar
-incentives = [5050]
+incentives = [5500]
 #data frame for results
 
 model_path = datadir("preconverged_models_40000")
 all_model_files = get_model_files(model_path)
-#split files into chucks of max 100 files each
-all_model_file_chunks = chunk(all_model_files, 100)
+#split files into chucks of max 50 files each
+all_model_file_chunks = chunk(all_model_files, 50)
 run_number = 0
 for  i in 1:length(all_model_file_chunks)
     chunk_number = i

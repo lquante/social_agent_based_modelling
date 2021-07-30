@@ -35,13 +35,26 @@ end
     return true
 end
 
+@inline function allequal_approx(x) #https://stackoverflow.com/questions/47564825/check-if-all-the-elements-of-a-julia-array-are-equal
+    length(x) < 2 && return true
+    e1 = x[1]
+    @inbounds for i=2:length(x)
+        x[i] ≈ e1 || return false
+    end
+    return true
+end
+
 function check_conversion_allequal(state_vec,period=1)
         return allequal_fast(state_vec[1:period:end])
 end
 
+function check_conversion_approx(state_vec,period=1)
+        return allequal_approx(state_vec[1:period:end])
+end
+
 "Recursive conversion checker which can account for oscillating behaviour up to a period p, defaults to 5, pmax=1 gives check_conversion"
 function check_conversion_osc_recursive(state_vec;pstart=1,pmax=5)
-        if check_conversion_allequal(state_vec,pstart)
+        if check_conversion_approx(state_vec,pstart)
                 return true
         end
         if pstart > pmax
@@ -159,14 +172,17 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
         hysteresis_results[hysteresis_results.Index .== counter,:Start_State_Average].=agent_df_start[end,"mean_state"]
         hysteresis_results[hysteresis_results.Index .== counter,:Start_Affinity_Average].=agent_df_start[end,"mean_affinity"]
         #set incentive using meta programming
-        propertyToChange = Meta.parse("model.properties."*incentive_variable)
-        eval(propertyToChange) = incentive
+        if (incentive_variable == "priceCombustionCar")
+                model.properties.priceCombustionCar=incentive
+        else
+                return("Error: Not yet implemented incentive!")
+        end
         #let it converge
         converged = false
         agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
         while converged == false
                         agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
-                        converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
+                        converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
         end
 
         hysteresis_results[hysteresis_results.Index .== counter,:Final_State_Average].=agent_df[end,"mean_state"]
