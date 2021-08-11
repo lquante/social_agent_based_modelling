@@ -19,6 +19,7 @@ Base.@kwdef mutable struct ModelParameters
 	budget::Float64
 	#general parameters
 	socialInfluenceFactor::Float64
+	neighbourShare::Float64
 	tauRational::Float64
 	tauSocial::Float64
 	switchingBias::Float64
@@ -45,7 +46,8 @@ function model_car_owners(placementFunction;seed=1234,
     budget = Inf, #for now ignoring budget limitations
     #general parameters
     socialInfluenceFactor = 1., # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
-    tauRational = 3., #inertia for the rational part
+	neighbourShare = 0.1, # share of neighbours to be considered of sqrt(numberAgents)
+	tauRational = 3., #inertia for the rational part
     tauSocial = 1., #intertia for the social part
     switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
     switchingBoundary=0.5, # bound for affinity to switch state
@@ -65,6 +67,7 @@ function model_car_owners(placementFunction;seed=1234,
             usedCarDiscount,
             budget,
             socialInfluenceFactor,
+			neighbourShare,
             tauRational,
             tauSocial,
             switchingBias,

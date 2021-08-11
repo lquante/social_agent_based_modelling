@@ -139,10 +139,17 @@ function step_costDiff(costDiff::Real)
     return Int(costDiff>=0)
 end
 
+"helper function to calculate neighbours maximum distance as sqrt(number of agents)*neighbourhood_share"
+function neighbour_distance(model)
+    number_agents = length(model.agents)
+    return cld(sqrt(number_agents),1/model.neighbourShare)
+end
+
 "returns social influence based on neighbours state"
-function state_social_influence(agent::CarOwner, model::AgentBasedModel, neighboursMaximumDistance=2.)
-    stateSocialInfluence = 0.
+function state_social_influence(agent::CarOwner, model::AgentBasedModel)
+    stateSocialInfluence = 0.0
     numberNeighbours = 0
+    neighboursMaximumDistance=neighbour_distance(model)
     neighbours = nearby_agents(agent,model,neighboursMaximumDistance)
     @inbounds for n in neighbours
         stateSocialInfluence += (n.state_old-agent.affinity_old)/edistance(n,agent,model) #scaling by exact distance
@@ -154,9 +161,11 @@ function state_social_influence(agent::CarOwner, model::AgentBasedModel, neighbo
 end
 
 "returns social influence based on neighbours affinity"
-function affinity_social_influence(agent::CarOwner, model::AgentBasedModel, neighboursMaximumDistance=2.)
-    affinitySocialInfluence = 0.
+function affinity_social_influence(agent::CarOwner, model::AgentBasedModel)
+    #calculate neighbours maximum distance based on
+    affinitySocialInfluence = 0.0
     numberNeighbours = 0
+    neighboursMaximumDistance=neighbour_distance(model)
     neighbours = nearby_agents(agent,model,neighboursMaximumDistance)
     @inbounds for n in neighbours
         affinitySocialInfluence += (n.affinity_old-agent.affinity_old)/edistance(n,agent,model) #scaling by exact distance
