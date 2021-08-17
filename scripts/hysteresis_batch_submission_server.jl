@@ -19,7 +19,7 @@ model_path = "/p/projects/compacts/projects/DeMo/ensemble_900_agents/"
 #split files into chucks of max 100 files each
 all_model_file_chunks = chunk(all_model_files, 100)
 
-run_number =4
+run_number =7
 for  i = 1:length(all_model_file_chunks)
     chunk_number = i
     for inc in incentives

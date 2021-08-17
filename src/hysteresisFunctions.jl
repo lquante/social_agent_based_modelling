@@ -149,7 +149,6 @@ end
 
 function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50,batch_number = 1,store_model = false, model_directory = "",convergence_stop=true)
     hysteresis_results = DataFrame(Index = 1:length(all_model_files), Start_State_Average = -9999.0, Start_Affinity_Average = -9999.0, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0,incentive_variable = incentive_variable, incentive = incentive)
-    step_length = 50
     counter = 1
     print("I got here")
     print(all_model_files)
@@ -171,7 +170,7 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
                                 converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
                 end
         else
-                print('got here')
+                print("got here")
                 agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
         end
 
