@@ -141,7 +141,7 @@ end
 -'results_storage_path': directory path where the final csv should be stored
 -'step_length': how many steps each model should take before checking conversion"
 
-function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50,batch_number = 1)
+function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50,batch_number = 1,store_model = false, model_directory = "")
     hysteresis_results = DataFrame(Index = 1:length(all_model_files), Start_State_Average = -9999.0, Start_Affinity_Average = -9999.0, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0,incentive_variable = incentive_variable, incentive = incentive)
     step_length = 50
     counter = 1
@@ -166,6 +166,14 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
 
         hysteresis_results[hysteresis_results.Index .== counter,:Final_State_Average].=agent_df[end,"mean_state"]
         hysteresis_results[hysteresis_results.Index .== counter,:Final_Affinity_Average].=agent_df[end,"mean_affinity"]
+
+        if store_model == true
+                parameters = (p_combustion=p_combustion,seed=seeds[i])
+                filename = savename("model",parameters,".bin")
+                storage_path=joinpath(model_directory,filename)
+                mkpath(storage_path)
+                serialize(storage_path, mixedHugeGaia)
+        end
         counter = counter +1
     end
     filename = "hysteresis_overview_incentive_variable_"* string(incentive_variable)*"_incentive_"*string(convert(Int,incentive))*"_batch_"*string(batch_number)*".csv"
