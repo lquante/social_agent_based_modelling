@@ -28,4 +28,4 @@ all_model_file_chunks = chunk(all_model_files, 100)
 local_file_list = all_model_file_chunks[parse(Int,ARGS[5])]
 println(local_file_list)
 
-perform_incentive_hysteresis(local_file_list,ARGS[2],parse(Float64,ARGS[3]),ARGS[4];batch_number =parse(Int,ARGS[5]) )
+perform_incentive_hysteresis(local_file_list,ARGS[2],parse(Float64,ARGS[3]),ARGS[4];batch_number =parse(Int,ARGS[5]),step_length = 1000,convergence_stop=false )

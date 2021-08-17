@@ -8,6 +8,7 @@ using Glob
 using Plots
 using Distributions
 using ProgressMeter
+using Plots.PlotMeasures
 
 "plots a histogram of the combustion share distribution
 the path needs to be specified with .png at the end"
@@ -133,6 +134,11 @@ function plot_histogram(data, path; variable = data.Final_State_Average, y_lab =
         png(path)
 end
 
+function plot_multi_incentive_scatter(data, path; variable = data.Final_State_Average, y_lab = "Final State Average", marker_z = data.incentive)
+        Plots.scatter(data.Start_State_Average, variable, marker_z=marker_z, xlabel = "Start State Average",ylabel=y_lab,left_margin = 40px,right_margin = 15px,label="", bottom_margin = 30px)
+        png(path)
+end
+
 "performs incentive hysteresis
 # Arguments
 -'all_model_files': File names of the preconverged models
@@ -141,7 +147,7 @@ end
 -'results_storage_path': directory path where the final csv should be stored
 -'step_length': how many steps each model should take before checking conversion"
 
-function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50,batch_number = 1,store_model = false, model_directory = "")
+function perform_incentive_hysteresis(all_model_files,incentive_variable, incentive, results_storage_path; step_length = 50,batch_number = 1,store_model = false, model_directory = "",convergence_stop=true)
     hysteresis_results = DataFrame(Index = 1:length(all_model_files), Start_State_Average = -9999.0, Start_Affinity_Average = -9999.0, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0,incentive_variable = incentive_variable, incentive = incentive)
     step_length = 50
     counter = 1
@@ -157,11 +163,16 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
         #set incentive
         model.properties[Symbol(incentive_variable) ] = incentive
         #let it converge
-        converged = false
-        agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
-        while converged == false
-                        agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
-                        converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
+        if convergence_stop == true
+                converged = false
+                agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
+                while converged == false
+                                agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
+                                converged= check_conversion_osc(agent_df[end-step_length:end,"mean_affinity"])
+                end
+        else
+                print('got here')
+                agent_df, model_df = run!(model, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
         end
 
         hysteresis_results[hysteresis_results.Index .== counter,:Final_State_Average].=agent_df[end,"mean_state"]
