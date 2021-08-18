@@ -24,7 +24,7 @@ function schedule_script(;
     #SBATCH --exclusive
     #SBATCH --cpus-per-task=$cpus
     #SBATCH --mem=$memory
-    #SBATCH --error=$workdir/$output.txt
+    #SBATCH --error=$workdir/error_$output.txt
     #SBATCH --export=ALL,OMP_PROC_BIND=FALSE,OMP_NUM_THREADS=$cpus
     #SBATCH --job-name=$jobname
     #SBATCH --nice=0

@@ -38,12 +38,16 @@ for i_random_model in random_models
     savefig(affinities,plotsdir(joinpath(ensembleidentifier,filename)))
 
     # plot cluster sizes
-    electric_clusters = histogram(cluster_sizes(find_state_clusters(state_matrix)[2]))
-    filename=savename("electric_clusters",model_params,"png")
-    savefig(electric_clusters,plotsdir(joinpath(ensembleidentifier,filename)))
-
-    combustion_clusters = histogram(cluster_sizes(find_state_clusters(state_matrix,invert=true)[2]))
-    filename=savename("combustion_clusters",model_params,"png")
-    savefig(combustion_clusters,plotsdir(joinpath(ensembleidentifier,filename)))
-
+    electric_clusters = cluster_sizes(find_state_clusters(state_matrix)[2])
+    if (length(electric_clusters) != 0)
+        hist = histogram(electric_clusters)
+        filename=savename("electric_clusters",model_params,"png")
+        savefig(hist,plotsdir(joinpath(ensembleidentifier,filename)))
+    end
+    combustion_clusters = cluster_sizes(find_state_clusters(state_matrix,invert=true)[2])
+    if (length(combustion_clusters) != 0)
+        hist = histogram(combustion_clusters)
+        filename=savename("combustion_clusters",model_params,"png")
+        savefig(hist,plotsdir(joinpath(ensembleidentifier,filename)))
+    end
 end

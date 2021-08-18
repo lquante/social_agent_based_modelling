@@ -6,7 +6,7 @@ using Distributed
 path = ARGS[1] # get path via script argument
 
 if (ispath(path)==false)
-    warn("Please specify a valid path!")
+    throw(UndefVarError(:path))
 end
 data = load_results_data(path)
 ensembleidentifier = ARGS[2]

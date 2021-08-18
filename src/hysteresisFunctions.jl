@@ -93,7 +93,7 @@ function generate_ensemble(p_combustion_range,summary_results_directory;step_len
                 ensemble_results = DataFrame(Seed = seeds, P_Combustion = p_combustion, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
                 @showprogress 1 "Seed Variation..." for i = 1:models_per_p
                         space = Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean)
-                        mixedHugeGaia = model_car_owners(mixed_population;kwargsPlacement=(combustionShare=p_combustion,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,fuelCostKM=0,powerCostKM=0,priceCombustionCar=5000,priceElectricCar=5000)
+                        mixedHugeGaia = model_car_owners(mixed_population;kwargsPlacement=(combustionShare=p_combustion,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,fuelCostKM=0,powerCostKM=0,priceCombustionCar=5000,priceElectricCar=5000,neighbourShare=0.05)
                         converged = false
                         agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
                         converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
