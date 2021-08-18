@@ -2,15 +2,8 @@ using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using Agents
 "create an agent for 2d grid space"
-@agent CarOwner GridAgent{2} begin
-    #case specific parameters
-    kilometersPerYear::Float64
-    carValue::Float64 # current time value
-    purchaseValue::Float64
-    carAge::Int
-    budget::Float64
-    income::Float64
-    #general parameters
+@agent DecisionAgent GridAgent{2} begin
+    internalRationalInfluence::Float64
     state::Int
     state_old::Int
     affinity::Float64
@@ -18,125 +11,23 @@ using Agents
     rationalOptimum::Int
 end
 
-"returns car price for model and car type"
-function get_car_price(car::Int,model::AgentBasedModel)
-        return car === 0 ? model.priceCombustionCar : model.priceElectricCar
-end
-
-"updates state and related variables of an CarOwner"
-function update_state!(state::Int,agent::CarOwner,model)
-    set_state!(state,agent)
-    set_carValue!(get_car_price(state,model),agent)
-    set_purchaseValue!(agent.carValue,agent)
-    set_carAge!(0,agent)
-    update_budget!(agent.purchaseValue,agent)
-end
-function set_state!(state::Int,agent::CarOwner)
+function set_state!(state::Int,agent::DecisionAgent)
     agent.state = state
 end
 
-function set_carValue!(carValue,agent::CarOwner)
-    agent.carValue = carValue
-end
-function set_purchaseValue!(purchaseValue,agent::CarOwner)
-    agent.purchaseValue = purchaseValue
-end
-function set_carAge!(carAge::Int,agent::CarOwner)
-    agent.carAge = carAge
-end
-function set_budget!(budget,agent::CarOwner)
-    agent.budget = budget
-end
-function update_budget!(budgetReduction,agent::CarOwner)
-    set_budget!(agent.budget-budgetReduction,agent)
+"computes rational decision for 0= no or 1= yes"
+function rational_influence(agent::DecisionAgent,model)
+    rationalAffinity = (externalRational(agent,model)+internalRational(agent,model))/2 #equal weighting of external and internal influence
+    return rationalAffinity-agent.affinity_old/model.tauRational
 end
 
-"returns yearly running cost of car usage, depending on agents yrly km, car age, car type and model parameters"
-function yearly_car_cost(kilometersPerYear,carAge,fuelCostKM,maintenanceCostKM)
-    return kilometersPerYear * (fuelCostKM +  (maintenanceCostKM * carAge))
+"computes contribuition for rational decision from external sources"
+function externalRational(agent,model)
+    return model.externalRationalInfluence # first very simple case:model parameter controls external "forcing"
 end
-
-function multi_year_car_cost(kilometersPerYear, usageYears,initialCarAge, state, model)
-    totalCost = 0.0
-    fuelCostKM = (state ===0 ? model.fuelCostKM : model.powerCostKM)
-    maintenanceCostKM = (state ===0 ? model.maintenanceCostCombustionKM : model.maintenanceCostElectricKM)
-    fuelCosts = kilometersPerYear*fuelCostKM*(usageYears-initialCarAge)
-    # assuming linear weighting of maintenance costs by increasing age
-    maintenanceCosts= kilometersPerYear*maintenanceCostKM*(usageYears-initialCarAge)*sum(initialCarAge:usageYears)
-    return fuelCosts+maintenanceCosts
-end
-
-function average_car_cost(kilometersPerYear, usageYears,initialCarAge, state, model)
-    cost = multi_year_car_cost(kilometersPerYear, usageYears,initialCarAge, state, model)
-    return cost/(usageYears-initialCarAge)
-end
-
-"returns linearly depreciated value of the car"
-function depreciate_car_value(agent::CarOwner,model)
-    carLifetimeKilometers = 300000
-    lifetime = cld(carLifetimeKilometers, agent.kilometersPerYear)
-    return agent.purchaseValue - agent.carAge / lifetime * agent.purchaseValue # very simple linear depreciation
-end
-
-"computes rational decision for 0=combustion car or 1=electric car based on comparison of average cost"
-function rational_decision(agent::CarOwner,model)
-    #purchasing cost after selling old car
-    incomeSellingOldCar = agent.carValue*model.usedCarDiscount
-    newCombustionPurchase = model.priceCombustionCar - incomeSellingOldCar
-    newElectricPurchase = model.priceElectricCar - incomeSellingOldCar
-    carLifetimeKilometers = 300000
-    lifetime = cld(carLifetimeKilometers, agent.kilometersPerYear)
-    remainingLifetime = lifetime-agent.carAge
-    if (agent.carAge<lifetime)
-        currentCarAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,agent.carAge,agent.state,model)+ incomeSellingOldCar / remainingLifetime
-    else
-        currentCarAverageCost = Inf #infinite cost to enforce buying a new car at the end of lifetime
-    end
-    newCombustionAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,0,0,model) + newCombustionPurchase/lifetime
-    newElectricAverageCost = average_car_cost(agent.kilometersPerYear, lifetime,0,1,model) + newElectricPurchase/lifetime
-    #compute rational decision
-    combustionCostEfficient = newCombustionAverageCost < currentCarAverageCost
-    electricCostEfficient = newElectricAverageCost < currentCarAverageCost
-    # check preference between new combustion or new electric car:
-    # default: remain with old car
-    newCar = false
-    carPreference = agent.state # remain with old car
-    agent.budget += agent.income
-    # use car at least for half of the liftime:
-    if (agent.carAge >= cld(lifetime,2))
-        if (combustionCostEfficient || electricCostEfficient)
-            carPreference = (newCombustionAverageCost < newElectricAverageCost) ? 0 : 1 # preference independent of budget constraint
-            if (combustionCostEfficient && newCombustionPurchase<agent.budget) || (electricCostEfficient && newElectricPurchase<agent.budget)
-                newCar = true
-            end
-        end
-    end
-    return newCar, carPreference, newCombustionAverageCost, newElectricAverageCost
-
-end
-
-"returns personal utility influence, based on cost benefit ratio"
-function calc_utility_influence_ratio(costDenominator::Real, costNumerator::Real, affinity::Real, model)
-    costRatio=costNumerator/costDenominator
-    rationalAffinity=costRatio/(costRatio+model.switchingBias)
-    return (rationalAffinity-affinity)/model.tauRational
-end
-
-"returns personal utility influence, based on one of the provided functions of cost difference"
-function calc_utility_influence_diff(costSubtrahend::Real, costMinuend::Real , affinity::Real, model, diffSmoothingFunction = tanh_costDiff,costDiffScale::Real=2500.)
-    costDiff=(costMinuend-costSubtrahend)/costDiffScale
-    rationalAffinity=diffSmoothingFunction(costDiff)
-    return (rationalAffinity-affinity)/model.tauRational
-end
-
-function tanh_costDiff(costDiff::Real)
-    return 0.5*(1+tanh(costDiff))
-end
-function linear_costDiff(costDiff::Real)
-    return 0.5*(1+costDiff)
-end
-function step_costDiff(costDiff::Real)
-    return Int(costDiff>=0)
+"computes contribuition for rational decision from internal sources"
+function internalRational(agent,model)
+    return agent.internalRationalInfluence # first very simple case:agent parameter controls internal "forcing"
 end
 
 "helper function to calculate neighbours maximum distance as sqrt(number of agents)*neighbourhood_share"
@@ -146,7 +37,7 @@ function neighbour_distance(model)
 end
 
 "returns social influence based on neighbours state"
-function state_social_influence(agent::CarOwner, model::AgentBasedModel)
+function state_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     stateSocialInfluence = 0.0
     numberNeighbours = 0
     neighboursMaximumDistance=neighbour_distance(model)
@@ -157,11 +48,11 @@ function state_social_influence(agent::CarOwner, model::AgentBasedModel)
     end
     stateSocialInfluence /= numberNeighbours # mean of neighbours opinion
     stateSocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is -1/1
-    return stateSocialInfluence / model.tauSocial * model.socialInfluenceFactor
+    return stateSocialInfluence / model.tauSocial
 end
 
 "returns social influence based on neighbours affinity"
-function affinity_social_influence(agent::CarOwner, model::AgentBasedModel)
+function affinity_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     #calculate neighbours maximum distance based on
     affinitySocialInfluence = 0.0
     numberNeighbours = 0
@@ -173,58 +64,26 @@ function affinity_social_influence(agent::CarOwner, model::AgentBasedModel)
     end
     affinitySocialInfluence /= numberNeighbours # mean of neighbours opinion
     affinitySocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is -1/1
-    return affinitySocialInfluence / model.tauSocial * model.socialInfluenceFactor
+    return affinitySocialInfluence / model.tauSocial
 end
 
-"old, slower function to calculate social influence based on neighbours state"
-function old_state_social_influence(agent::CarOwner, model, neighboursMaximumDistance=1)
-    stateSocialInfluence = 0
-    counted=[agent.id]
-    for distance in 1:neighboursMaximumDistance
-        neighboursStateDiff = 0
-        neighbours = nearby_agents(agent,model,distance)
-        numberNeighbours = 0
-        for n in neighbours
-            if !(n.id in counted)
-                neighboursStateDiff += (n.state_old-agent.affinity_old)
-                numberNeighbours +=1
-                counted=append!(counted,n.id)
-            end
-        end
-        neighboursStateDiff /= numberNeighbours # mean of neighbours opinion
-        stateSocialInfluence += neighboursStateDiff/distance # decaying influence of more distanced neighbours
+"returns social influence based on neighbours affinity and state combined to improve performance"
+function combined_social_influence(agent::DecisionAgent, model::AgentBasedModel)
+    #calculate neighbours maximum distance based on
+    combinedSocialInfluence = 0.0
+    numberNeighbours = 0
+    @inbounds for n in nearby_agents(agent,model,neighbour_distance(model))
+        combinedSocialInfluence += ((n.affinity_old-agent.affinity_old)+(n.state_old-agent.affinity_old))/edistance(n,agent,model) #scaling by exact distance
+        numberNeighbours =+1
     end
-    stateSocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is between -1/1
-    return stateSocialInfluence / model.tauSocial * model.socialInfluenceFactor
+    combinedSocialInfluence /= numberNeighbours # mean of neighbours opinion
+    combinedSocialInfluence /= neighbour_distance(model) #such that the maximum social influence is -1/1
+    return combinedSocialInfluence / model.tauSocial
 end
 
-"old, slower function returns social influence resulting from neighbours current affinity"
-function old_affinity_social_influence(agent::CarOwner, model, neighboursMaximumDistance=1)
-    affinitySocialInfluence = 0
-    counted=[agent.id]
-    for distance in 1:neighboursMaximumDistance
-        neigboursAffinityDiff = 0
-        neighbours = nearby_agents(agent,model,distance)
-        numberNeighbours = 0
-        for n in neighbours
-            if !(n.id in counted)
-                neigboursAffinityDiff += (n.affinity_old-agent.affinity_old)
-                numberNeighbours +=1
-                counted=append!(counted,n.id)
-            end
-        end
-        neigboursAffinityDiff /= numberNeighbours # mean of neighbours opinion
-        affinitySocialInfluence += neigboursAffinityDiff/distance # decaying influence of more distanced neighbours
-    end
-    affinitySocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is -1/1
-    return affinitySocialInfluence * model.socialInfluenceFactor / model.tauSocial
-end
 
 "step function for agents"
 function agent_step!(agent, model)
-    set_carAge!(agent.carAge+1,agent)
-    newCar, rationalOptimum, averageCostCombustion, averageCostElectric = rational_decision(agent,model)
-    agent.rationalOptimum = rationalOptimum
     #store previous affinity
     agent.affinity_old = agent.affinity
     agent.state_old = agent.state
@@ -234,17 +93,11 @@ function agent_step!(agent, model)
       max(
           model.lowerAffinityBound,
           agent.affinity_old +
-          calc_utility_influence_diff(averageCostElectric,averageCostCombustion,agent.affinity_old,model,tanh_costDiff)
-          + state_social_influence(agent,model)
+          rational_influence(agent,model)
+          + combined_social_influence(agent,model)
       )
   )
-    if newCar
-        if agent.state_old===0
-            (agent.affinity<model.switchingBoundary+model.decisionGap) ? update_state!(0,agent,model) : update_state!(1,agent,model)
-        else
-            (agent.affinity<model.switchingBoundary-model.decisionGap) ? update_state!(0,agent,model) : update_state!(1,agent,model)
-        end
-    else
-        agent.carValue = depreciate_car_value(agent,model)
+    if agent.state_old===0 # one way decision, no change for already "yes" decision, Q: should affinity still change as implemented?!
+        (agent.affinity<model.switchingBoundary+model.decisionGap) ? set_state!(0,agent) : set_state!(1,agent)
     end
 end

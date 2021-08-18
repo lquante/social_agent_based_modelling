@@ -16,16 +16,18 @@ test = initialize(;seed=1234,space=Agents.GridSpace(spaceDims;periodic=true,metr
 tagent=test.agents[23]
 
 @benchmark agent_step!(tagent,test)
+@benchmark agent_step!(tagent,test)
 @benchmark model_step!(test)
-@benchmark old_state_social_influence(tagent,test,5)
 @benchmark state_social_influence(tagent,test)
+@benchmark affinity_social_influence(tagent,test)
+@benchmark combined_social_influence(tagent,test)
+
 @benchmark init_test = initialize(;seed=1234,space=Agents.GridSpace(spaceDims;periodic=true,metric = :euclidean))
 @code_warntype neighbour_distance(test)
-@benchmark neighbour_distance
+@benchmark neighbour_distance(test)
 
 
 
 @code_warntype initialize(;seed=1234,space=Agents.GridSpace(spaceDims;periodic=true,metric = :euclidean))
 @code_warntype agent_step!(tagent,test)
-@code_warntype old_state_social_influence(tagent,test,2)
 @code_warntype state_social_influence(tagent,test)

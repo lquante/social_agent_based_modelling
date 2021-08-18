@@ -11,8 +11,8 @@ using Glob
 
 "plots a histogram of the combustion share distribution
 the path needs to be specified with .png at the end"
-function plot_combustion_share_histogram(p_combustion, path)
-    Plots.histogram(p_combustion_range,xlabel="p_CombustionShare",ylabel="Count" )
+function plot_combustion_share_histogram(pNo, path)
+    Plots.histogram(pNo_range,xlabel="p_CombustionShare",ylabel="Count" )
     png(path)
 end
 
@@ -76,29 +76,29 @@ end
 
 "generates an ensemble of starting models
 # Arguments
--'p_combustion_range': set of probabilities specifying the likelihood for a combustion car
+-'pNo_range': set of probabilities specifying the likelihood for a combustion car
 -'summary_results_directory': where the summaries of the ensemble runs should be stored
 -'step_length': how many steps each model should take before checking conversion
 -'gridsize': size of the considered grid, number of agents is gridsize squared
--'models_per_p': how many different models should be considered per p in p_combustion
+-'models_per_p': how many different models should be considered per p in pNo
 -'seeds': set of seeds to generate models_per_p different grid population -> reused for each p
 To always get the same seeds insert them manually and specify Random.seed!(XXXX)
 -'store_model': if the models should be stored (serialized) to be used as a starting ensemble later
 -'model_directory': the directory for the storage of the models. If store_model is true and no path is specified there will be an error"
-function generate_ensemble(p_combustion_range,summary_results_directory;step_length=50,gridsize = 30, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
+function generate_ensemble(pNo_range,summary_results_directory;step_length=50,gridsize = 30, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
         if store_model==true && model_directory == ""
                 return("Error: Please specify a model storage path!")
         end
-        @showprogress 1 "P Variation..." for p_combustion in p_combustion_range
-                ensemble_results = DataFrame(Seed = seeds, P_Combustion = p_combustion, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
+        @showprogress 1 "P Variation..." for pNo in pNo_range
+                ensemble_results = DataFrame(Seed = seeds, P_Combustion = pNo, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
                 @showprogress 1 "Seed Variation..." for i = 1:models_per_p
                         space = Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean)
-                        mixedHugeGaia = model_car_owners(mixed_population;kwargsPlacement=(combustionShare=p_combustion,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,fuelCostKM=0,powerCostKM=0,priceCombustionCar=5000,priceElectricCar=5000,neighbourShare=0.05)
+                        decisionModel = model_decision_agents(mixed_population;kwargsPlacement=(noShare=pNo,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,externalRationalInfluence=0.5,neighbourShare=0.05)
                         converged = false
-                        agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
+                        agent_df, model_df = run!(decisionModel, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
                         converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
                         while converged == false
-                                agent_df, model_df = run!(mixedHugeGaia, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
+                                agent_df, model_df = run!(decisionModel, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
                                 converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
                         end
 
@@ -107,16 +107,16 @@ function generate_ensemble(p_combustion_range,summary_results_directory;step_len
                         ensemble_results[ensemble_results.Seed .== seeds[i],:Final_Affinity_Average].= agent_df[end,"mean_affinity"]
                         #store model
                         if store_model == true
-                                parameters = (p_combustion=p_combustion,seed=seeds[i])
+                                parameters = (pNo=pNo,seed=seeds[i])
                                 filename = savename("model",parameters,"bin",digits=10)
                                 storage_path=joinpath(model_directory,filename)
                                 mkpath(model_directory)
-                                serialize(storage_path, mixedHugeGaia)
+                                serialize(storage_path, decisionModel)
                         end
                 end
                 min_seed= minimum(seeds)
                 max_seed= maximum(seeds)
-                params = @ntuple p_combustion min_seed max_seed
+                params = @ntuple pNo min_seed max_seed
                 filename = savename("ensemble_overview",params,".csv",digits=10)
                 storage_path=joinpath(summary_results_directory,filename)
                 mkpath(summary_results_directory)
@@ -172,8 +172,8 @@ function perform_incentive_hysteresis(all_model_files,incentive_variable, incent
         hysteresis_results[hysteresis_results.Index .== counter,:Start_State_Average].=agent_df_start[end,"mean_state"]
         hysteresis_results[hysteresis_results.Index .== counter,:Start_Affinity_Average].=agent_df_start[end,"mean_affinity"]
         #set incentive using meta programming
-        if (incentive_variable == "priceCombustionCar")
-                model.properties.priceCombustionCar=incentive
+        if (incentive_variable == "externalRationalInfluence")
+                model.properties.externalRationalInfluence=incentive
         else
                 return("Error: Not yet implemented incentive!")
         end

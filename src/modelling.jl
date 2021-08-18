@@ -8,17 +8,8 @@ include(srcdir("populationCreation.jl"))
 
 "custom struct as a container of model parameters"
 Base.@kwdef mutable struct ModelParameters
-	#carLifetimeKilometers::Float64
-	priceCombustionCar::Float64
-	priceElectricCar::Float64
-	fuelCostKM::Float64
-	powerCostKM::Float64
-	maintenanceCostCombustionKM::Float64
-	maintenanceCostElectricKM::Float64
-	usedCarDiscount::Float64
-	budget::Float64
 	#general parameters
-	socialInfluenceFactor::Float64
+	externalRationalInfluence::Float64
 	neighbourShare::Float64
 	tauRational::Float64
 	tauSocial::Float64
@@ -32,20 +23,11 @@ Base.@kwdef mutable struct ModelParameters
 end
 
 "creating a model with some plausible default parameters"
-function model_car_owners(placementFunction;seed=1234,
+function model_decision_agents(placementFunction;seed=1234,
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     kwargsPlacement = (),
-	#carLifetimeKilometers = 300000., reverting this change to be able to use preconverged models
-    priceCombustionCar = 10000.,
-    priceElectricCar = 10000.,
-    fuelCostKM = 0.05,
-    powerCostKM = 0.05,
-    maintenanceCostCombustionKM = 0., # for now ignored for simplicity
-    maintenanceCostElectricKM = 0.,# for now ignored for simplicity
-    usedCarDiscount = 0.5, #assumption: loss of 50% of car value due to used car market conditions
-    budget = Inf, #for now ignoring budget limitations
     #general parameters
-    socialInfluenceFactor = 1., # weight of neighbours opinion, declining with distance of neighbours (if more than first-order neighbours considered)
+	externalRationalInfluence = 0.5,
 	neighbourShare = 0.1, # share of neighbours to be considered of sqrt(numberAgents)
 	tauRational = 3., #inertia for the rational part
     tauSocial = 1., #intertia for the social part
@@ -57,16 +39,8 @@ function model_car_owners(placementFunction;seed=1234,
     timepoint=0.,
     decisionGap=0.)
 
-	properties = ModelParameters(#:carLifetimeKilometers => carLifetimeKilometers,
-			priceCombustionCar,
-            priceElectricCar,
-            fuelCostKM,
-            powerCostKM,
-            maintenanceCostCombustionKM,
-            maintenanceCostElectricKM,
-            usedCarDiscount,
-            budget,
-            socialInfluenceFactor,
+	properties = ModelParameters(
+            externalRationalInfluence,
 			neighbourShare,
             tauRational,
             tauSocial,
@@ -79,11 +53,11 @@ function model_car_owners(placementFunction;seed=1234,
             timepoint
     )
     model = ABM(
-        CarOwner,
+        DecisionAgent,
         space;rng=(Random.seed!(seed)),
         properties = properties
     )
-    placementFunction(model,length(space.s),budget;kwargsPlacement...)
+    placementFunction(model,length(space.s);kwargsPlacement...)
     return model
 end
 
@@ -97,7 +71,7 @@ end
 
 "initialize function for model creation, needed for paramscan methods"
 function initialize(;args ...)
-    return model_car_owners(mixed_population;args ...)
+    return model_decision_agents(mixed_population;args ...)
 end
 
 "function to interpret scenario *.yml file"
