@@ -18,7 +18,7 @@ end
 "computes rational decision for 0= no or 1= yes"
 function rational_influence(agent::DecisionAgent,model)
     rationalAffinity = (externalRational(agent,model)+internalRational(agent,model))/2 #equal weighting of external and internal influence
-    return rationalAffinity-agent.affinity_old/model.tauRational
+    return (rationalAffinity-agent.affinity_old)/model.tauRational
 end
 
 "computes contribuition for rational decision from external sources"
