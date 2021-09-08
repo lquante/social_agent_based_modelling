@@ -25,10 +25,10 @@ end
 
 
 "adds an agent at specified position of the model"
-function create_agent(model,position,noShare)
-    initialAffinity = (rand(model.rng)<noShare) ? 0 : 1 # just assuming Bernoulli distr for now
-    initialState = (initialAffinity<(model.switchingBoundary+model.decisionGap)) ? 0 : 1
-    initialInternalRational=0.5
+function create_agent(model,position,noShare;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
+    initialInternalRational=initializeInternalRational(model)
+    initialAffinity = initializeAffinity(model,noShare)
+    initialState = (initialAffinity<(model.switchingBoundary)) ? 0 : 1
     add_agent!((position[1],position[2]),
         model,
         #general parameters
@@ -39,4 +39,14 @@ function create_agent(model,position,noShare)
         initialAffinity,
         initialState
     )
+end
+
+"function to randomly initialize internal rational preference of agent"
+function randomInternalRational(model,distribution=Uniform(0,1))
+    return rand(model.rng,distribution)
+end
+"function to randomly initialize affinity of agent"
+function randomAffinity(model,noShare)
+    distribution=Bernoulli(noShare)
+    return rand(model.rng,distribution)
 end

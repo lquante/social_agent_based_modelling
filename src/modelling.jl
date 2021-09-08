@@ -14,7 +14,6 @@ Base.@kwdef mutable struct ModelParameters
 	socialInfluenceFactor::Float64
 	switchingBias::Float64
 	switchingBoundary::Float64
-	decisionGap::Float64
 	lowerAffinityBound::Float64
 	upperAffinityBound::Float64
 	scenario::Bool
@@ -34,8 +33,7 @@ function model_decision_agents(placementFunction;seed=1234,
     lowerAffinityBound = 0.0,
     upperAffinityBound = 1.0,
     scenario=0.,
-    timepoint=0.,
-    decisionGap=0.)
+    timepoint=0.)
 
 	properties = ModelParameters(
             externalRationalInfluence,
@@ -43,7 +41,6 @@ function model_decision_agents(placementFunction;seed=1234,
             socialInfluenceFactor,
             switchingBias,
             switchingBoundary,
-            decisionGap,
             lowerAffinityBound,
             upperAffinityBound,
             scenario,
