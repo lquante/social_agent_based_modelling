@@ -18,16 +18,16 @@ end
 "computes rational decision for 0= no or 1= yes"
 function rational_influence(agent::DecisionAgent,model)
     rationalAffinity = (externalRational(agent,model)+internalRational(agent,model))/2 #equal weighting of external and internal influence
-    return (rationalAffinity-agent.affinity_old)/model.tauRational
+    return (rationalAffinity-agent.affinity_old)
 end
 
 "computes contribuition for rational decision from external sources"
 function externalRational(agent,model)
-    return model.externalRationalInfluence # first very simple case:model parameter controls external "forcing"
+    return model.externalRationalInfluence # first very simple case: model parameter controls external "forcing"
 end
 "computes contribuition for rational decision from internal sources"
 function internalRational(agent,model)
-    return agent.internalRationalInfluence # first very simple case:agent parameter controls internal "forcing"
+    return agent.internalRationalInfluence # first very simple case: agent parameter controls internal "forcing"
 end
 
 "helper function to calculate neighbours maximum distance as sqrt(number of agents)*neighbourhood_share"
@@ -48,7 +48,7 @@ function state_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     end
     stateSocialInfluence /= numberNeighbours # mean of neighbours opinion
     stateSocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is -1/1
-    return stateSocialInfluence / model.tauSocial
+    return stateSocialInfluence * model.socialInfluenceFactor
 end
 
 "returns social influence based on neighbours affinity"
@@ -64,7 +64,7 @@ function affinity_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     end
     affinitySocialInfluence /= numberNeighbours # mean of neighbours opinion
     affinitySocialInfluence /= neighboursMaximumDistance #such that the maximum social influence is -1/1
-    return affinitySocialInfluence / model.tauSocial
+    return affinitySocialInfluence * model.socialInfluenceFactor
 end
 
 "returns social influence based on neighbours affinity and state combined to improve performance"
@@ -78,7 +78,7 @@ function combined_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     end
     combinedSocialInfluence /= numberNeighbours # mean of neighbours opinion
     combinedSocialInfluence /= neighbour_distance(model) #such that the maximum social influence is -1/1
-    return combinedSocialInfluence / model.tauSocial
+    return combinedSocialInfluence * model.socialInfluenceFactor
 end
 
 

@@ -93,7 +93,7 @@ function generate_ensemble(pNo_range,summary_results_directory;step_length=50,gr
                 ensemble_results = DataFrame(Seed = seeds, P_Combustion = pNo, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
                 @showprogress 1 "Seed Variation..." for i = 1:models_per_p
                         space = Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean)
-                        decisionModel = model_decision_agents(mixed_population;kwargsPlacement=(noShare=pNo,),seed = seeds[i],space=space,tauSocial=3,tauRational=6,externalRationalInfluence=0.5,neighbourShare=0.05)
+                        decisionModel = model_decision_agents(mixed_population;kwargsPlacement=(noShare=pNo,),seed = seeds[i],space=space,socialInfluenceFactor=0.5,externalRationalInfluence=0.5,neighbourShare=0.05)
                         converged = false
                         agent_df, model_df = run!(decisionModel, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
                         converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
