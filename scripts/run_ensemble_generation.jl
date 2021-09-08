@@ -9,13 +9,9 @@ using Distributed
 
 Random.seed!(1234)
 
-#set combustion share
-#sample p_combustion from uniform distribution
-#p_combustion_range=range(0, 1, length=50)
-#sample p_combustion from normal distribution
 p_normal_dist = truncated(Normal(0.5, 0.05), 0.3, 0.6)
-p_combustion_range = rand(p_normal_dist, 100)
-plot_combustion_share_histogram(p_combustion_range, plotsdir("histogram_p_combustion.png"))
+p_range = rand(p_normal_dist, 100)
+plot_combustion_share_histogram(p_range, plotsdir("histogram_p_shares.png"))
 run_index = 0
 for p in p_combustion_range
     global run_index +=1

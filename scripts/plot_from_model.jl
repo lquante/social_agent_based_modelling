@@ -14,10 +14,10 @@ if (ispath(path)==false)
 end
 # some plotting parameters
 figsize = (2000,2000)
-combustioncolor=:black
-electricColor=:lightgreen
+noColor=:black
+yesColor=:lightgreen
 blackgreen_binary = range(colorant"black", stop=colorant"lightgreen", length=2)
-blackgreen_continous = cgrad([combustioncolor, electricColor], [0, 0.5, 1])
+blackgreen_continous = cgrad([noColor, yesColor], [0, 0.5, 1])
 Random.seed!(1234)
 model_files = get_model_files(path)
 random_models = rand(1:length(model_files),100)
@@ -38,16 +38,16 @@ for i_random_model in random_models
     savefig(affinities,plotsdir(joinpath(ensembleidentifier,filename)))
 
     # plot cluster sizes
-    electric_clusters = cluster_sizes(find_state_clusters(state_matrix)[2])
+    yes_clusters = cluster_sizes(find_state_clusters(state_matrix)[2])
     if (length(electric_clusters) != 0)
-        hist = histogram(electric_clusters)
-        filename=savename("electric_clusters",model_params,"png")
+        hist = histogram(yes_clusters)
+        filename=savename("yes_clusters",model_params,"png")
         savefig(hist,plotsdir(joinpath(ensembleidentifier,filename)))
     end
-    combustion_clusters = cluster_sizes(find_state_clusters(state_matrix,invert=true)[2])
-    if (length(combustion_clusters) != 0)
-        hist = histogram(combustion_clusters)
-        filename=savename("combustion_clusters",model_params,"png")
+    no_clusters = cluster_sizes(find_state_clusters(state_matrix,invert=true)[2])
+    if (length(no_clusters) != 0)
+        hist = histogram(no_clusters)
+        filename=savename("no_clusters",model_params,"png")
         savefig(hist,plotsdir(joinpath(ensembleidentifier,filename)))
     end
 end

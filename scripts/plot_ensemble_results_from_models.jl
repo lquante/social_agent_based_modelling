@@ -15,12 +15,12 @@ model_files = get_model_files(path)
 
 #calculate state average for each model
 counter=1
-hysteresis_results = DataFrame(Index = 1:length(model_files), Final_State_Average = NaN , Final_Affinity_Average = NaN,P_Combustion = NaN)
+hysteresis_results = DataFrame(Index = 1:length(model_files), Final_State_Average = NaN , Final_Affinity_Average = NaN,P_No = NaN)
 for i_model_file in model_files
     model_params = parse_savename(i_model_file)
     i_model=deserialize(i_model_file)
     agent_df_start, model_df_start = run!(i_model, agent_step!,model_step!, 0; adata = [(:state, mean),(:affinity,mean)])
-    hysteresis_results[hysteresis_results.Index .== counter,:P_Combustion].=model_params[2]["p_combustion"]
+    hysteresis_results[hysteresis_results.Index .== counter,:P_No].=model_params[2]["p_no"]
     hysteresis_results[hysteresis_results.Index .== counter,:Final_State_Average].=agent_df_start[end,"mean_state"]
     hysteresis_results[hysteresis_results.Index .== counter,:Final_Affinity_Average].=agent_df_start[end,"mean_affinity"]
     global counter+=1

@@ -19,7 +19,7 @@ function mixed_population(model,numagents;noShare=0.5)
 end
 
 "population with only no agents"
-function combustion_population(model,numagents)
+function nosayers_population(model,numagents)
     mixed_population(model,numagents;noShare=1)
 end
 

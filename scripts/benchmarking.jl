@@ -16,7 +16,6 @@ test = initialize(;seed=1234,space=Agents.GridSpace(spaceDims;periodic=true,metr
 tagent=test.agents[23]
 
 @benchmark agent_step!(tagent,test)
-@benchmark agent_step!(tagent,test)
 @benchmark model_step!(test)
 @benchmark state_social_influence(tagent,test)
 @benchmark affinity_social_influence(tagent,test)

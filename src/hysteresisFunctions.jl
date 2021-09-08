@@ -9,9 +9,9 @@ using Distributions
 using ProgressMeter
 using Glob
 
-"plots a histogram of the combustion share distribution
+"plots a histogram of the no share distribution
 the path needs to be specified with .png at the end"
-function plot_combustion_share_histogram(pNo, path)
+function plot_share_histogram(pNo, path)
     Plots.histogram(pNo_range,xlabel="p_CombustionShare",ylabel="Count" )
     png(path)
 end
@@ -76,7 +76,7 @@ end
 
 "generates an ensemble of starting models
 # Arguments
--'pNo_range': set of probabilities specifying the likelihood for a combustion car
+-'pNo_range': set of probabilities specifying the likelihood for no decision
 -'summary_results_directory': where the summaries of the ensemble runs should be stored
 -'step_length': how many steps each model should take before checking conversion
 -'gridsize': size of the considered grid, number of agents is gridsize squared
