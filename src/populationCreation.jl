@@ -11,7 +11,7 @@ function affinityRandomization(model,state)
 end
 
 "population with a specified share of no agents"
-function mixed_population(model,numagents;noShare=0.5)
+function mixed_population_grid(model,numagents;noShare=0.5)
     positions = Agents.positions(model)
     for i_position in positions.iter
         create_agent(model,i_position,noShare)
@@ -25,7 +25,7 @@ end
 
 
 "adds an agent at specified position of the model"
-function create_agent(model,position,noShare;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
+function create_agent_grid(model,position,noShare;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
     initialInternalRational=initializeInternalRational(model)
     initialAffinity = initializeAffinity(model,noShare)
     initialState = (initialAffinity<(model.switchingBoundary)) ? 0 : 1

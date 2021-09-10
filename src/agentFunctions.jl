@@ -2,7 +2,7 @@ using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using Agents
 "create an agent for 2d grid space"
-@agent DecisionAgent GridAgent{2} begin
+@agent DecisionAgentGrid GridAgent{2} begin
     internalRationalInfluence::Float64
     state::Int
     state_old::Int

@@ -85,14 +85,14 @@ end
 To always get the same seeds insert them manually and specify Random.seed!(XXXX)
 -'store_model': if the models should be stored (serialized) to be used as a starting ensemble later
 -'model_directory': the directory for the storage of the models. If store_model is true and no path is specified there will be an error"
-function generate_ensemble(pNo_range,summary_results_directory;step_length=50,gridsize = 30, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
+function generate_ensemble(pNo_range,summary_results_directory;space= Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean), step_length=50,gridsize = 30, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
         if store_model==true && model_directory == ""
                 return("Error: Please specify a model storage path!")
         end
         @showprogress 1 "P Variation..." for pNo in pNo_range
                 ensemble_results = DataFrame(Seed = seeds, P_Combustion = pNo, Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
                 @showprogress 1 "Seed Variation..." for i = 1:models_per_p
-                        space = Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean)
+
                         decisionModel = model_decision_agents(mixed_population;kwargsPlacement=(noShare=pNo,),seed = seeds[i],space=space,socialInfluenceFactor=0.5,externalRationalInfluence=0.5,neighbourShare=0.05)
                         converged = false
                         agent_df, model_df = run!(decisionModel, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])

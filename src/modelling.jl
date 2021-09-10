@@ -21,7 +21,7 @@ Base.@kwdef mutable struct ModelParameters
 end
 
 "creating a model with some plausible default parameters"
-function model_decision_agents(placementFunction;seed=1234,
+function model_decision_agents_grid(placementFunction;seed=1234,
     space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
     kwargsPlacement = (),
     #general parameters
