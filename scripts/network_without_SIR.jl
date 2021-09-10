@@ -2,12 +2,12 @@ using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using Agents, Random, DataFrames, LightGraphs
 using Distributions: Poisson, DiscreteNonParametric
-using DrWatson: @dict
 using CairoMakie
 using LinearAlgebra: diagind
 using GraphMakie
 using DelimitedFiles
 using GraphPlot
+using SNAPDatasets
 
 mutable struct DecisionAgent <: AbstractAgent
     id:: Int
@@ -33,11 +33,12 @@ function randomInternalRational(model,distribution=Beta(2,5))
     return 1-rand(model.rng,distribution)
 end
 
-function create_agent(model;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
+function create_agent(model,node;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
     initialInternalRational=initializeInternalRational(model)
     initialAffinity = initialInternalRational
     initialState = 0
-    add_agent_single!(
+    add_agent!(
+		node,
         model,
         #general parameters
         initialInternalRational,
@@ -51,7 +52,7 @@ end
 
 function mixed_population_network(model)
     for node in 1:length(model.space.s)
-		create_agent(model)
+		create_agent(model,node)
     end
 end
 
@@ -113,7 +114,7 @@ function combined_social_influence(agent::DecisionAgent, model::AgentBasedModel)
 end
 
 #external rational influence has no meaning here as it is not used
-function generate_ensemble(summary_results_directory;space= Agents.GridSpace((gridsize, gridsize); periodic = true, metric = :euclidean), step_length=50, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
+function generate_ensemble(summary_results_directory;space= Agents.Graphspace(SimpleGraph(100,500)), step_length=50, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
         if store_model==true && model_directory == ""
                 return("Error: Please specify a model storage path!")
         end
@@ -121,17 +122,18 @@ function generate_ensemble(summary_results_directory;space= Agents.GridSpace((gr
 				index_counter = 1
 				@showprogress 1 "Seed Variation..." for i = 1:models_per_p
 
-                        decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(karate_g),seed = seeds[i],socialInfluenceFactor=2,switchingBoundary=0.6)
+                        decisionModel = model_decision_agents(mixed_population_network;space=space,seed = seeds[i],socialInfluenceFactor=2,switchingBoundary=0.5)
                         converged = false
                         agent_df, model_df = run!(decisionModel, agent_step!,model_step!, 0; adata = [(:state, mean),(:affinity,mean)])
 						ensemble_results[ensemble_results.Index .== index_counter,:Start_State_Average].= agent_df[end,"mean_state"]
  					   	ensemble_results[ensemble_results.Index .== index_counter,:Start_Affinity_Average].= agent_df[end,"mean_affinity"]
 						ensemble_results[ensemble_results.Index .== index_counter,:Seed].= seeds[i]
 						total_steps=1
-                        while converged == false && total_steps<11
+                        while converged == false
+							#&& total_steps<11
                                 agent_df, model_df = run!(decisionModel, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
-                                #converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
-								total_steps = total_steps+1
+                                converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
+								#total_steps = total_steps+1
                         end
 
                         #add final values to dataframe
@@ -176,3 +178,20 @@ generate_ensemble(datadir("network_test");space = Agents.GraphSpace(karate_g),mo
 
 seeds = rand(0:1000,100)
 decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(karate_g),seed = seeds[1],socialInfluenceFactor=2)
+
+fb = loadsnap(:facebook_combined)
+gplot(fb)
+
+generate_ensemble(datadir("facebook_test");models_per_p = 100,space = Agents.GraphSpace(fb),model_directory=datadir("facebook_test"))
+
+decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(fb),seed = seeds[1],socialInfluenceFactor=2)
+
+function plot_scatter(ensemble_data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
+        Plots.scatter(ensemble_data.P_Combustion,variable,marker_z = ensemble_data.P_Combustion, xlabel = "p_CombustionShare",ylabel=y_lab)
+        png(path)
+end
+
+function plot_histogram(ensemble_data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
+        Plots.histogram(ensemble_data.P_Combustion,variable, xlabel = "p_CombustionShare",ylabel=y_lab)
+        png(path)
+end
