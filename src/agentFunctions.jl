@@ -89,15 +89,17 @@ function agent_step!(agent, model)
     agent.state_old = agent.state
     #compute new affinity
     agent.affinity = min(
-  model.upperAffinityBound,
+    model.upperAffinityBound,
       max(
           model.lowerAffinityBound,
           agent.affinity_old +
           rational_influence(agent,model)
           + combined_social_influence(agent,model)
       )
-  )
+    )
     if agent.state_old===0 # one way decision, no change for already "yes" decision, Q: should affinity still change as implemented?!
-        (agent.affinity<model.switchingBoundary) ? set_state!(0,agent) : set_state!(1,agent)
+        if agent.affinity>=model.switchingBoundary
+            set_state!(1,agent)
+        end
     end
 end

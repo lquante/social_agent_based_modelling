@@ -1,17 +1,13 @@
+using DrWatson
+@quickactivate "Social Agent Based Modelling"
 using Agents, Random, DataFrames, LightGraphs
 using Distributions: Poisson, DiscreteNonParametric
 using DrWatson: @dict
 using CairoMakie
 using LinearAlgebra: diagind
 using GraphMakie
-using DrWatson
 using DelimitedFiles
-@quickactivate "Social Agent Based Modelling"
-include(srcdir("agentFunctions.jl"))
-include(srcdir("modelling.jl"))
-include(srcdir("populationCreation.jl"))
-include(srcdir("hysteresisFunctions.jl"))
-
+using GraphPlot
 
 mutable struct DecisionAgent <: AbstractAgent
     id:: Int
@@ -24,6 +20,15 @@ mutable struct DecisionAgent <: AbstractAgent
     rationalOptimum::Int
 end
 
+include(srcdir("agentFunctions.jl"))
+include(srcdir("modelling.jl"))
+include(srcdir("populationCreation.jl"))
+include(srcdir("hysteresisFunctions.jl"))
+
+
+
+
+"get random personal opionon on decision, skewed by inverted beta dist"
 function randomInternalRational(model,distribution=Beta(2,5))
     return 1-rand(model.rng,distribution)
 end
@@ -98,11 +103,12 @@ function combined_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     combinedSocialInfluence = 0.0
     numberNeighbours = 0
     @inbounds for n in nearby_agents(agent,model,1)
-        combinedSocialInfluence += ((n.affinity_old-agent.affinity_old)+(n.state_old-agent.affinity_old))
+        combinedSocialInfluence =+ ((n.affinity_old-agent.affinity_old)*0+(n.state_old-agent.affinity_old))
         numberNeighbours =+1
     end
-    combinedSocialInfluence /= numberNeighbours # mean of neighbours opinion
-    combinedSocialInfluence /= neighbour_distance(model) #such that the maximum social influence is -1/1
+	if numberNeighbours > 0
+    	combinedSocialInfluence /= numberNeighbours # mean of neighbours opinion
+	end
     return combinedSocialInfluence * model.socialInfluenceFactor
 end
 
@@ -115,7 +121,7 @@ function generate_ensemble(summary_results_directory;space= Agents.GridSpace((gr
 				index_counter = 1
 				@showprogress 1 "Seed Variation..." for i = 1:models_per_p
 
-                        decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(karate_g),seed = seeds[i],socialInfluenceFactor=2)
+                        decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(karate_g),seed = seeds[i],socialInfluenceFactor=2,switchingBoundary=0.6)
                         converged = false
                         agent_df, model_df = run!(decisionModel, agent_step!,model_step!, 0; adata = [(:state, mean),(:affinity,mean)])
 						ensemble_results[ensemble_results.Index .== index_counter,:Start_State_Average].= agent_df[end,"mean_state"]
@@ -124,7 +130,7 @@ function generate_ensemble(summary_results_directory;space= Agents.GridSpace((gr
 						total_steps=1
                         while converged == false && total_steps<11
                                 agent_df, model_df = run!(decisionModel, agent_step!,model_step!, step_length; adata = [(:state, mean),(:affinity,mean)])
-                                converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
+                                #converged= check_conversion_osc_recursive(agent_df[end-step_length:end,"mean_affinity"])
 								total_steps = total_steps+1
                         end
 
@@ -152,24 +158,21 @@ function generate_ensemble(summary_results_directory;space= Agents.GridSpace((gr
 end
 
 
-p_beta_dist = Beta(2,5)
-p_range = rand(p_beta_dist, 100)
-
+p_beta_dist = Beta(3,2)
+x = rand(p_beta_dist,100)
+histogram(x)
 
 network_model = initialize(;seed=1234)
 
-agent_df, model_df = run!(network_model, agent_step!,model_step!, 10; adata = [(:state, mean),(:affinity,mean)])
+agent_df, model_df = run!(network_model, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
 
-graphplot(test.space.graph)
-
-p_normal_dist = truncated(Normal(0.5, 0.05), 0.3, 0.6)
-p_range = rand(p_normal_dist, 2)
-
-karate_am = readdlm("C:\\Users\\stecheme\\Documents\\Social_Modelling\\karate.txt")
+karate_am = readdlm(datadir("karate.txt"))
 karate_g = Graph(karate_am)
 
-graphplot(karate_g)
+gplot(karate_g)
 
-generate_ensemble("C:\\Users\\stecheme\\Documents\\Social_Modelling\\network_test";space = Agents.GraphSpace(karate_g),model_directory="C:\\Users\\stecheme\\Documents\\Social_Modelling\\network_test")
 
-decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(karate_g),seed = seeds[i],socialInfluenceFactor=2)
+generate_ensemble(datadir("network_test");space = Agents.GraphSpace(karate_g),model_directory=datadir("network_test"))
+
+seeds = rand(0:1000,100)
+decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(karate_g),seed = seeds[1],socialInfluenceFactor=2)
