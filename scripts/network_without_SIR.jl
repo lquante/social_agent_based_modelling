@@ -35,8 +35,8 @@ end
 
 function create_agent(model,node;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
     initialInternalRational=initializeInternalRational(model)
-    initialAffinity = initialInternalRational
-    initialState = 0
+    initialAffinity = initializeInternalRational(model)
+    initialState = initialAffinity>model.switchingBoundary ? 1 : 0
     add_agent!(
 		node,
         model,
@@ -61,12 +61,12 @@ function initialize(;args ...)
 end
 
 function model_decision_agents(placementFunction;seed=1234,
-    space = Agents.GraphSpace(SimpleGraph(5,5)),
+    space = Agents.GraphSpace(SimpleGraph(1000,2000)),
     kwargsPlacement = (),
     #general parameters
 	externalRationalInfluence = 0.5,
 	neighbourShare = 0.1, # share of neighbours to be considered of sqrt(numberAgents)
-	socialInfluenceFactor = 0.5, #weight of social influence
+	socialInfluenceFactor = 2, #weight of social influence
     switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
     switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
@@ -96,7 +96,7 @@ end
 
 function rational_influence(agent::DecisionAgent,model)
     rationalAffinity = internalRational(agent,model)
-    return (rationalAffinity-agent.affinity_old)
+    return (rationalAffinity-agent.affinity)
 end
 
 function combined_social_influence(agent::DecisionAgent, model::AgentBasedModel)
@@ -104,7 +104,21 @@ function combined_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     combinedSocialInfluence = 0.0
     numberNeighbours = 0
     @inbounds for n in nearby_agents(agent,model,1)
-        combinedSocialInfluence =+ ((n.affinity_old-agent.affinity_old)*0+(n.state_old-agent.affinity_old))
+        combinedSocialInfluence =+ ((n.affinity_old-agent.affinity)*0+(n.state_old-agent.state))
+        numberNeighbours =+1
+    end
+	if numberNeighbours > 0
+    	combinedSocialInfluence /= numberNeighbours # mean of neighbours opinion
+	end
+    return combinedSocialInfluence * model.socialInfluenceFactor
+end
+
+function state_social_influence(agent::DecisionAgent, model::AgentBasedModel)
+    #calculate neighbours maximum distance based on
+    combinedSocialInfluence = 0.0
+    numberNeighbours = 0
+    @inbounds for n in nearby_agents(agent,model,1)
+        combinedSocialInfluence =+ n.state_old-agent.state
         numberNeighbours =+1
     end
 	if numberNeighbours > 0
@@ -114,7 +128,7 @@ function combined_social_influence(agent::DecisionAgent, model::AgentBasedModel)
 end
 
 #external rational influence has no meaning here as it is not used
-function generate_ensemble(summary_results_directory;space= Agents.Graphspace(SimpleGraph(100,500)), step_length=50, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
+function generate_ensemble(summary_results_directory;space= Agents.Graphspace(SimpleGraph(100,300)), step_length=50, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
         if store_model==true && model_directory == ""
                 return("Error: Please specify a model storage path!")
         end
@@ -164,25 +178,23 @@ p_beta_dist = Beta(3,2)
 x = rand(p_beta_dist,100)
 histogram(x)
 
-network_model = initialize(;seed=1234)
-
+#test with simple 5 node graph
+network_model = initialize(;socialInfluenceFactor=2,switchingBoundary=0.9,seed=5421)
 agent_df, model_df = run!(network_model, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
 
+# test with karate club network
 karate_am = readdlm(datadir("karate.txt"))
 karate_g = Graph(karate_am)
-
 gplot(karate_g)
-
-
-generate_ensemble(datadir("network_test");space = Agents.GraphSpace(karate_g),model_directory=datadir("network_test"))
 
 seeds = rand(0:1000,100)
 decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(karate_g),seed = seeds[1],socialInfluenceFactor=2)
 
-fb = loadsnap(:facebook_combined)
-gplot(fb)
+generate_ensemble(datadir("network_test");space = Agents.GraphSpace(karate_g),model_directory=datadir("network_test"))
 
-generate_ensemble(datadir("facebook_test");models_per_p = 100,space = Agents.GraphSpace(fb),model_directory=datadir("facebook_test"))
+# test with small network from facebook data (standford SNAP)
+fb = loadsnap(:facebook_combined)
+generate_ensemble(datadir("facebook_test");models_per_p = 10,space = Agents.GraphSpace(fb),model_directory=datadir("facebook_test"))
 
 decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(fb),seed = seeds[1],socialInfluenceFactor=2)
 

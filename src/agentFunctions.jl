@@ -18,7 +18,7 @@ end
 "computes rational decision for 0= no or 1= yes"
 function rational_influence(agent::DecisionAgent,model)
     rationalAffinity = (externalRational(agent,model)+internalRational(agent,model))/2 #equal weighting of external and internal influence
-    return (rationalAffinity-agent.affinity_old)
+    return (rationalAffinity-agent.affinity)
 end
 
 "computes contribuition for rational decision from external sources"
@@ -43,7 +43,7 @@ function state_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     neighboursMaximumDistance=neighbour_distance(model)
     neighbours = nearby_agents(agent,model,neighboursMaximumDistance)
     @inbounds for n in neighbours
-        stateSocialInfluence += (n.state_old-agent.affinity_old)/edistance(n,agent,model) #scaling by exact distance
+        stateSocialInfluence += (n.state_old-agent.state)/edistance(n,agent,model) #scaling by exact distance
         numberNeighbours +=1
     end
     stateSocialInfluence /= numberNeighbours # mean of neighbours opinion
@@ -59,7 +59,7 @@ function affinity_social_influence(agent::DecisionAgent, model::AgentBasedModel)
     neighboursMaximumDistance=neighbour_distance(model)
     neighbours = nearby_agents(agent,model,neighboursMaximumDistance)
     @inbounds for n in neighbours
-        affinitySocialInfluence += (n.affinity_old-agent.affinity_old)/edistance(n,agent,model) #scaling by exact distance
+        affinitySocialInfluence += (n.affinity_old-agent.affinity)/edistance(n,agent,model) #scaling by exact distance
         numberNeighbours +=1
     end
     affinitySocialInfluence /= numberNeighbours # mean of neighbours opinion
@@ -84,22 +84,22 @@ end
 
 "step function for agents"
 function agent_step!(agent, model)
-    #store previous affinity
-    agent.affinity_old = agent.affinity
-    agent.state_old = agent.state
     #compute new affinity
     agent.affinity = min(
     model.upperAffinityBound,
       max(
           model.lowerAffinityBound,
-          agent.affinity_old +
-          rational_influence(agent,model)
-          + combined_social_influence(agent,model)
+          agent.affinity
+          +rational_influence(agent,model)
+          +combined_social_influence(agent,model)
       )
     )
-    if agent.state_old===0 # one way decision, no change for already "yes" decision, Q: should affinity still change as implemented?!
-        if agent.affinity>=model.switchingBoundary
+    if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change as implemented?!
+        if (agent.affinity>=model.switchingBoundary)
             set_state!(1,agent)
         end
     end
+    #store affinity and state for next timestep
+    agent.affinity_old = agent.affinity
+    agent.state_old = agent.state
 end
