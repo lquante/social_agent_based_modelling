@@ -36,7 +36,7 @@ end
 function create_agent(model,node;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
     initialInternalRational=initializeInternalRational(model)
     initialAffinity = initializeInternalRational(model)
-    initialState = initialAffinity>model.switchingBoundary ? 1 : 0
+    initialState = 0
     add_agent!(
 		node,
         model,
@@ -61,33 +61,41 @@ function initialize(;args ...)
 end
 
 function model_decision_agents(placementFunction;seed=1234,
+	scheduler = Agents.Schedulers.fastest,
+	schedulerIndex=0,
     space = Agents.GraphSpace(SimpleGraph(1000,2000)),
     kwargsPlacement = (),
     #general parameters
 	externalRationalInfluence = 0.5,
 	neighbourShare = 0.1, # share of neighbours to be considered of sqrt(numberAgents)
-	socialInfluenceFactor = 2, #weight of social influence
-    switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
+	socialInfluenceFactor = 2., #weight of social influence
+    switchingLimit= Inf, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
     switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
     upperAffinityBound = 1.0,
-    scenario=0.,
-    timepoint=0.)
+    scenario=false,
+    timepoint=0)
 
 	properties = ModelParameters(
             externalRationalInfluence,
 			neighbourShare,
             socialInfluenceFactor,
-            switchingBias,
+            switchingLimit,
             switchingBoundary,
             lowerAffinityBound,
             upperAffinityBound,
             scenario,
             timepoint
     )
+
+	defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:affinity),Agents.Schedulers.by_property(vaccinateScepticalFirst)]
+
+	scheduler = defaultScheduers[schedulerIndex]
+
     model = ABM(
         DecisionAgent,
         space;rng=(Random.seed!(seed)),
+		scheduler=scheduler,
         properties = properties
     )
     placementFunction(model;kwargsPlacement...)
@@ -174,13 +182,69 @@ function generate_ensemble(summary_results_directory;space= Agents.Graphspace(Si
 end
 
 
+
+"stepping function for updating model parameters"
+function model_step!(model)
+    model.timepoint += 1
+	model.switchingLimit = 25
+    if model.scenario != false
+        apply_scenario!(model)
+    end
+end
+"step function for agents"
+function agent_step!(agent, model)
+    #compute new affinity
+    agent.affinity = min(
+    model.upperAffinityBound,
+      max(
+          model.lowerAffinityBound,
+          agent.affinity
+          +rational_influence(agent,model)
+          +combined_social_influence(agent,model)
+      )
+    )
+    if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change as implemented?!
+        if (agent.affinity>=model.switchingBoundary && model.switchingLimit>0)
+            set_state!(1,agent)
+			model.switchingLimit-=1
+        end
+    end
+    #store affinity and state for next timestep
+    agent.affinity_old = agent.affinity
+    agent.state_old = agent.state
+end
+
+
 p_beta_dist = Beta(3,2)
 x = rand(p_beta_dist,100)
 histogram(x)
 
-#test with simple 5 node graph
-network_model = initialize(;socialInfluenceFactor=2,switchingBoundary=0.9,seed=5421)
-agent_df, model_df = run!(network_model, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
+# test function to schedule agents by inverse affinity, thus the most sceptical agents get vaccinated first from the (potentially) limited supply
+function vaccinateScepticalFirst(agent)
+	return 1-agent.affinity
+end
+
+network_model_decreasing_affinity_schedule = initialize(;scheduler = Agents.Schedulers.by_property(:affinity),socialInfluenceFactor=1,switchingBoundary=0.75,seed=5421)
+network_model_increasing_affinity_schedule = initialize(;scheduler = Agents.Schedulers.by_property(vaccinateScepticalFirst),socialInfluenceFactor=1,switchingBoundary=0.75,seed=5421)
+network_model_random_schedule = initialize(;scheduler = Agents.Schedulers.randomly,socialInfluenceFactor=1,switchingBoundary=0.75,seed=5421)
+
+agent_df, model_df = run!(network_model_decreasing_affinity_schedule, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
+
+agent_df, model_df = run!(network_model_increasing_affinity_schedule, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
+
+agent_df, model_df = run!(network_model_random_schedule, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
+
+
+# simple ensemble run test
+parameters = Dict(
+    :schedulerIndex => [1,2]
+	:switchingBoundary => [0.85]        # expanded
+)
+adata = [(:state, mean),(:affinity,mean)]
+adf, _ = paramscan(parameters, initialize; adata, agent_step!, n = 50)
+
+
+
 
 # test with karate club network
 karate_am = readdlm(datadir("karate.txt"))

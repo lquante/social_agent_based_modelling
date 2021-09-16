@@ -9,13 +9,13 @@ include(srcdir("populationCreation.jl"))
 "custom struct as a container of model parameters"
 Base.@kwdef mutable struct ModelParameters
 	#general parameters
-	externalRationalInfluence::Float64
-	neighbourShare::Float64
-	socialInfluenceFactor::Float64
-	switchingBias::Float64
-	switchingBoundary::Float64
-	lowerAffinityBound::Float64
-	upperAffinityBound::Float64
+	externalRationalInfluence::Real
+	neighbourShare::Real
+	socialInfluenceFactor::Real
+	switchingLimit::Real
+	switchingBoundary::Real
+	lowerAffinityBound::Real
+	upperAffinityBound::Real
 	scenario::Bool
 	timepoint::Int
 end
@@ -28,7 +28,7 @@ function model_decision_agents_grid(placementFunction;seed=1234,
 	externalRationalInfluence = 0.5,
 	neighbourShare = 0.1, # share of neighbours to be considered of sqrt(numberAgents)
 	socialInfluenceFactor = 0.5, #weight of social influence
-    switchingBias=1.0, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
+    switchingLimit=Inf, #limited number of state switching per timestep
     switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
     upperAffinityBound = 1.0,
@@ -39,7 +39,7 @@ function model_decision_agents_grid(placementFunction;seed=1234,
             externalRationalInfluence,
 			neighbourShare,
             socialInfluenceFactor,
-            switchingBias,
+            switchingLimit,
             switchingBoundary,
             lowerAffinityBound,
             upperAffinityBound,
