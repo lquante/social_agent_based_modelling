@@ -2,6 +2,7 @@ using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using Images
 
+#N.B.: only implemented for GridSpace at the moment
 
 "help function to collect groups from label_components result, https://stackoverflow.com/a/32778103"
 function collect_groups(labels)

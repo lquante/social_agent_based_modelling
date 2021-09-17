@@ -7,18 +7,7 @@ using LinearAlgebra: diagind
 using GraphMakie
 using DelimitedFiles
 using GraphPlot
-using SNAPDatasets
 
-mutable struct DecisionAgent <: AbstractAgent
-    id:: Int
-    pos:: Int
-    internalRationalInfluence::Float64
-    state::Int
-    state_old::Int
-    affinity::Float64
-    affinity_old::Float64
-    rationalOptimum::Int
-end
 
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
@@ -26,124 +15,13 @@ include(srcdir("populationCreation.jl"))
 include(srcdir("hysteresisFunctions.jl"))
 
 
-
-
-"get random personal opionon on decision, skewed by inverted beta dist"
-function randomInternalRational(model,distribution=Beta(2,5))
-    return 1-rand(model.rng,distribution)
-end
-
-function create_agent(model,node;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
-    initialInternalRational=initializeInternalRational(model)
-    initialAffinity = initializeInternalRational(model)
-    initialState = 0
-    add_agent!(
-		node,
-        model,
-        #general parameters
-        initialInternalRational,
-        initialState,
-        initialState,
-        initialAffinity,
-        initialAffinity,
-        initialState
-    )
-end
-
-function mixed_population_network(model)
-    for node in 1:length(model.space.s)
-		create_agent(model,node)
-    end
-end
-
-function initialize(;args ...)
-    return model_decision_agents(mixed_population_network;args ...)
-end
-
-function model_decision_agents(placementFunction;seed=1234,
-	scheduler = Agents.Schedulers.fastest,
-	schedulerIndex=0,
-    space = Agents.GraphSpace(SimpleGraph(1000,2000)),
-    kwargsPlacement = (),
-    #general parameters
-	externalRationalInfluence = 0.5,
-	neighbourShare = 0.1, # share of neighbours to be considered of sqrt(numberAgents)
-	socialInfluenceFactor = 2., #weight of social influence
-    switchingLimit= Inf, #bias to switching, if <1, bias towards state 1, if >1, bias towards state 0
-    switchingBoundary=0.5, # bound for affinity to switch state
-    lowerAffinityBound = 0.0,
-    upperAffinityBound = 1.0,
-    scenario=false,
-    timepoint=0)
-
-	properties = ModelParameters(
-            externalRationalInfluence,
-			neighbourShare,
-            socialInfluenceFactor,
-            switchingLimit,
-            switchingBoundary,
-            lowerAffinityBound,
-            upperAffinityBound,
-            scenario,
-            timepoint
-    )
-
-	defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:affinity),Agents.Schedulers.by_property(vaccinateScepticalFirst)]
-
-	scheduler = defaultSchedulers[schedulerIndex]
-
-    model = ABM(
-        DecisionAgent,
-        space;rng=(Random.seed!(seed)),
-		scheduler=scheduler,
-        properties = properties
-    )
-    placementFunction(model;kwargsPlacement...)
-    return model
-end
-
-function rational_influence(agent::DecisionAgent,model)
-    rationalAffinity = internalRational(agent,model)
-    return (rationalAffinity-agent.affinity)
-end
-
-function combined_social_influence(agent::DecisionAgent, model::AgentBasedModel)
-    #calculate neighbours maximum distance based on
-    combinedSocialInfluence = 0.0
-    numberNeighbours = 0
-    @inbounds for n in nearby_agents(agent,model,1)
-        combinedSocialInfluence =+ ((n.affinity_old-agent.affinity)*0+(n.state_old-agent.state))
-        numberNeighbours =+1
-    end
-	if numberNeighbours > 0
-    	combinedSocialInfluence /= numberNeighbours # mean of neighbours opinion
-	end
-    return combinedSocialInfluence * model.socialInfluenceFactor
-end
-
-function state_social_influence(agent::DecisionAgent, model::AgentBasedModel)
-    #calculate neighbours maximum distance based on
-    combinedSocialInfluence = 0.0
-    numberNeighbours = 0
-    @inbounds for n in nearby_agents(agent,model,1)
-        combinedSocialInfluence =+ n.state_old-agent.state
-        numberNeighbours =+1
-    end
-	if numberNeighbours > 0
-    	combinedSocialInfluence /= numberNeighbours # mean of neighbours opinion
-	end
-    return combinedSocialInfluence * model.socialInfluenceFactor
-end
-
-#external rational influence has no meaning here as it is not used
-function generate_ensemble(summary_results_directory;space= Agents.Graphspace(SimpleGraph(100,300)), step_length=50, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
+function generate_ensemble(summary_results_directory;space= Agents.GraphSpace(SimpleGraph(100,300)), step_length=50, models_per_p = 100,seeds = rand(1234:9999,100),store_model = true, model_directory = "")
         if store_model==true && model_directory == ""
                 return("Error: Please specify a model storage path!")
         end
                 ensemble_results = DataFrame(Index = 1:models_per_p,Seed = -9999.0, Start_State_Average = -9999.0, Start_Affinity_Average = -9999.0,Final_State_Average = -9999.0 , Final_Affinity_Average = -9999.0)
 				index_counter = 1
 				@showprogress 1 "Seed Variation..." for i = 1:models_per_p
-
                         decisionModel = model_decision_agents(mixed_population_network;space=space,seed = seeds[i],socialInfluenceFactor=2,switchingBoundary=0.5)
                         converged = false
                         agent_df, model_df = run!(decisionModel, agent_step!,model_step!, 0; adata = [(:state, mean),(:affinity,mean)])
@@ -180,96 +58,4 @@ function generate_ensemble(summary_results_directory;space= Agents.Graphspace(Si
                 mkpath(summary_results_directory)
                 CSV.write(storage_path, ensemble_results)
 end
-
-
-
-"stepping function for updating model parameters"
-function model_step!(model)
-    model.timepoint += 1
-	model.switchingLimit = 25
-    if model.scenario != false
-        apply_scenario!(model)
-    end
-end
-"step function for agents"
-function agent_step!(agent, model)
-    #compute new affinity
-    agent.affinity = min(
-    model.upperAffinityBound,
-      max(
-          model.lowerAffinityBound,
-          agent.affinity
-          +rational_influence(agent,model)
-          +combined_social_influence(agent,model)
-      )
-    )
-    if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change as implemented?!
-        if (agent.affinity>=model.switchingBoundary && model.switchingLimit>0)
-            set_state!(1,agent)
-			model.switchingLimit-=1
-        end
-    end
-    #store affinity and state for next timestep
-    agent.affinity_old = agent.affinity
-    agent.state_old = agent.state
-end
-
-
-p_beta_dist = Beta(3,2)
-x = rand(p_beta_dist,100)
-histogram(x)
-
-# test function to schedule agents by inverse affinity, thus the most sceptical agents get vaccinated first from the (potentially) limited supply
-function vaccinateScepticalFirst(agent)
-	return 1-agent.affinity
-end
-
-network_model_decreasing_affinity_schedule = initialize(;scheduler = Agents.Schedulers.by_property(:affinity),socialInfluenceFactor=1,switchingBoundary=0.75,seed=5421)
-network_model_increasing_affinity_schedule = initialize(;scheduler = Agents.Schedulers.by_property(vaccinateScepticalFirst),socialInfluenceFactor=1,switchingBoundary=0.75,seed=5421)
-network_model_random_schedule = initialize(;scheduler = Agents.Schedulers.randomly,socialInfluenceFactor=1,switchingBoundary=0.75,seed=5421)
-
-agent_df, model_df = run!(network_model_decreasing_affinity_schedule, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
-
-agent_df, model_df = run!(network_model_increasing_affinity_schedule, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
-
-agent_df, model_df = run!(network_model_random_schedule, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
-
-
-# some ensemble run test
-parameters = Dict(
-    :schedulerIndex => [1,2],
-	:switchingBoundary => [0.75,0.85],
-	:seed => rand(0:1000,1)        # expanded
 )
-adata = [(:state, mean),(:affinity,mean)]
-adf, _ = paramscan(parameters, initialize; adata, agent_step!, n = 50)
-
-using DataFrames
-using StatsPlots
-@df adf Plots.plot(:step,["average_state"])
-
-# test with karate club network
-karate_am = readdlm(datadir("karate.txt"))
-karate_g = Graph(karate_am)
-gplot(karate_g)
-
-seeds = rand(0:1000,100)
-decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(karate_g),seed = seeds[1],socialInfluenceFactor=2)
-
-generate_ensemble(datadir("network_test");space = Agents.GraphSpace(karate_g),model_directory=datadir("network_test"))
-
-# test with small network from facebook data (standford SNAP)
-fb = loadsnap(:facebook_combined)
-generate_ensemble(datadir("facebook_test");models_per_p = 10,space = Agents.GraphSpace(fb),model_directory=datadir("facebook_test"))
-
-decisionModel = model_decision_agents(mixed_population_network;space=Agents.GraphSpace(fb),seed = seeds[1],socialInfluenceFactor=2)
-
-function plot_scatter(ensemble_data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
-        Plots.scatter(ensemble_data.P_Combustion,variable,marker_z = ensemble_data.P_Combustion, xlabel = "p_CombustionShare",ylabel=y_lab)
-        png(path)
-end
-
-function plot_histogram(ensemble_data, path; variable = ensemble_data.Final_State_Average, y_lab = "Final State Average")
-        Plots.histogram(ensemble_data.P_Combustion,variable, xlabel = "p_CombustionShare",ylabel=y_lab)
-        png(path)
-end
