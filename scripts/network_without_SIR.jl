@@ -90,7 +90,7 @@ function model_decision_agents(placementFunction;seed=1234,
 
 	defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:affinity),Agents.Schedulers.by_property(vaccinateScepticalFirst)]
 
-	scheduler = defaultScheduers[schedulerIndex]
+	scheduler = defaultSchedulers[schedulerIndex]
 
     model = ABM(
         DecisionAgent,
@@ -235,16 +235,18 @@ agent_df, model_df = run!(network_model_increasing_affinity_schedule, agent_step
 agent_df, model_df = run!(network_model_random_schedule, agent_step!,model_step!, 100; adata = [(:state, mean),(:affinity,mean)])
 
 
-# simple ensemble run test
+# some ensemble run test
 parameters = Dict(
-    :schedulerIndex => [1,2]
-	:switchingBoundary => [0.85]        # expanded
+    :schedulerIndex => [1,2],
+	:switchingBoundary => [0.75,0.85],
+	:seed => rand(0:1000,1)        # expanded
 )
 adata = [(:state, mean),(:affinity,mean)]
 adf, _ = paramscan(parameters, initialize; adata, agent_step!, n = 50)
 
-
-
+using DataFrames
+using StatsPlots
+@df adf Plots.plot(:step,["average_state"])
 
 # test with karate club network
 karate_am = readdlm(datadir("karate.txt"))
