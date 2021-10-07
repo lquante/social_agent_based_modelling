@@ -20,12 +20,18 @@ karate_am = readdlm(datadir("karate.txt"))
 karate_g = Graph(karate_am)
 
 seeds = rand(0:1000,100)
-decisionModel = model_decision_agents(mixed_population;space=Agents.GraphSpace(karate_g),seed = seeds[1],socialInfluenceFactor=2)
+decisionModel = model_decision_agents_SIR(mixed_population;space=Agents.GraphSpace(karate_g),seed = seeds[1],socialInfluenceFactor=2)
 
-# test with small network from facebook data (standford SNAP)
+# test with small network from facebook data (stanford SNAP)
 fb = loadsnap(:facebook_combined)
 fbModel = model_decision_agents(mixed_population;space=Agents.GraphSpace(fb),seed = seeds[1],socialInfluenceFactor=0.5,switchingLimit=50,neighbourhoodExtent=1,switchingBoundary=0.85)
 agent_df, model_df = run!(fbModel, agent_step!,model_step!, 100; adata = [(:state,mean),(:affinity,mean)])
+
+
+# test with small network from twitter data (stanford SNAP)
+twitter = loadsnap(:ego_twitter_u)
+twitterModel = model_decision_agents(mixed_population;space=Agents.GraphSpace(twitter),seed = seeds[1],socialInfluenceFactor=0.5,switchingLimit=1000,neighbourhoodExtent=1,switchingBoundary=0.85)
+agent_df, model_df = run!(twitterModel, agent_step!,model_step!, 100; adata = [(:state,mean),(:affinity,mean)])
 
 
 # some ensemble run test

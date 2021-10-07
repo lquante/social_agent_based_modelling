@@ -47,7 +47,7 @@ function randomAffinity(model,distribution=Beta(2,5))
 end
 
 "function to add an agent to a space based on position"
-function create_agent(model,position;SIR = false,initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
+function create_agent(model,position;SIR=false,initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
     initialInternalRational=initializeInternalRational(model)
     initialAffinity = initializeAffinity(model)
     initialState = 0
@@ -61,7 +61,6 @@ function create_agent(model,position;SIR = false,initializeInternalRational=rand
             initialAffinity,
             initialAffinity
         )
-    end
     else
         SIR_status = rand(model.rng)<0.2 ? :I : :S
         add_agent!(position,
@@ -72,10 +71,11 @@ function create_agent(model,position;SIR = false,initializeInternalRational=rand
             initialState,
             initialAffinity,
             initialAffinity,
-            SIR_status = SIR_status,
-            days_infected = 0
-            days_recovered = 0
+            SIR_status,
+            0,
+            0
         )
+    end
 end
 
 function set_state!(state::Int,agent::AbstractAgent)

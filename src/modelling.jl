@@ -35,22 +35,22 @@ Base.@kwdef mutable struct ModelParametersSIR
 	timepoint::Int
 	infectionPeriod::Int
 	detectionTime::Int
-	deathRate::Float
+	deathRate::Float64
 	reinfectionProtection::Int
-	transmissionUndetected::Float
-	transmissionDetected::Float
+	transmissionUndetected::Float64
+	transmissionDetected::Float64
 end
 
 "function to place one agent at each position of the models space"
-function mixed_population(model)
+function mixed_population(model;SIR=false)
 	if typeof(model.space)<:Agents.GraphSpace
 		for node in 1:length(model.space.s)
-			create_agent(model,node)
+			create_agent(model,node;SIR=SIR)
 	    end
     end
 	if typeof(model.space)<:Agents.GridSpace
 		for pos in positions(model)
-			create_agent(model,pos)
+			create_agent(model,pos;SIR=SIR)
 		end
 	end
 end
@@ -126,7 +126,7 @@ end
 
 "creating a model with some plausible default parameters"
 function model_decision_agents_SIR(placementFunction;seed=1234,
-    space = Agents.Graphspace((SimpleGraph(10,30)),
+    space = Agents.Graphspace(SimpleGraph(10,30)),
 	scheduler = Agents.Schedulers.fastest,
 	schedulerIndex=1,
 	kwargsPlacement = (),
@@ -141,6 +141,7 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
     upperAffinityBound = 1.0,
     scenario=0.,
     timepoint=0.,
+	#SIR parameters
 	infectionPeriod = 30,
 	detectionTime = 7,
 	deathRate = 0.02,
@@ -149,7 +150,7 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 	transmissionDetected = 0.05
 	)
 
-	properties = ModelParameters(
+	properties = ModelParametersSIR(
             externalRationalInfluence,
 			neighbourhoodExtent,
             socialInfluenceFactor,
@@ -180,9 +181,7 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 		        properties = properties
 		    )
 
-	end
-
-    placementFunction(model;kwargsPlacement...)
+    placementFunction(model;SIR=true,kwargsPlacement...)
     return model
 end
 
