@@ -24,6 +24,18 @@ mutable struct DecisionAgentGraph <:AbstractAgent
     affinity_old::Float64
 end
 
+mutable struct DecisionAgentGraphSIR <:AbstractAgent
+    id::Int
+    pos::Int
+    internalRationalInfluence::Float64
+    state::Int
+    state_old::Int
+    affinity::Float64
+    affinity_old::Float64
+    SIR_status::Symbol
+    days_infected::Int
+    days_recovered::Int
+end
 
 "get random personal opinion on decision, skewed by inverted beta dist"
 function randomInternalRational(model,distribution=Beta(2,5))
@@ -35,19 +47,35 @@ function randomAffinity(model,distribution=Beta(2,5))
 end
 
 "function to add an agent to a space based on position"
-function create_agent(model,position;initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
+function create_agent(model,position;SIR = false,initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
     initialInternalRational=initializeInternalRational(model)
     initialAffinity = initializeAffinity(model)
     initialState = 0
-    add_agent!(position,
-        model,
-        #general parameters
-        initialInternalRational,
-        initialState,
-        initialState,
-        initialAffinity,
-        initialAffinity
-    )
+    if SIR == false
+        add_agent!(position,
+            model,
+            #general parameters
+            initialInternalRational,
+            initialState,
+            initialState,
+            initialAffinity,
+            initialAffinity
+        )
+    end
+    else
+        SIR_status = rand(model.rng)<0.2 ? :I : :S
+        add_agent!(position,
+            model,
+            #general parameters
+            initialInternalRational,
+            initialState,
+            initialState,
+            initialAffinity,
+            initialAffinity,
+            SIR_status = SIR_status,
+            days_infected = 0
+            days_recovered = 0
+        )
 end
 
 function set_state!(state::Int,agent::AbstractAgent)
@@ -160,3 +188,83 @@ function agent_step!(agent, model)
     agent.affinity_old = agent.affinity
     agent.state_old = agent.state
 end
+
+## SIR model functions
+"step function for agents"
+function agent_step_SIR!(agent, model)
+    transmit!(agent,model)
+    update!(agent,model)
+    recover_or_die!(agent,model)
+    update_recovered!(agent,model)
+    if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change?
+        #compute new affinity
+        agent.affinity = min(
+        model.upperAffinityBound,
+          max(
+              model.lowerAffinityBound,
+              agent.affinity
+              +rational_influence(agent,model)
+              +affinity_social_influence(agent,model)
+          )
+        )
+        #change state if affinity large enough & switching still possible
+        if model.numberSwitched<model.switchingLimit && agent.SIR_status == :S
+            if (agent.affinity>=model.switchingBoundary)
+                set_state!(1,agent)
+                model.numberSwitched+=1
+            end
+        end
+    end
+    #store affinity and state for next timestep
+    agent.affinity_old = agent.affinity
+    agent.state_old = agent.state
+    update_vaccinated!(agent,model)
+end
+
+
+function transmit!(agent, model)
+    agent.SIR_status == :S && return
+    rate = if agent.days_infected < model.detectionTime
+        model.transmissionUndetected
+    else
+        model.transmissionDetected
+    end
+
+    d = Poisson(rate)
+    n = rand(model.rng, d)
+    n == 0 && return
+
+    neighbours = nearby_agents(agent,model,1)
+
+    for neighbour in neighbours
+        if neighbour.SIR_status == :S
+            contact.status = :I
+            n -= 1
+            n == 0 && return
+        end
+    end
+end
+
+update!(agent, model) = agent.SIR_status == :I && (agent.days_infected += 1)
+
+function recover_or_die!(agent, model)
+    if agent.days_infected ≥ model.infectionPeriod
+        if rand(model.rng) ≤ model.deathRate
+            kill_agent!(agent, model)
+        else
+            agent.SIR_status = :R
+            agent.days_infected = 0
+        end
+    end
+end
+
+function update_recovered!(agent,model)
+    if agent.SIR_status == :R
+        agent.days_recovoered +=1
+    end
+    if agent.days_recovered >= model.reinfectionProtection
+        agent.SIR_status == :S
+    end
+end
+
+update_vaccinated!(agent, model) = agent.state == 1 && (agent.SIR_state = :V)

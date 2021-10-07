@@ -20,6 +20,27 @@ Base.@kwdef mutable struct ModelParameters
 	timepoint::Int
 end
 
+"custom struct as a container of model parameters coupled with SIR model"
+Base.@kwdef mutable struct ModelParametersSIR
+	#general parameters
+	externalRationalInfluence::Real #starting value of general rational influence on decision
+	neighbourhoodExtent::Real # gives the extent of the neighbourhood: for grid spaces, euclidean distance, for networks: n-th neighbours
+	socialInfluenceFactor::Real # weight of the social influences relative to the rational component
+	switchingLimit::Real #limited number of state changes possible (per timestep)
+	numberSwitched::Real #umber of state changes occured (per timestep)
+	switchingBoundary::Real # lower boundary for affinity to have a state switch
+	lowerAffinityBound::Real
+	upperAffinityBound::Real
+	scenario::Bool # help variable to trigger use of scenarios, i.e. dynamic change of model parameters
+	timepoint::Int
+	infectionPeriod::Int
+	detectionTime::Int
+	deathRate::Float
+	reinfectionProtection::Int
+	transmissionUndetected::Float
+	transmissionDetected::Float
+end
+
 "function to place one agent at each position of the models space"
 function mixed_population(model)
 	if typeof(model.space)<:Agents.GraphSpace
@@ -102,6 +123,70 @@ function model_decision_agents(placementFunction;seed=1234,
     placementFunction(model;kwargsPlacement...)
     return model
 end
+
+"creating a model with some plausible default parameters"
+function model_decision_agents_SIR(placementFunction;seed=1234,
+    space = Agents.Graphspace((SimpleGraph(10,30)),
+	scheduler = Agents.Schedulers.fastest,
+	schedulerIndex=1,
+	kwargsPlacement = (),
+    #general parameters
+	externalRationalInfluence = 0.5,
+	neighbourhoodExtent = 1, # distance of neighbours to be considered
+	socialInfluenceFactor = 2, #weight of social influence
+    switchingLimit=Inf, #limited number of state switching per timestep
+	numberSwitched=0,
+	switchingBoundary=0.5, # bound for affinity to switch state
+    lowerAffinityBound = 0.0,
+    upperAffinityBound = 1.0,
+    scenario=0.,
+    timepoint=0.,
+	infectionPeriod = 30,
+	detectionTime = 7,
+	deathRate = 0.02,
+	reinfectionProtection = 180,
+	transmissionUndetected = 0.5,
+	transmissionDetected = 0.05
+	)
+
+	properties = ModelParameters(
+            externalRationalInfluence,
+			neighbourhoodExtent,
+            socialInfluenceFactor,
+            switchingLimit,
+			numberSwitched,
+            switchingBoundary,
+            lowerAffinityBound,
+            upperAffinityBound,
+            scenario,
+            timepoint,
+			infectionPeriod,
+			detectionTime,
+			deathRate,
+			reinfectionProtection,
+			transmissionUndetected,
+			transmissionDetected
+    )
+
+	if (scheduler==Agents.Schedulers.fastest)
+		defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:affinity),Agents.Schedulers.by_property(lowAffinityFirst)]
+		scheduler = defaultSchedulers[schedulerIndex]
+	end
+
+	model = ABM(
+		        DecisionAgentGraphSIR,
+		        space;rng=(Random.seed!(seed)),
+				scheduler=scheduler,
+		        properties = properties
+		    )
+
+	end
+
+    placementFunction(model;kwargsPlacement...)
+    return model
+end
+
+
 
 "stepping function for updating model parameters"
 function model_step!(model)
