@@ -238,7 +238,7 @@ function transmit!(agent, model)
 
     for neighbour in neighbours
         if neighbour.SIR_status == :S
-            contact.status = :I
+            neighbour.SIR_status = :I
             n -= 1
             n == 0 && return
         end
@@ -250,7 +250,8 @@ update!(agent, model) = agent.SIR_status == :I && (agent.days_infected += 1)
 function recover_or_die!(agent, model)
     if agent.days_infected ≥ model.infectionPeriod
         if rand(model.rng) ≤ model.deathRate
-            kill_agent!(agent, model)
+            agent.SIR_status = :D
+            agent.affinity = 1
         else
             agent.SIR_status = :R
             agent.days_infected = 0
@@ -259,12 +260,14 @@ function recover_or_die!(agent, model)
 end
 
 function update_recovered!(agent,model)
-    if agent.SIR_status == :R
-        agent.days_recovoered +=1
+    if agent.SIR_status == :R && agent.days_recovered < model.reinfectionProtection
+        agent.days_recovered +=1
     end
-    if agent.days_recovered >= model.reinfectionProtection
+    if agent.SIR_status == :R && agent.days_recovered >= model.reinfectionProtection
+        print("back to susceptible!")
         agent.SIR_status == :S
+        agent.days_recovered == 0
     end
 end
 
-update_vaccinated!(agent, model) = agent.state == 1 && (agent.SIR_state = :V)
+update_vaccinated!(agent, model) = agent.state == 1 && (agent.SIR_status = :V)
