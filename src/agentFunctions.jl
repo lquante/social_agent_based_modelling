@@ -24,6 +24,7 @@ mutable struct DecisionAgentGraph <:AbstractAgent
     affinity_old::Float64
 end
 
+"define an agent for coupled decision-SIR model on a graph"
 mutable struct DecisionAgentGraphSIR <:AbstractAgent
     id::Int
     pos::Int
@@ -62,7 +63,7 @@ function create_agent(model,position;SIR=false,initializeInternalRational=random
             initialAffinity
         )
     else
-        SIR_status = rand(model.rng)<0.2 ? :I : :S
+        SIR_status = rand(model.rng)<model.initialInfected ? :I : :S
         add_agent!(position,
             model,
             #general parameters
@@ -221,7 +222,7 @@ function agent_step_SIR!(agent, model)
     update_vaccinated!(agent,model)
 end
 
-
+"determine transmission from infected to susceptible"
 function transmit!(agent, model)
     agent.SIR_status == :S && return
     rate = if agent.days_infected < model.detectionTime
@@ -244,9 +245,10 @@ function transmit!(agent, model)
         end
     end
 end
-
+"update number of days infected"
 update!(agent, model) = agent.SIR_status == :I && (agent.days_infected += 1)
 
+"check if patients die or recover after infection period"
 function recover_or_die!(agent, model)
     if agent.days_infected ≥ model.infectionPeriod
         if rand(model.rng) ≤ model.deathRate
@@ -259,12 +261,12 @@ function recover_or_die!(agent, model)
     end
 end
 
+"count days since recovery & reset to susceptible after protection period"
 function update_recovered!(agent,model)
     if agent.SIR_status == :R && agent.days_recovered < model.reinfectionProtection
         agent.days_recovered +=1
     end
     if agent.SIR_status == :R && agent.days_recovered >= model.reinfectionProtection
-        print("back to susceptible!")
         agent.SIR_status == :S
         agent.days_recovered == 0
     end

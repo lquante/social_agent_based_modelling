@@ -15,10 +15,15 @@ watts_networks = watts_strogatz(1000,5,0.1)
 space = Agents.GraphSpace(watts_networks)
 
 seeds = rand(0:5000,100)
-decisionModel = model_decision_agents_SIR(mixed_population;space=space,seed = seeds[1],socialInfluenceFactor=2, switchingLimit=20)
+decisionModel = model_decision_agents_SIR(mixed_population;space=space,seed = seeds[1],socialInfluenceFactor=2, switchingLimit=20,detectionTime = 7,
+	initialInfected = 0.1,
+	deathRate = 0.04,
+	reinfectionProtection = 180,
+	transmissionUndetected = 0.2,
+	transmissionDetected = 0.02)
 agent_df, model_df = run!(decisionModel, agent_step_SIR!,model_step!, 500; adata = [:state,:affinity,:SIR_status])
 
-CSV.write("C:\\Users\\stecheme\\Documents\\Social_Modelling\\saved_dataframes\\watts_100_steps.csv",agent_df)
+CSV.write(datadir("watts_test.csv"),agent_df)
 
 # test with karate club network
 karate_am = readdlm(datadir("karate.txt"))

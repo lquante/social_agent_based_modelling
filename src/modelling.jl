@@ -39,6 +39,7 @@ Base.@kwdef mutable struct ModelParametersSIR
 	reinfectionProtection::Int
 	transmissionUndetected::Float64
 	transmissionDetected::Float64
+	initialInfected::Float64
 end
 
 "function to place one agent at each position of the models space"
@@ -147,7 +148,8 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 	deathRate = 0.02,
 	reinfectionProtection = 180,
 	transmissionUndetected = 0.5,
-	transmissionDetected = 0.05
+	transmissionDetected = 0.05,
+	initialInfected = 0.1
 	)
 
 	properties = ModelParametersSIR(
@@ -166,7 +168,8 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 			deathRate,
 			reinfectionProtection,
 			transmissionUndetected,
-			transmissionDetected
+			transmissionDetected,
+			initialInfected
     )
 
 	if (scheduler==Agents.Schedulers.fastest)
