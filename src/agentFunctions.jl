@@ -193,10 +193,14 @@ end
 ## SIR model functions
 "step function for agents"
 function agent_step_SIR!(agent, model)
-    transmit!(agent,model)
-    update!(agent,model)
-    recover_or_die!(agent,model)
-    update_recovered!(agent,model)
+    if agent.SIR_status == :I
+        transmit!(agent,model)
+        update!(agent,model)
+        recover_or_die!(agent,model)
+    end
+    if agent.SIR_status == :R
+        update_recovered!(agent,model)
+    end
     if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change?
         #compute new affinity
         agent.affinity = min(
@@ -224,7 +228,6 @@ end
 
 "determine transmission from infected to susceptible"
 function transmit!(agent, model)
-    agent.SIR_status == :S && return
     rate = if agent.days_infected < model.detectionTime
         model.transmissionUndetected
     else
@@ -246,7 +249,7 @@ function transmit!(agent, model)
     end
 end
 "update number of days infected"
-update!(agent, model) = agent.SIR_status == :I && (agent.days_infected += 1)
+update!(agent, model) = (agent.days_infected += 1)
 
 "check if patients die or recover after infection period"
 function recover_or_die!(agent, model)
@@ -263,12 +266,11 @@ end
 
 "count days since recovery & reset to susceptible after protection period"
 function update_recovered!(agent,model)
-    if agent.SIR_status == :R && agent.days_recovered < model.reinfectionProtection
+    if agent.days_recovered < model.reinfectionProtection
         agent.days_recovered +=1
-    end
-    if agent.SIR_status == :R && agent.days_recovered >= model.reinfectionProtection
-        agent.SIR_status == :S
-        agent.days_recovered == 0
+    else
+        agent.SIR_status = :S
+        agent.days_recovered = 0
     end
 end
 
