@@ -226,6 +226,30 @@ function agent_step_SIR!(agent, model)
     update_vaccinated!(agent,model)
 end
 
+
+"distribute infections between agents of different distance"
+
+function distributedInfection(numberInfections,agent,model)
+    # draw distribution of distances of infected agents
+    distanceDistribution = Poisson(0.5) #tbd parametrize as model parameter
+    while numberInfections>0
+        distance = rand(model.rng,distanceDistribution)+1 #draw distances and shift by 1 to have at least distance 1
+        agentsWithinExactDistance = setdiff(nearby_agents(agent,model,distance),nearby_agents(agent,model,distance-1))
+        infectionSucess=false
+        agentIterator = 0
+        while infectionSucess && agentIterator<length(agentsWithinExactDistance)
+            neighbour = rand(agentsWithinExactDistance)
+            if neighbour.SIR_status == :S
+                neighbour.SIR_status = :I
+                numberInfections-=1
+                infectionSucess = true
+            else
+                agentIterator +=1
+            end
+        end
+    end
+end
+
 "determine transmission from infected to susceptible"
 function transmit!(agent, model)
     rate = if agent.days_infected < model.detectionTime
@@ -236,17 +260,7 @@ function transmit!(agent, model)
 
     d = Poisson(rate)
     n = rand(model.rng, d)
-    n == 0 && return
-
-    neighbours = nearby_agents(agent,model,1)
-
-    for neighbour in neighbours
-        if neighbour.SIR_status == :S
-            neighbour.SIR_status = :I
-            n -= 1
-            n == 0 && return
-        end
-    end
+    distributedInfection(n,agent,model)
 end
 "update number of days infected"
 update!(agent, model) = (agent.days_infected += 1)
