@@ -33,16 +33,17 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
 
 # set parameters to be varied in the ensemble
     parameters = Dict(
-        :space => ensemble_spaces,
+        :space => ensemble_spaces[1],
         :switchingLimit => node_number*0.01, # assuming that 1 percent of population can be vaccinated per timestep
         :schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
         :neighbourhoodExtent => 1,
-        :switchingBoundary => [0.5,0.7,0.9], #varying vaccine decision boundary to check for sensitivity
+        :socialInfluenceFactor => [0.5,1,1.5,2,2.5,3],
+        :switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity
         :seed => 1910, # fixed seed to to enough variation by network composition
         #SIR parameters
-        :detectionTime => [3,7,10],
-        :initialInfected => [0.025,0.05,0.1],
-        :deathRate => 0.04,
+        :detectionTime => [7],
+        :initialInfected => [0.003], # estimated from German Data
+        :deathRate => 0.03, # estimated from German Data
         :reinfectionProtection => 180,
         :transmissionUndetected => 0.2,
         :transmissionDetected => 0.02
@@ -56,4 +57,8 @@ end
 # perform parameter scan for varying models
 ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize_SIR; adata,agent_step! = agent_step_SIR!,model_step!, n = 100, parallel = true)
 # safe to datadir
-CSV.write(datadir("ensemble_test.csv"),ensemble_agent_data_frame)
+#identify by date
+using Dates
+date = Dates.now()
+identifier = "ensemble_"*string(date)*".csv"
+CSV.write(datadir(),ensemble_agent_data_frame)
