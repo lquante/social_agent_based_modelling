@@ -125,7 +125,12 @@ function model_decision_agents(placementFunction;seed=1234,
     return model
 end
 
-"creating a model with some plausible default parameters"
+"initialize function for model creation, needed for paramscan methods"
+function initialize_SIR(;args ...)
+    return model_decision_agents_SIR(mixed_population;args ...)
+end
+
+"creating a coupled SIR - decision model"
 function model_decision_agents_SIR(placementFunction;seed=1234,
     space = Agents.Graphspace(SimpleGraph(10,30)),
 	scheduler = Agents.Schedulers.fastest,
