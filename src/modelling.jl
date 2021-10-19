@@ -193,16 +193,30 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
     return model
 end
 
+"constant switching limit"
+function constantSwitchingLimit(model,timepoint)
+	return model.switchingLimit
+end
 
+"increasing switching limit - final capacity = starting value * limit factor, build-up time = number of timesteps until maximum capacity reached"
+function increasingSwitchingLimit(model,timepoint,limitFactor=10,buildupTime=150)
+	if timepoint > buildupTime 
+		model.switchingLimit = model.switchingLimit
+	else
+		model.switchingLimit = model.switchingLimit + ((limitFactor-1)*timepoint/buildupTime)
+	end
+end
 
 "stepping function for updating model parameters"
-function model_step!(model)
+function model_step!(model,switchingLimitFunction=increasingSwitchingLimit)
     model.timepoint += 1
 	model.numberSwitched=0
     if model.scenario != false
         apply_scenario!(model)
     end
+	model.switchingLimit = switchingLimitFunction(model,model.timepoint)
 end
+
 
 "function to interpret scenario *.yml file"
 
