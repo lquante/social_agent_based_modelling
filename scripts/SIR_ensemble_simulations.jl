@@ -24,7 +24,7 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
     ensemble_spaces = [] #TODO: define properly typed container
     #network params
     k = 5 # number of neighbours of each node before randomization if even, otherwise k-1
-    beta = 0.1 # probability for an edge to be not rewired to another node, i.e. 1-beta edges will be rewired
+    beta = 0.9 # probability for an edge to be rewired to another node, i.e.  a share beta of edges will be rewired
     node_number = 1000 # number of nodes in the random networks
 
     for i_seed in network_seeds
