@@ -199,16 +199,16 @@ function constantSwitchingLimit(model,timepoint)
 end
 
 "increasing switching limit - final capacity = starting value * limit factor, build-up time = number of timesteps until maximum capacity reached"
-function increasingSwitchingLimit(model,timepoint,limitFactor=10,buildupTime=150)
+function increasingSwitchingLimit(model,timepoint,limitFactor=10,buildupTime=150,initialSwitchingLimit=1)
 	if timepoint > buildupTime 
-		model.switchingLimit = model.switchingLimit
+		return model.switchingLimit
 	else
-		model.switchingLimit = model.switchingLimit + ((limitFactor-1)*timepoint/buildupTime)
+		return initialSwitchingLimit*(1+(limitFactor-1)*(timepoint/buildupTime))
 	end
 end
 
 "stepping function for updating model parameters"
-function model_step!(model,switchingLimitFunction=increasingSwitchingLimit)
+function model_step!(model,switchingLimitFunction=constantSwitchingLimit)
     model.timepoint += 1
 	model.numberSwitched=0
     if model.scenario != false

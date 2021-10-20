@@ -16,6 +16,9 @@ neighbour=test.agents[27]
 
 @benchmark agent_step_SIR!(tagent,test)
 @benchmark model_step!(test,increasingSwitchingLimit)
+@benchmark distributedInfection(1,tagent,test)
+@code_warntype distributedInfection(1,tagent,test)
+
 @benchmark state_social_influence(tagent,test)
 @benchmark affinity_social_influence(tagent,test)
 @benchmark combined_social_influence(tagent,test)

@@ -232,21 +232,19 @@ end
 function distributedInfection(numberInfections,agent,model)
     # draw distribution of distances of infected agents
     distanceDistribution = Poisson(0.5) #tbd parametrize as model parameter
-    while numberInfections>0
-        distance = rand(model.rng,distanceDistribution)+1 #draw distances and shift by 1 to have at least distance 1
-        agentsWithinExactDistance = setdiff(nearby_agents(agent,model,distance),nearby_agents(agent,model,distance-1))
-        infectionSucess=false
-        agentIterator = 0
-        while infectionSucess && agentIterator<length(agentsWithinExactDistance)
-            neighbour = rand(agentsWithinExactDistance)
+    distances = rand(model.rng,distanceDistribution,numberInfections).+1 #draw distances and shift by 1 to have at least distance 1
+    infectionCache = 0
+    for i_distance in Set(distances)
+        numberInfectionsWithinDistance = count(i->(i==i_distance),distances)+infectionCache
+        agentsWithinExactDistance = setdiff(nearby_agents(agent,model,i_distance),nearby_agents(agent,model,i_distance-1))
+        for neighbour in agentsWithinExactDistance
             if neighbour.SIR_status == :S
                 neighbour.SIR_status = :I
-                numberInfections-=1
-                infectionSucess = true
-            else
-                agentIterator +=1
+                numberInfectionsWithinDistance-=1
+                numberInfectionsWithinDistance==0 && break
             end
         end
+        infectionCache = numberInfectionsWithinDistance
     end
 end
 
