@@ -6,24 +6,30 @@ using LinearAlgebra: diagind
 using GraphPlot
 using SNAPDatasets
 using DelimitedFiles
+using CSV
+
 
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
-include(srcdir("hysteresisFunctions.jl"))
 
-watts_networks = watts_strogatz(1000,5,0.1)
+watts_networks = watts_strogatz(1000,15,0.9)
 space = Agents.GraphSpace(watts_networks)
+
+
 
 seeds = rand(0:5000,100)
 decisionModel = model_decision_agents_SIR(mixed_population;space=space,seed = seeds[1],socialInfluenceFactor=2, switchingLimit=20,detectionTime = 7,
-	initialInfected = 0.1,
-	deathRate = 0.04,
+	initialInfected = 0.003,
+	deathRate = 0.03,
 	reinfectionProtection = 180,
 	transmissionUndetected = 0.2,
 	transmissionDetected = 0.02)
 agent_df, model_df = run!(decisionModel, agent_step_SIR!,model_step!, 500; adata = [:state,:affinity,:SIR_status])
 
 CSV.write(datadir("watts_test.csv"),agent_df)
+
+
+
 
 # test with karate club network
 karate_am = readdlm(datadir("karate.txt"))
