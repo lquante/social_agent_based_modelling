@@ -1,7 +1,7 @@
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using Distributed
-numberCPUS = length(Sys.cpu_info()) # get number of available CPUS
+numberCPUS = floor(Int, length(Sys.cpu_info())/2) # get number of available physical CPUS
 addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project on the distributed workers (https://stackoverflow.com/questions/60934852/why-does-multiprocessing-julia-break-my-module-imports)
 
 @everywhere begin
