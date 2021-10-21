@@ -197,7 +197,7 @@ end
 function agent_step_SIR!(agent, model)
     if agent.SIR_status == :I
         transmit!(agent,model)
-        update!(agent,model)
+        update_infection_days!(agent,model)
         recover_or_die!(agent,model)
     end
     if agent.SIR_status == :R
@@ -272,7 +272,7 @@ function transmit!(agent, model)
     distributedInfection(n,agent,model)
 end
 "update number of days infected"
-update!(agent, model) = (agent.days_infected += 1)
+update_infection_days!(agent, model) = (agent.days_infected += 1)
 
 "check if patients die or recover after infection period"
 function recover_or_die!(agent, model)
