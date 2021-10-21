@@ -18,21 +18,45 @@ bara_albert = barabasi_albert(10000,10,5)
 space = Agents.GraphSpace(watts_networks)
 
 
+natural_spread = 0.15/0.97
+
+# functions to calculate some network measures
+#details see http://networksciencebook.com/chapter/10#network-epidemic table 10.3
+
+"epidemic threshold for SIR modell on given graph"
+function SIR_epidemic_threshold(graph)
+    degrees = indegree(graph)
+    mean_degree = mean(degrees)
+    second_moment = mean(degrees.^2)
+    return 1/(second_moment/mean_degree-1)
+end
+
+"epidemic threshold for SIS modell on given graph"
+function SIS_epidemic_threshold(graph)
+    degrees = indegree(graph)
+    mean_degree = mean(degrees)
+    second_moment = mean(degrees.^2)
+    return mean_degree/second_moment
+end
+
+SIR_epidemic_threshold(watts_networks)
+SIS_epidemic_threshold(watts_networks)
+
 seeds = rand(0:5000,100)
-decisionModel = model_decision_agents_SIR(mixed_population;space=space,seed = seeds[1],socialInfluenceFactor=2, switchingLimit=0,detectionTime = 6,
-	initialInfected = 0.005,
-	deathRate = 0.03,
+decisionModel = model_decision_agents_SIR(mixed_population;space=space,seed = seeds[1],socialInfluenceFactor=2, switchingLimit=2,detectionTime = 6,
+	initialInfected = 0.01,
+	deathRate = 0.02,
 	reinfectionProtection = 180,
 	infectionPeriod=30,
-	transmissionUndetected = 0.1,
-	transmissionDetected = 0.0075,
+	transmissionUndetected = 0.12,
+	transmissionDetected = 0.0005,
 	detectionProbability = 0.58) #according to Gutenberg study of U Mainz, 42.4% undetected overall ==> since multiple days of possible detection, lower individual detection probability.)
 
 	#TODO calibrate parameters properly
 
 agent_df, model_df = run!(decisionModel, agent_step_SIR!,model_step!, 500; adata = [:state,:affinity,:SIR_status])
 
-CSV.write(datadir("watts_test.csv"),agent_df)
+CSV.write(datadir("watts_test_with_vaccine.csv"),agent_df)
 
 
 

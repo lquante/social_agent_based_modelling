@@ -215,7 +215,7 @@ function agent_step_SIR!(agent, model)
           )
         )
         #change state if affinity large enough & switching still possible
-        if model.numberSwitched<model.switchingLimit && agent.SIR_status == :S
+        if model.numberSwitched<model.switchingLimit && agent.SIR_status != :I && agent.infection_detected == false
             if (agent.affinity>=model.switchingBoundary)
                 set_state!(1,agent)
                 model.numberSwitched+=1
@@ -290,11 +290,12 @@ end
 
 "count days since recovery & reset to susceptible after protection period"
 function update_recovered!(agent,model)
-    if agent.days_recovered < model.reinfectionProtection
-        agent.days_recovered +=1
-    else
+    if agent.days_recovered > model.reinfectionProtection || rand(model.rng)>0.99
         agent.SIR_status = :S
         agent.days_recovered = 0
+        agent.infection_detected = false
+    else
+        agent.days_recovered +=1
     end
 end
 
