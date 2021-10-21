@@ -12,18 +12,24 @@ using CSV
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
 
-watts_networks = watts_strogatz(1000,15,0.9)
+watts_networks = watts_strogatz(1000,10,0.8)
+bara_albert = barabasi_albert(10000,10,5)
+
 space = Agents.GraphSpace(watts_networks)
 
 
-
 seeds = rand(0:5000,100)
-decisionModel = model_decision_agents_SIR(mixed_population;space=space,seed = seeds[1],socialInfluenceFactor=2, switchingLimit=20,detectionTime = 7,
-	initialInfected = 0.003,
+decisionModel = model_decision_agents_SIR(mixed_population;space=space,seed = seeds[1],socialInfluenceFactor=2, switchingLimit=0,detectionTime = 6,
+	initialInfected = 0.005,
 	deathRate = 0.03,
 	reinfectionProtection = 180,
-	transmissionUndetected = 0.2,
-	transmissionDetected = 0.02)
+	infectionPeriod=30,
+	transmissionUndetected = 0.1,
+	transmissionDetected = 0.0075,
+	detectionProbability = 0.58) #according to Gutenberg study of U Mainz, 42.4% undetected overall ==> since multiple days of possible detection, lower individual detection probability.)
+
+	#TODO calibrate parameters properly
+
 agent_df, model_df = run!(decisionModel, agent_step_SIR!,model_step!, 500; adata = [:state,:affinity,:SIR_status])
 
 CSV.write(datadir("watts_test.csv"),agent_df)

@@ -36,6 +36,7 @@ mutable struct DecisionAgentGraphSIR <:AbstractAgent
     SIR_status::Symbol
     days_infected::Int
     days_recovered::Int
+    infection_detected::Bool
 end
 
 "get random personal opinion on decision, skewed by inverted beta dist"
@@ -74,7 +75,8 @@ function create_agent(model,position;SIR=false,initializeInternalRational=random
             initialAffinity,
             SIR_status,
             0,
-            0
+            0,
+            false
         )
     end
 end
@@ -249,13 +251,22 @@ function distributedInfection(numberInfections,agent,model)
 end
 
 "determine transmission from infected to susceptible"
-function transmit!(agent, model)
-    rate = if agent.days_infected < model.detectionTime
-        model.transmissionUndetected
-    else
-        model.transmissionDetected
+function detectInfection!(agent, model)
+    if agent.days_infected>model.detectionTime && agent.infection_detected == false
+        if (rand(model.rng)>model.detectionProbability) 
+            agent.infection_detected = true
+        end
     end
+end
 
+
+"determine transmission from infected to susceptible"
+function transmit!(agent, model)
+    rate = if agent.infection_detected
+        model.transmissionDetected
+    else
+        model.transmissionUndetected
+    end
     d = Poisson(rate)
     n = rand(model.rng, d)
     distributedInfection(n,agent,model)
