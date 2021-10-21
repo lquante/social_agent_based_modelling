@@ -268,8 +268,8 @@ function recover_or_die!(agent, model)
     if agent.days_infected ≥ model.infectionPeriod
         if rand(model.rng) ≤ model.deathRate
             agent.SIR_status = :D
-            kill_agent!(agent,model) # TBD: kill agents and remove them from network or leave them with affinity 1 to influence close contacts
-            #agent.affinity = 1
+            # kill_agent!(agent,model) # TBD: kill agents requires fix to data collection, discuss:remove them from network or leave them with affinity 1 to influence close contacts
+            agent.affinity = 1
         else
             agent.SIR_status = :R
             agent.days_infected = 0
