@@ -7,7 +7,7 @@ using LightGraphs
 using StatsPlots
 using Cairo, Compose
 
-watts_strogatz_test = watts_strogatz(100000,10,0.9)
+watts_strogatz_test = watts_strogatz(1000,10,0.8)
 bara_albert = barabasi_albert(1000,10,5)
 
 
@@ -48,10 +48,15 @@ end
 # some plotting
 # nodes size proportional to their degree
 nodesize = [LightGraphs.outdegree(watts_strogatz_test,v) for v in LightGraphs.vertices(watts_strogatz_test)]
-@time draw(SVG(plotsdir("watts_strogatz.svg")),compose(gplot(watts_strogatz_test, nodesize=nodesize,edgelinewidth=0.25), compose(compose(context(), Compose.rectangle()), fill("white"))))
+@time draw(SVG(plotsdir("watts_strogatz.svg"),10cm,10cm),compose(gplot(watts_strogatz_test, nodesize=nodesize,edgelinewidth=0.25), compose(compose(context(), Compose.rectangle()), fill("white"))))
 
 nodesize = [LightGraphs.outdegree(bara_albert,v) for v in LightGraphs.vertices(bara_albert)]
-@time draw(SVG(plotsdir("barabasi_albert.svg")),compose(gplot(bara_albert, nodesize=nodesize,edgelinewidth=0.25), compose(compose(context(), Compose.rectangle()), fill("white"))))
+@time draw(SVG(plotsdir("barabasi_albert.svg"),10cm,10cm),compose(gplot(bara_albert, nodesize=nodesize,edgelinewidth=0.25), compose(compose(context(), Compose.rectangle()), fill("white"))))
+
+cluster = dorogovtsev_mendes(1000)
+nodesize = [LightGraphs.outdegree(cluster,v) for v in LightGraphs.vertices(bara_albert)]
+@time draw(SVG(plotsdir("dorogovtsev_mendes.svg"),10cm,10cm),compose(gplot(cluster, nodesize=nodesize,edgelinewidth=0.25), compose(compose(context(), Compose.rectangle()), fill("white"))))
+
 
 
 # plot affinity distributions 

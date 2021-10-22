@@ -17,14 +17,21 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
     Random.seed!(1234)
 
     # define model(s) to be used
-    network_number = 10
+    network_number = 1
     network_seeds = rand((0:10000),network_number)
 
     ensemble_spaces = [] #TODO: define properly typed container
     #network params
     k = 10 # number of neighbours of each node before randomization if even, otherwise k-1
     beta = 0.8 # probability for an edge to be rewired to another node, i.e.  a share beta of edges will be rewired
+
+
+
     node_number = 1000 # number of nodes in the random networks
+    #for testing
+    barabasi_albert_space = Agents.GraphSpace(barabasi_albert(node_number,k,5))
+    dorogovtsev_mendes_space = Agents.GraphSpace(dorogovtsev_mendes(node_number))
+
 
     for i_seed in network_seeds
         push!(ensemble_spaces,Agents.GraphSpace(watts_strogatz(node_number,k,beta,seed=i_seed)))
@@ -35,7 +42,7 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
 
 # set parameters to be varied in the ensemble
     parameters = Dict(
-        :space => ensemble_spaces[1],
+        :space => dorogovtsev_mendes_space,
         :switchingLimit => [node_number*0.01], # assuming that 1 percent of population can be vaccinated per timestep
         #:schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
         #:neighbourhoodExtent => 1,
@@ -54,5 +61,5 @@ ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initializ
 #identify by date
 using Dates
 date = Dates.now()
-identifier = "social_ensemble_"*string(date)*".csv"
+identifier = "social_ensemble_dorogotsev_"*string(date)*".csv"
 CSV.write(datadir(identifier),ensemble_agent_data_frame)
