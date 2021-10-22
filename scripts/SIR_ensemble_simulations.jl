@@ -34,18 +34,18 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
 # set parameters to be varied in the ensemble
     parameters = Dict(
         :space => ensemble_spaces[1],
-        :switchingLimit => [node_number*0.01,node_number*0.005,node_number*0.02,node_number*0.015], # assuming that 1 percent of population can be vaccinated per timestep
-        :schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
-        :neighbourhoodExtent => 1,
+        :switchingLimit => [node_number*0.01], # assuming that 1 percent of population can be vaccinated per timestep
+        #:schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
+        #:neighbourhoodExtent => 1,
         :socialInfluenceFactor => 1, #[0.5,1,1.5,2,2.5,3],
-        :switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity
+        #:switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity
         :seed => 1910, # fixed seed to to enough variation by network composition
         #SIR parameters
-        :detectionTime => [7],
+        #:detectionTime => [7],
         :initialInfected => [0.003], # estimated from German Data
-        :deathRate => [0.015,0.03], # estimated from German Data
-        :reinfectionProtection => 180,
-        :transmissionUndetected => [0.05,0.1,0.15,0.2],
+        :deathRate => [0.03], # estimated from German Data
+        #:reinfectionProtection => 180,
+        :transmissionUndetected => [0.05,0.1,0.15],
         :transmissionDetected => 0.0005,
 	    :detectionProbability => 0.58 # estimate from U Mainz gutenberg study
     )

@@ -1,13 +1,13 @@
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
-using Agents, Random, DataFrames, Graphs, Plots, Statistics
+using Agents, Random, DataFrames, Graphs, Plots, Statistics, Distributions
 using GraphPlot
 using SNAPDatasets
 using LightGraphs
 using StatsPlots
 using Cairo, Compose
 
-watts_strogatz_test = watts_strogatz(1000,10,0.9)
+watts_strogatz_test = watts_strogatz(100000,10,0.9)
 bara_albert = barabasi_albert(1000,10,5)
 
 
@@ -54,3 +54,13 @@ nodesize = [LightGraphs.outdegree(bara_albert,v) for v in LightGraphs.vertices(b
 @time draw(SVG(plotsdir("barabasi_albert.svg")),compose(gplot(bara_albert, nodesize=nodesize,edgelinewidth=0.25), compose(compose(context(), Compose.rectangle()), fill("white"))))
 
 
+# plot affinity distributions 
+Random.seed!(123)
+beta_distribution = Beta(2,3)
+n = 10000000
+inverse_beta_sample = ones(n) - rand(beta_distribution,n)
+
+histogram(inverse_beta_sample,normed=true)
+
+inverse_beta_cdf(x) = cdf(beta_distribution,1-x)
+Plots.plot(inverse_beta_cdf,[0:0.001:1])
