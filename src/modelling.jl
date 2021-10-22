@@ -10,7 +10,8 @@ Base.@kwdef mutable struct ModelParameters
 	#general parameters
 	externalRationalInfluence::Real #starting value of general rational influence on decision
 	neighbourhoodExtent::Real # gives the extent of the neighbourhood: for grid spaces, euclidean distance, for networks: n-th neighbours
-	socialInfluenceFactor::Real # weight of the social influences relative to the rational component
+	tauRational::Real # weight for the rational influence
+	tauSocial::Real #weight for the social influence
 	switchingLimit::Real #limited number of state changes possible (per timestep)
 	numberSwitched::Real #umber of state changes occured (per timestep)
 	switchingBoundary::Real # lower boundary for affinity to have a state switch
@@ -25,7 +26,8 @@ Base.@kwdef mutable struct ModelParametersSIR
 	#general parameters
 	externalRationalInfluence::Real #starting value of general rational influence on decision
 	neighbourhoodExtent::Real # gives the extent of the neighbourhood: for grid spaces, euclidean distance, for networks: n-th neighbours
-	socialInfluenceFactor::Real # weight of the social influences relative to the rational component
+	tauRational::Real # weight for the rational influence
+	tauSocial::Real #weight for the social influence
 	switchingLimit::Real #limited number of state changes possible (per timestep)
 	numberSwitched::Real #umber of state changes occured (per timestep)
 	switchingBoundary::Real # lower boundary for affinity to have a state switch
@@ -76,7 +78,8 @@ function model_decision_agents(placementFunction;seed=1234,
     #general parameters
 	externalRationalInfluence = 0.5,
 	neighbourhoodExtent = 1, # distance of neighbours to be considered
-	socialInfluenceFactor = 2, #weight of social influence
+	tauRational = 1, #weight of rational influence
+	tauSocial = 1, #weight of social influence
     switchingLimit=Inf, #limited number of state switching per timestep
 	numberSwitched=0,
 	switchingBoundary=0.5, # bound for affinity to switch state
@@ -88,7 +91,8 @@ function model_decision_agents(placementFunction;seed=1234,
 	properties = ModelParameters(
             externalRationalInfluence,
 			neighbourhoodExtent,
-            socialInfluenceFactor,
+            tauRational,
+			tauSocial,
             switchingLimit,
 			numberSwitched,
             switchingBoundary,
@@ -140,7 +144,8 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
     #general parameters
 	externalRationalInfluence = 0.5,
 	neighbourhoodExtent = 1, # distance of neighbours to be considered
-	socialInfluenceFactor = 2, #weight of social influence
+	tauRational = 1, #weight of rational influence
+	tauSocial = 1, #weight of social influence
     switchingLimit=Inf, #limited number of state switching per timestep
 	numberSwitched=0,
 	switchingBoundary=0.5, # bound for affinity to switch state
@@ -162,7 +167,8 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 	properties = ModelParametersSIR(
             externalRationalInfluence,
 			neighbourhoodExtent,
-            socialInfluenceFactor,
+            tauRational,
+			tauSocial,
             switchingLimit,
 			numberSwitched,
             switchingBoundary,

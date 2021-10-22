@@ -13,7 +13,7 @@ mutable struct DecisionAgentGrid <:AbstractAgent
     affinity_old::Float64
 end
 
-"define an agent for 2d grid space"
+"define an agent for graph space"
 mutable struct DecisionAgentGraph <:AbstractAgent
     id::Int
     pos::Int
@@ -40,14 +40,13 @@ mutable struct DecisionAgentGraphSIR <:AbstractAgent
 end
 
 "get random personal opinion on decision, skewed by inverted beta dist"
-function randomInternalRational(model,distribution=Beta(2,5))
+function randomInternalRational(model,distribution=Beta(2,3))
     return 1-rand(model.rng,distribution)
 end
 "get random affinity on decision, skewed by inverted beta dist"
-function randomAffinity(model,distribution=Beta(2,5))
+function randomAffinity(model,distribution=Beta(2,3))
     return 1-rand(model.rng,distribution)
 end
-
 "function to add an agent to a space based on position"
 function create_agent(model,position;SIR=false,initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
     initialInternalRational=initializeInternalRational(model)
@@ -85,22 +84,22 @@ function set_state!(state::Int,agent::AbstractAgent)
     agent.state = state
 end
 
-"computes rational decision for 0=no or 1=yes"
-function rational_influence(agent,model)
-    rationalAffinity = internalRational(agent,model) # no external rational component implemented yet
-    return rationalAffinity-agent.affinity
-end
-
-"computes contribuition for rational decision from external sources"
+"contribuition for rational decision from external sources"
 function externalRational(agent,model)
     return model.externalRationalInfluence # first very simple case: model parameter controls external "forcing"
 end
-"computes contribuition for rational decision from internal sources"
+"contribuition for rational decision from internal sources"
 function internalRational(agent,model)
     return agent.internalRationalInfluence # first very simple case: agent parameter controls internal "forcing"
 end
 
-"return distance of neighbour depending on space type of model"
+"rational decision for 0=no or 1=yes"
+function rational_influence(agent,model)
+    rationalAffinity = internalRational(agent,model) # no external rational component implemented yet
+    return (rationalAffinity-agent.affinity) / model.tauRational
+end
+
+"distance of neighbour depending on space type of model"
 function neigbourDistance(agent,neighbour,model)
     if typeof(model.space)<:Agents.GridSpace
         return edistance(agent,neighbour,model)
@@ -117,9 +116,9 @@ function neigbourDistance(agent,neighbour,model)
     end
 end
 
-"returns social influence based on neighbours state"
+"social influence based on neighbours state"
 function state_social_influence(agent, model::AgentBasedModel)
-    stateSocialInfluence::Real = 0
+    stateSocialInfluence = 0.0
     sumNeighbourWeights = 0
     neighbours = nearby_agents(agent,model,model.neighbourhoodExtent)
     @inbounds for n in neighbours
@@ -130,10 +129,10 @@ function state_social_influence(agent, model::AgentBasedModel)
     if sumNeighbourWeights>0
         stateSocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
     end
-    return stateSocialInfluence * model.socialInfluenceFactor
+    return stateSocialInfluence / model.tauSocial
 end
 
-"returns social influence based on neighbours affinity"
+"social influence based on neighbours affinity"
 function affinity_social_influence(agent, model::AgentBasedModel)
     #calculate neighbours maximum distance based on
     affinitySocialInfluence = 0.0
@@ -147,10 +146,10 @@ function affinity_social_influence(agent, model::AgentBasedModel)
     if sumNeighbourWeights>0
         affinitySocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
     end
-    return affinitySocialInfluence * model.socialInfluenceFactor
+    return affinitySocialInfluence / model.tauSocial
 end
 
-"returns social influence based on neighbours state"
+"social influence based on neighbours state and affinity"
 function combined_social_influence(agent, model::AgentBasedModel)
     combinedSocialInfluence = 0.0
     sumNeighbourWeights = 0
@@ -163,21 +162,17 @@ function combined_social_influence(agent, model::AgentBasedModel)
     if sumNeighbourWeights>0
         combinedSocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
     end
-    return combinedSocialInfluence * model.socialInfluenceFactor
+    return combinedSocialInfluence / model.tauSocial
 end
 
 "step function for agents"
 function agent_step!(agent, model)
     if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change?
         #compute new affinity
-        agent.affinity = min(
-        model.upperAffinityBound,
-          max(
-              model.lowerAffinityBound,
-              agent.affinity
-              +rational_influence(agent,model)
-              +state_social_influence(agent,model)
-          )
+        unbounded_affinity = agent.affinity +rational_influence(agent,model) +affinity_social_influence(agent,model)
+        # set new affinity respecting the bounds for the affinity
+        agent.affinity = min(model.upperAffinityBound,
+          max(model.lowerAffinityBound,unbounded_affinity)
         )
         #change state if affinity large enough & switching still possible
         if model.numberSwitched<model.switchingLimit
@@ -187,50 +182,51 @@ function agent_step!(agent, model)
             end
         end
     end
-    #store affinity and state for next timestep
+    #store affinity and state for social influence in next timestep
     agent.affinity_old = agent.affinity
     agent.state_old = agent.state
 end
 
-## SIR model functions
+# SIR model functions
 "step function for agents"
 function agent_step_SIR!(agent, model)
     if agent.SIR_status == :I
+        detectInfection!(agent, model)
         transmit!(agent,model)
         update_infection_days!(agent,model)
         recover_or_die!(agent,model)
     end
-    if agent.SIR_status == :R
-        update_recovered!(agent,model)
-    end
-    if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change?
-        #compute new affinity
-        agent.affinity = min(
-        model.upperAffinityBound,
-          max(
-              model.lowerAffinityBound,
-              agent.affinity
-              +rational_influence(agent,model)
-              +affinity_social_influence(agent,model)
-          )
-        )
-        #change state if affinity large enough & switching still possible
-        if model.numberSwitched<model.switchingLimit && agent.SIR_status != :I && agent.infection_detected == false
-            if (agent.affinity>=model.switchingBoundary)
-                set_state!(1,agent)
-                model.numberSwitched+=1
-            end
-        end
-    end
-    #store affinity and state for next timestep
-    agent.affinity_old = agent.affinity
-    agent.state_old = agent.state
-    update_vaccinated!(agent,model)
+    # recovery dynamics
+    agent.SIR_status == :R && update_recovered!(agent,model)
+    # call social dynamyics for living agents
+    agent.SIR_status != :D && agent_step!(agent, model)
+    # vaccination update
+    agent.SIR_status != :V && update_vaccinated!(agent,model)
 end
 
 
-"distribute infections between agents of different distance"
+"determine detection of infections"
+function detectInfection!(agent, model)
+    if agent.days_infected>model.detectionTime && agent.infection_detected == false
+        if (rand(model.rng)>model.detectionProbability) 
+            agent.infection_detected = true
+        end
+    end
+end
 
+"determine transmission from infected to susceptible"
+function transmit!(agent, model)
+    rate = if agent.infection_detected
+        model.transmissionDetected
+    else
+        model.transmissionUndetected
+    end
+    d = Poisson(rate)
+    n = rand(model.rng, d)
+    distributedInfection(n,agent,model)
+end
+
+"distribute infections between agents of different distance"
 function distributedInfection(numberInfections,agent,model)
     # draw distribution of distances of infected agents
     distanceDistribution = Poisson(0.5) #tbd parametrize as model parameter
@@ -250,27 +246,7 @@ function distributedInfection(numberInfections,agent,model)
     end
 end
 
-"determine transmission from infected to susceptible"
-function detectInfection!(agent, model)
-    if agent.days_infected>model.detectionTime && agent.infection_detected == false
-        if (rand(model.rng)>model.detectionProbability) 
-            agent.infection_detected = true
-        end
-    end
-end
 
-
-"determine transmission from infected to susceptible"
-function transmit!(agent, model)
-    rate = if agent.infection_detected
-        model.transmissionDetected
-    else
-        model.transmissionUndetected
-    end
-    d = Poisson(rate)
-    n = rand(model.rng, d)
-    distributedInfection(n,agent,model)
-end
 "update number of days infected"
 update_infection_days!(agent, model) = (agent.days_infected += 1)
 
@@ -280,7 +256,6 @@ function recover_or_die!(agent, model)
         if rand(model.rng) ≤ model.deathRate
             agent.SIR_status = :D
             # kill_agent!(agent,model) # TBD: kill agents requires fix to data collection, discuss:remove them from network or leave them with affinity 1 to influence close contacts
-            agent.affinity = 1
         else
             agent.SIR_status = :R
             agent.days_infected = 0
@@ -290,7 +265,7 @@ end
 
 "count days since recovery & reset to susceptible after protection period"
 function update_recovered!(agent,model)
-    if agent.days_recovered > model.reinfectionProtection || rand(model.rng)>0.99
+    if agent.days_recovered > model.reinfectionProtection || rand(model.rng)>0.995 # random vanishing of immunity before specified recovery time
         agent.SIR_status = :S
         agent.days_recovered = 0
         agent.infection_detected = false
