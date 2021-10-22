@@ -10,8 +10,7 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
     using Distributions: Poisson, DiscreteNonParametric
     using GraphPlot
     using DelimitedFiles
-    using CSV 
-    
+    using CSV
     include(srcdir("agentFunctions.jl"))
     include(srcdir("modelling.jl"))
 
@@ -24,12 +23,15 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
     ensemble_spaces = [] #TODO: define properly typed container
     #network params
     k = 10 # number of neighbours of each node before randomization if even, otherwise k-1
-    beta = 0.9 # probability for an edge to be rewired to another node, i.e.  a share beta of edges will be rewired
-    node_number = 100000 # number of nodes in the random networks
+    beta = 0.8 # probability for an edge to be rewired to another node, i.e.  a share beta of edges will be rewired
+    node_number = 1000 # number of nodes in the random networks
 
     for i_seed in network_seeds
         push!(ensemble_spaces,Agents.GraphSpace(watts_strogatz(node_number,k,beta,seed=i_seed)))
     end
+
+# range for array of varying tauSocials
+    tauSocialVariation = range(0.25, 2.5, step=0.025)
 
 # set parameters to be varied in the ensemble
     parameters = Dict(
@@ -37,28 +39,20 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
         :switchingLimit => [node_number*0.01], # assuming that 1 percent of population can be vaccinated per timestep
         #:schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
         #:neighbourhoodExtent => 1,
+        :tauSocial => [i for i in tauSocialVariation],
+        :tauRational => 1,
         #:switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity
         :seed => 1910, # fixed seed to to enough variation by network composition
-        #SIR parameters
-        #:detectionTime => [7],
-        :initialInfected => [0.003], # estimated from German Data
-        :deathRate => [0.03], # estimated from German Data
-        #:reinfectionProtection => 180,
-        :transmissionUndetected => [0.05,0.1,0.15],
-        :transmissionDetected => 0.0005,
-	    :detectionProbability => 0.58 # estimate from U Mainz gutenberg study
     )
-
     # data to be tracked for each agent
-
-    adata = [:affinity,:SIR_status]
+    adata = [:affinity,:state]
 end
 timesteps = 500
 # perform parameter scan for varying models
-ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize_SIR; adata,agent_step! = agent_step_SIR!,model_step!, n = timesteps, parallel = true)
+ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; adata,agent_step! = agent_step!,model_step!, n = timesteps, parallel = true)
 # safe to datadir
 #identify by date
 using Dates
 date = Dates.now()
-identifier = "ensemble_"*string(date)*".csv"
+identifier = "social_ensemble_"*string(date)*".csv"
 CSV.write(datadir(identifier),ensemble_agent_data_frame)
