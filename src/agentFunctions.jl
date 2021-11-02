@@ -169,7 +169,7 @@ end
 function agent_step!(agent, model)
     if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change?
         #compute new affinity
-        unbounded_affinity = agent.affinity +rational_influence(agent,model) +affinity_social_influence(agent,model)
+        unbounded_affinity = agent.affinity  +affinity_social_influence(agent,model) +rational_influence(agent,model) #TODO: test without rational influence
         # set new affinity respecting the bounds for the affinity
         agent.affinity = min(model.upperAffinityBound,
           max(model.lowerAffinityBound,unbounded_affinity)
@@ -242,7 +242,7 @@ function distributedInfection(numberInfections,agent,model)
                 numberInfectionsWithinDistance==0 && break
             end
         end
-        infectionCache = numberInfectionsWithinDistance
+        infectionCache = numberInfectionsWithinDistance #not distributed infections are transfered to higher distance
     end
 end
 
@@ -275,3 +275,73 @@ function update_recovered!(agent,model)
 end
 
 update_vaccinated!(agent, model) = agent.state == 1 && (agent.SIR_status = :V)
+
+
+
+
+# alternative infection dynamcis: SLIRDV (susceptible latent infectious recovered dead vaccinated)
+
+# SIR model functions
+"step function for agents"
+function agent_step_SIR_latent!(agent, model)
+    if agent.SIR_status == :L
+        latent_to_infectious!(agent,model)
+        if agent.SIR_status == :L
+            update_infection_days!(agent,model)
+        end
+    end
+    if agent.SIR_status == :I
+        detectInfection!(agent, model)
+        transmit_latent!(agent,model)
+        update_infection_days!(agent,model)
+        recover_or_die!(agent,model)
+    end
+    # recovery dynamics
+    agent.SIR_status == :R && update_recovered!(agent,model)
+    # call social dynamyics for living agents
+    agent.SIR_status != :D && agent_step!(agent, model)
+    # vaccination update
+    agent.SIR_status != :V && update_vaccinated!(agent,model)
+end
+
+"determine transmission from infected to susceptible"
+function transmit_latent!(agent, model)
+    rate = if agent.infection_detected
+        model.transmissionDetected
+    else
+        model.transmissionUndetected
+    end
+    d = Poisson(rate)
+    n = rand(model.rng, d)
+    distributedInfectionLatent(n,agent,model)
+end
+
+"distribute infections between agents of different distance"
+function distributedInfectionLatent(numberInfections,agent,model)
+    # draw distribution of distances of infected agents
+    distanceDistribution = Poisson(0.5) #tbd parametrize as model parameter
+    distances = rand(model.rng,distanceDistribution,numberInfections).+1 #draw distances and shift by 1 to have at least distance 1
+    infectionCache = 0
+    for i_distance in Set(distances)
+        numberInfectionsWithinDistance = count(i->(i==i_distance),distances)+infectionCache
+        agentsWithinExactDistance = setdiff(nearby_agents(agent,model,i_distance),nearby_agents(agent,model,i_distance-1))
+        for neighbour in agentsWithinExactDistance
+            if neighbour.SIR_status == :S
+                neighbour.SIR_status = :L
+                numberInfectionsWithinDistance-=1
+                numberInfectionsWithinDistance==0 && break
+            end
+        end
+        infectionCache = numberInfectionsWithinDistance #not distributed infections are transfered to higher distance
+    end
+end
+
+"transfer from latent to infectious stage"
+function latent_to_infectious!(agent,model)
+    #TODO: really necessary?! if yes: make model parameter
+    mean_latent_period = 5
+    transition_probabilty = agent.days_infected / (2*(mean_latent_period*mean_latent_period+1))
+    if rand(model.rng) < transition_probabilty
+        agent.SIR_status = :I
+    end
+end
