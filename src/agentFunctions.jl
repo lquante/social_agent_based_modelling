@@ -169,7 +169,7 @@ end
 function agent_step!(agent, model)
     if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change?
         #compute new affinity
-        unbounded_affinity = agent.affinity  +affinity_social_influence(agent,model) +rational_influence(agent,model) #TODO: test without rational influence
+        unbounded_affinity = agent.affinity  + affinity_social_influence(agent,model) # +rational_influence(agent,model) #TODO: test without rational influence
         # set new affinity respecting the bounds for the affinity
         agent.affinity = min(model.upperAffinityBound,
           max(model.lowerAffinityBound,unbounded_affinity)
@@ -198,7 +198,7 @@ function agent_step_SIR!(agent, model)
     end
     # recovery dynamics
     agent.SIR_status == :R && update_recovered!(agent,model)
-    # call social dynamyics for living agents
+    # call social dynamics for living agents
     agent.SIR_status != :D && agent_step!(agent, model)
     # vaccination update
     agent.SIR_status != :V && update_vaccinated!(agent,model)

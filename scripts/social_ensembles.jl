@@ -1,7 +1,7 @@
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using Distributed
-numberCPUS = floor(Int, length(Sys.cpu_info())/2) # get number of available physical CPUS
+numberCPUS = floor(Int, length(Sys.cpu_info())/4) # get number of available physical CPUS
 addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project on the distributed workers (https://stackoverflow.com/questions/60934852/why-does-multiprocessing-julia-break-my-module-imports)
 
 @everywhere begin
@@ -27,29 +27,25 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
 
 
 
-    node_number = 1000 # number of nodes in the random networks
+    node_number = 10000 # number of nodes in the random networks
     #for testing
-    barabasi_albert_space = Agents.GraphSpace(barabasi_albert(node_number,k,5))
-    dorogovtsev_mendes_space = Agents.GraphSpace(dorogovtsev_mendes(node_number))
+    watts_strogatz_space = Agents.GraphSpace(watts_strogatz(node_number,k,beta,seed=network_seeds[1]))
+    barabasi_albert_space = Agents.GraphSpace(barabasi_albert(node_number,k,5,seed=network_seeds[1]))
+    dorogovtsev_mendes_space = Agents.GraphSpace(dorogovtsev_mendes(node_number,seed=network_seeds[1]))
 
 
-    for i_seed in network_seeds
-        push!(ensemble_spaces,Agents.GraphSpace(watts_strogatz(node_number,k,beta,seed=i_seed)))
-    end
 
 # range for array of varying tauSocials
-    tauSocialVariation = range(0.25, 2.5, step=0.025)
+    tauSocialVariation = range(0.5, 2.5, step=0.5)
 
 # set parameters to be varied in the ensemble
     parameters = Dict(
-        :space => dorogovtsev_mendes_space,
-        :switchingLimit => [node_number*0.01], # assuming that 1 percent of population can be vaccinated per timestep
+        :space => [watts_strogatz_space],
+        :switchingLimit => [node_number*0.005,node_number*0.01], # assuming that 1 percent of population can be vaccinated per timestep
         #:schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
         #:neighbourhoodExtent => 1,
         :tauSocial => [i for i in tauSocialVariation],
-        :tauRational => 1,
-        #:switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity
-        :seed => 1910, # fixed seed to to enough variation by network composition
+        :switchingBoundary => [0.5,0.7,0.9], #varying vaccine decision boundary to check for sensitivity
     )
     # data to be tracked for each agent
     adata = [:affinity,:state]
@@ -61,5 +57,5 @@ ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initializ
 #identify by date
 using Dates
 date = Dates.now()
-identifier = "social_ensemble_dorogotsev_"*string(date)*".csv"
+identifier = "social_ensemble_only_social_"*string(date)*".csv"
 CSV.write(datadir(identifier),ensemble_agent_data_frame)
