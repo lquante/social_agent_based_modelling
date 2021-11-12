@@ -22,6 +22,7 @@ mutable struct DecisionAgentGraph <:AbstractAgent
     state_old::Int
     affinity::Float64
     affinity_old::Float64
+    degree::Int
 end
 
 "define an agent for coupled decision-SIR model on a graph"
@@ -37,6 +38,7 @@ mutable struct DecisionAgentGraphSIR <:AbstractAgent
     days_infected::Int
     days_recovered::Int
     infection_detected::Bool
+    degree::Int
 end
 
 "get random personal opinion on decision, skewed by inverted beta dist"
@@ -64,6 +66,7 @@ function create_agent(model,position;SIR=false,initializeInternalRational=random
         )
     else
         SIR_status = rand(model.rng)<model.initialInfected ? :I : :S
+        degree=LightGraphs.outdegree(model.space.graph,position)
         add_agent!(position,
             model,
             #general parameters
@@ -75,7 +78,8 @@ function create_agent(model,position;SIR=false,initializeInternalRational=random
             SIR_status,
             0,
             0,
-            false
+            false,
+            degree
         )
     end
 end
@@ -100,7 +104,7 @@ function rational_influence(agent,model)
 end
 
 "distance of neighbour depending on space type of model"
-function neigbourDistance(agent,neighbour,model)
+function neighbourDistance(agent,neighbour,model)
     if typeof(model.space)<:Agents.GridSpace
         return edistance(agent,neighbour,model)
     else
@@ -116,15 +120,25 @@ function neigbourDistance(agent,neighbour,model)
     end
 end
 
+"directed weighting scheme (influencers make opinions)"
+function neighbourWeight(agent,neighbour,model)
+        if typeof(model.space)<:Agents.GraphSpace
+                return(agent.degree/neighbour.degree)
+        else
+            error("distance for this space type not yet implemented")
+        end
+end
+
+
 "social influence based on neighbours state"
 function state_social_influence(agent, model::AgentBasedModel)
     stateSocialInfluence = 0.0
     sumNeighbourWeights = 0
     neighbours = nearby_agents(agent,model,model.neighbourhoodExtent)
     @inbounds for n in neighbours
-        neighbourDistance=neigbourDistance(agent,n,model)
-        stateSocialInfluence += (n.state_old-agent.state)/neighbourDistance
-        sumNeighbourWeights +=1/neighbourDistance
+        nWeight=neighbourWeight(agent,n,model)
+        stateSocialInfluence += (n.state_old-agent.state)*nWeight
+        sumNeighbourWeights +=nWeight
     end
     if sumNeighbourWeights>0
         stateSocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
@@ -139,9 +153,9 @@ function affinity_social_influence(agent, model::AgentBasedModel)
     sumNeighbourWeights = 0
     neighbours = nearby_agents(agent,model,model.neighbourhoodExtent)
     @inbounds for n in neighbours
-        neighbourDistance=neigbourDistance(agent,n,model)
-        affinitySocialInfluence += (n.affinity_old-agent.affinity)/neighbourDistance
-        sumNeighbourWeights +=1/neighbourDistance
+        nWeight=neighbourWeight(agent,n,model)
+        affinitySocialInfluence += (n.affinity_old-agent.affinity)*nWeight
+        sumNeighbourWeights +=nWeight
     end
     if sumNeighbourWeights>0
         affinitySocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
@@ -155,9 +169,9 @@ function combined_social_influence(agent, model::AgentBasedModel)
     sumNeighbourWeights = 0
     neighbours = nearby_agents(agent,model,model.neighbourhoodExtent)
     @inbounds for n in neighbours
-        neighbourDistance=neigbourDistance(agent,n,model)
-        combinedSocialInfluence += ((n.affinity_old-agent.affinity)+(n.state_old-agent.state))/neighbourDistance
-        sumNeighbourWeights +=1/neighbourDistance
+        nWeight=neighbourWeight(agent,n,model)        
+        combinedSocialInfluence += ((n.affinity_old-agent.affinity)+(n.state_old-agent.state))*nWeight
+        sumNeighbourWeights +=nWeight
     end
     if sumNeighbourWeights>0
         combinedSocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
@@ -167,18 +181,20 @@ end
 
 "step function for agents"
 function agent_step!(agent, model)
-    if agent.state===0 # one way decision, no change for already "yes" decision, Q: should affinity still change?
+   # one way decision, no change for already "yes" decision, Q: should affinity still change? YES!
         #compute new affinity
-        unbounded_affinity = agent.affinity  + affinity_social_influence(agent,model) # +rational_influence(agent,model) #TODO: test without rational influence
-        # set new affinity respecting the bounds for the affinity
-        agent.affinity = min(model.upperAffinityBound,
-          max(model.lowerAffinityBound,unbounded_affinity)
-        )
+    unbounded_affinity = agent.affinity  + affinity_social_influence(agent,model) # +rational_influence(agent,model) #TODO: test without rational influence
+    # set new affinity respecting the bounds for the affinity
+    agent.affinity = min(model.upperAffinityBound,
+    max(model.lowerAffinityBound,unbounded_affinity)
+    )
+    if agent.state===0 
         #change state if affinity large enough & switching still possible
         if model.numberSwitched<model.switchingLimit
             if (agent.affinity>=model.switchingBoundary)
                 set_state!(1,agent)
                 model.numberSwitched+=1
+                print(model.numberSwitched)
             end
         end
     end
