@@ -49,8 +49,14 @@ end
 function randomAffinity(model,distribution=Beta(2,3))
     return 1-rand(model.rng,distribution)
 end
+
+"get random affinity on decision, skewed by inverted beta dist"
+function randomAffinityNormal(model,distribution=truncated(Normal(0.5,0.5),0,1))
+    return rand(model.rng,distribution)
+end
+
 "function to add an agent to a space based on position"
-function create_agent(model,position;SIR=false,initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinity)
+function create_agent(model,position;SIR=false,initializeInternalRational=randomInternalRational,initializeAffinity=randomAffinityNormal)
     initialInternalRational=initializeInternalRational(model)
     initialAffinity = initializeAffinity(model)
     initialState = 0
@@ -361,3 +367,4 @@ function latent_to_infectious!(agent,model)
         agent.SIR_status = :I
     end
 end
+

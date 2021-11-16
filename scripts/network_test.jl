@@ -12,15 +12,25 @@ using CSV
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
 
-watts_networks = watts_strogatz(10000,10,0.8)
-bara_albert = barabasi_albert(10000,10,5)
+watts_networks = watts_strogatz(1000,10,0.8)
+bara_albert = barabasi_albert(1000,10,5)
 
 watts_space = Agents.GraphSpace(watts_networks)
 bara_space = Agents.GraphSpace(bara_albert)
 
+function strip_isolates(g)
+    isolates=findall(x->x==0, degree(g))
+    isolates = reverse(isolates)
+    for i in isolates
+        rem_vertex!(g,i)
+    end
+    return g
+end
+
+strip_isolates(bara_space)
 
 seeds = rand(0:5000,100)
-wattsStrogatz = model_decision_agents_SIR(mixed_population;space=watts_space,seed = seeds[1],tauRational=1,tauSocial=1, switchingLimit=2,detectionTime = 7,
+wattsStrogatz = model_decision_agents_SIR(mixed_population;space=bara_space,seed = seeds[1],tauRational=1,tauSocial=1, switchingLimit=2,detectionTime = 7,
 	initialInfected = 0.005,
 	deathRate = 0.03,
 	reinfectionProtection = 180,
@@ -32,7 +42,7 @@ wattsStrogatz = model_decision_agents_SIR(mixed_population;space=watts_space,see
 	#TODO calibrate parameters properly
 
 
-watts_agent_df, model_df = run!(wattsStrogatz, agent_step_SIR_latent!,model_step!, 500; adata = [:affinity,:SIR_status],parallel=true)
+watts_agent_df, model_df = run!(wattsStrogatz, agent_step_SIR_latent!,model_step!, 100; adata = [:affinity,:SIR_status],parallel=true)
 CSV.write(datadir("watts_strogatz_test_latent.csv"),watts_agent_df)
 
 barabasiAlbert = model_decision_agents_SIR(mixed_population;space=bara_space,seed = seeds[1],tauRational=1,tauSocial=1, switchingLimit=2,detectionTime = 7,
