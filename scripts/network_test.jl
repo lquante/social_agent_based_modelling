@@ -1,6 +1,6 @@
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
-using Agents, Random, DataFrames, LightGraphs
+using Agents, Random, DataFrames, Graphs
 using Distributions: Poisson, DiscreteNonParametric
 using LinearAlgebra: diagind
 using GraphPlot
@@ -28,6 +28,10 @@ function strip_isolates(g)
 end
 
 strip_isolates(bara_space)
+
+using GraphIO, Graphs
+bara_albert = barabasi_albert(1000,10,5)
+savegraph(open(datadir("test.net");write=true),bara_albert,"test",NETFormat())
 
 seeds = rand(0:5000,100)
 wattsStrogatz = model_decision_agents_SIR(mixed_population;space=bara_space,seed = seeds[1],tauRational=1,tauSocial=1, switchingLimit=2,detectionTime = 7,
