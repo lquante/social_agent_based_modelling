@@ -72,7 +72,7 @@ function create_agent(model,position;SIR=false,initializeInternalRational=random
         )
     else
         SIR_status = rand(model.rng)<model.initialInfected ? :I : :S
-        degree=LightGraphs.outdegree(model.space.graph,position)
+        degree=outdegree(model.space.graph,position)
         add_agent!(position,
             model,
             #general parameters
