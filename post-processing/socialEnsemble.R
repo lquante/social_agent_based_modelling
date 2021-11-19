@@ -3,11 +3,14 @@ library(dplyr)
 
 #load data
 
-social_ensemble <- read.csv("/home/quante/git/social_network_modelling/social_agent_based_modelling/data/social_ensemble_dorogotsev_2021-10-22T15:08:45.093.csv")
+social_ensemble <- read.csv("/home/quante/git/social_agent_based_modelling/data/social_ensemble_2021-11-19T16:40:10.377.csv")
 
-# get frequency per timestep
-
-affinity = social_ensemble %>% group_by(tauSocial,step) %>% summarise(mean_affinity=mean(affinity))
-# make simple plot
+affinity = social_ensemble %>% group_by(tauSocial,step) %>% filter(switchingBoundary==0.5) %>% summarise(mean_affinity=mean(affinity))
 
 ggplot(data = affinity,aes(x = step, y = mean_affinity,color=tauSocial))+geom_point()+theme_light()+labs(x="time")+scale_colour_gradientn(colours=rainbow(8))
+
+# look at infection dynamcics
+
+SIR_status = social_ensemble%>% filter(switchingBoundary==0.5)  %>% filter(tauSocial==0.5) %>% count(SIR_status,step)
+
+ggplot(data = SIR_status,aes(x = step, y = SIR_status)+geom_line()+theme_light()+labs(x="time"))
