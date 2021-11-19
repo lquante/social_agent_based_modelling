@@ -200,7 +200,6 @@ function agent_step!(agent, model)
             if (agent.affinity>=model.switchingBoundary)
                 set_state!(1,agent)
                 model.numberSwitched+=1
-                print(model.numberSwitched)
             end
         end
     end
