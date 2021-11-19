@@ -6,7 +6,7 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
 
 @everywhere begin
     using DrWatson
-    using Agents, Random, DataFrames, LightGraphs
+    using Agents, Random, DataFrames, Graphs
     using Distributions: Poisson, DiscreteNonParametric
     using GraphPlot
     using DelimitedFiles

@@ -1,11 +1,7 @@
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
-using Agents, Random, DataFrames, Graphs
-using Distributions: Poisson, DiscreteNonParametric
-using LinearAlgebra: diagind
+using Agents, Random, Graphs, GraphIO
 using GraphPlot
-using SNAPDatasets
-using DelimitedFiles
 using CSV
 
 include(srcdir("agentFunctions.jl"))
@@ -24,13 +20,13 @@ end
 
 watts_networks = watts_strogatz(1000,10,0.8)
 
-TODO: calibrate barabasi albert space creation
+#TODO: calibrate barabasi albert space creation
 bara_albert = barabasi_albert(1000,5,5,seed=1234)
 strip_isolates!(bara_albert)
 test_space = Agents.GraphSpace(bara_albert)
 
-"demonstrating export using GraphIO"
-using GraphIO, Graphs
+
+#demonstrating export using GraphIO
 savegraph(open(datadir("test.net");write=true),bara_albert,"test",NETFormat())
 
 testModel = model_decision_agents_SIR(mixed_population;space=test_space,seed = seed,tauRational=1,tauSocial=1, switchingLimit=2,detectionTime = 7,
@@ -47,11 +43,6 @@ testModel = model_decision_agents_SIR(mixed_population;space=test_space,seed = s
 
 test_agent_df, model_df = run!(testModel, agent_step_SIR_latent!,model_step!, 1; adata = [:affinity,:SIR_status],parallel=true)
 CSV.write(datadir("test_network_data.csv"),test_agent_df)
-"write degree into seperate dataframe to avoid repeating data for each timestep"
-CSV.write(datadir("degree_distribution.csv"),DataFrame(pos=range(1,testModel.agents.count,step=1),degree=degree(testModel.space.graph)))
 
-"test if positions are not permutated"
-comparison = test_agent_df.degree[1:995]-degree(testModel.space.graph)
-minimum(comparison)
-maximum(comparison)
-"indeed, everything seems fine"
+#write degree into seperate dataframe to avoid repeating data for each timestep
+CSV.write(datadir("degree_distribution.csv"),DataFrame(pos=range(1,testModel.agents.count,step=1),degree=degree(testModel.space.graph)))

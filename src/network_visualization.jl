@@ -3,7 +3,7 @@ using DrWatson
 using Agents, Random, DataFrames, Graphs, Plots, Statistics, Distributions
 using GraphPlot
 using SNAPDatasets
-using LightGraphs
+using Graphs
 using StatsPlots
 using Cairo, Compose
 using Colors
