@@ -12,5 +12,3 @@ ggplot(data = affinity,aes(x = step, y = mean_affinity,color=tauSocial))+geom_po
 # look at infection dynamcics
 
 SIR_status = social_ensemble%>% filter(switchingBoundary==0.5)  %>% filter(tauSocial==0.5) %>% count(SIR_status,step)
-
-ggplot(data = SIR_status,aes(x = step, y = SIR_status)+geom_line()+theme_light()+labs(x="time"))
