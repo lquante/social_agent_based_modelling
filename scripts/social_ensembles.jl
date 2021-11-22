@@ -37,11 +37,14 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
 # set parameters to be varied in the ensemble
     parameters = Dict(
         :space => [barabasi_albert_space],
-        :switchingLimit => [node_number*0.005], # assuming that 0.5 percent of population can be vaccinated per timestep
+        #:switchingLimit => [node_number*0.005], # assuming that 0.5 percent of population can be vaccinated per timestep
         #:schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
         #:neighbourhoodExtent => 1,
-        :tauSocial => [i for i in tauSocialVariation],
-        :switchingBoundary => [0.5,0.7,0.9], #varying vaccine decision boundary to check for sensitivity
+        :tauSocial => [0.5],
+        #:switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity,
+        :transmissionUndetected => [0.5,0.7],
+        :detectionProbability => [0.03,0.02],
+        :meanLatentDays => [7,3]
     )
     # data to be tracked for each agent
     adata = [:affinity,:SIR_status]
@@ -53,5 +56,5 @@ ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initializ
 #identify by date
 using Dates
 date = Dates.now()
-identifier = "social_ensemble_"*string(date)*".csv"
+identifier = "transmission_ensemble_"*string(date)*".csv"
 CSV.write(datadir(identifier),ensemble_agent_data_frame)

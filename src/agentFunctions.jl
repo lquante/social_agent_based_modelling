@@ -359,9 +359,7 @@ end
 
 "transfer from latent to infectious stage"
 function latent_to_infectious!(agent,model)
-    #TODO: really necessary?! if yes: make model parameter
-    mean_latent_period = 5
-    transition_probabilty = agent.days_infected / (2*(mean_latent_period*mean_latent_period+1))
+    transition_probabilty = agent.days_infected / (2*(model.meanLatentDays*model.meanLatentDays+1))
     if rand(model.rng) < transition_probabilty
         agent.SIR_status = :I
     end

@@ -43,6 +43,7 @@ Base.@kwdef mutable struct ModelParametersSIR
 	transmissionDetected::Float64
 	initialInfected::Float64
 	detectionProbability::Float64
+	meanLatentDays::Int
 end
 
 "function to place one agent at each position of the models space"
@@ -146,7 +147,7 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 	neighbourhoodExtent = 1, # distance of neighbours to be considered
 	tauRational = 1, #weight of rational influence
 	tauSocial = 1, #weight of social influence
-    switchingLimit=Inf, #limited number of state switching per timestep
+    switchingLimit=0.005, #limited number of state switching per timestep
 	numberSwitched=0,
 	switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
@@ -156,14 +157,16 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 	#SIR parameters
 	infectionPeriod = 30,
 	detectionTime = 7,
-	deathRate = 0.02,
+	deathRate = 0.03,
 	reinfectionProtection = 180,
-	transmissionUndetected = 0.5,
+	transmissionUndetected = 0.75, # improve this estimate, but a little tricky since no 1:1 relation to e.g. effective R 
 	transmissionDetected = 0.05,
-	initialInfected = 0.1,
-	detectionProbability = 0.5
+	initialInfected = 0.03, # estimated from German Data
+	detectionProbability = 0.037, #according to Gutenberg study of U Mainz, 42.4% undetected overall ==> since multiple days of possible detection, lower individual detection probability.
+	#  0.963^23 approx 0.42 TODO: more realistic detection prob. depending on latency status etc.
+	meanLatentDays = 5 # estimate of days with latent infection 
 	)
-
+	
 	properties = ModelParametersSIR(
             externalRationalInfluence,
 			neighbourhoodExtent,
@@ -183,7 +186,8 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 			transmissionUndetected,
 			transmissionDetected,
 			initialInfected,
-			detectionProbability
+			detectionProbability,
+			meanLatentDays
     )
 
 	if (scheduler==Agents.Schedulers.fastest)
