@@ -42,9 +42,10 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
         #:neighbourhoodExtent => 1,
         :tauSocial => [0.5],
         #:switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity,
-        :transmissionUndetected => [0.5,0.7],
-        :detectionProbability => [0.03,0.02],
-        :meanLatentDays => [7,3]
+        :transmissionUndetected => [0.3,0.5,0.9,1.1],
+        #:transmissionDetected => [0.05,0.01],
+        :detectionProbability => [0.97,0.98],
+        #:meanLatentDays => [7,3]
     )
     # data to be tracked for each agent
     adata = [:affinity,:SIR_status]

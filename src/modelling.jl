@@ -162,7 +162,7 @@ function model_decision_agents_SIR(placementFunction;seed=1234,
 	transmissionUndetected = 0.75, # improve this estimate, but a little tricky since no 1:1 relation to e.g. effective R 
 	transmissionDetected = 0.05,
 	initialInfected = 0.03, # estimated from German Data
-	detectionProbability = 0.037, #according to Gutenberg study of U Mainz, 42.4% undetected overall ==> since multiple days of possible detection, lower individual detection probability.
+	detectionProbability = 0.963, #according to Gutenberg study of U Mainz, 42.4% undetected overall ==> since multiple days of possible detection, lower individual detection probability.
 	#  0.963^23 approx 0.42 TODO: more realistic detection prob. depending on latency status etc.
 	meanLatentDays = 5 # estimate of days with latent infection 
 	)
