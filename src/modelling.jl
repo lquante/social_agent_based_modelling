@@ -8,7 +8,7 @@ using YAML
 "custom struct as a container of model parameters"
 Base.@kwdef mutable struct ModelParameters
 	#general parameters
-	externalRationalInfluence::Real #starting value of general rational influence on decision
+	constantAvantgarde::Real #constant value of avantgarde
 	neighbourhoodExtent::Real # gives the extent of the neighbourhood: for grid spaces, euclidean distance, for networks: n-th neighbours
 	tauRational::Real # weight for the rational influence
 	tauSocial::Real #weight for the social influence
@@ -21,30 +21,6 @@ Base.@kwdef mutable struct ModelParameters
 	timepoint::Int
 end
 
-"custom struct as a container of model parameters coupled with SIR model"
-Base.@kwdef mutable struct ModelParametersSIR
-	#general parameters
-	externalRationalInfluence::Real #starting value of general rational influence on decision
-	neighbourhoodExtent::Real # gives the extent of the neighbourhood: for grid spaces, euclidean distance, for networks: n-th neighbours
-	tauRational::Real # weight for the rational influence
-	tauSocial::Real #weight for the social influence
-	switchingLimit::Real #limited number of state changes possible (per timestep)
-	numberSwitched::Real #umber of state changes occured (per timestep)
-	switchingBoundary::Real # lower boundary for affinity to have a state switch
-	lowerAffinityBound::Real
-	upperAffinityBound::Real
-	scenario::Bool # help variable to trigger use of scenarios, i.e. dynamic change of model parameters
-	timepoint::Int
-	infectionPeriod::Int
-	detectionTime::Int
-	deathRate::Float64
-	reinfectionProtection::Int
-	transmissionUndetected::Float64
-	transmissionDetected::Float64
-	initialInfected::Float64
-	detectionProbability::Float64
-	meanLatentDays::Int
-end
 
 "function to place one agent at each position of the models space"
 function mixed_population(model;SIR=false)
@@ -77,7 +53,7 @@ function model_decision_agents(placementFunction;seed=1234,
 	schedulerIndex=1,
 	kwargsPlacement = (),
     #general parameters
-	externalRationalInfluence = 0.5,
+	constantAvantgarde = 0.5,
 	neighbourhoodExtent = 1, # distance of neighbours to be considered
 	tauRational = 1, #weight of rational influence
 	tauSocial = 1, #weight of social influence
@@ -90,7 +66,7 @@ function model_decision_agents(placementFunction;seed=1234,
     timepoint=0.)
 
 	properties = ModelParameters(
-            externalRationalInfluence,
+			constantAvantgarde,
 			neighbourhoodExtent,
             tauRational,
 			tauSocial,
@@ -128,81 +104,6 @@ function model_decision_agents(placementFunction;seed=1234,
 	end
 
     placementFunction(model;kwargsPlacement...)
-    return model
-end
-
-"initialize function for model creation, needed for paramscan methods"
-function initialize_SIR(;args ...)
-    return model_decision_agents_SIR(mixed_population;args ...)
-end
-
-"creating a coupled SIR - decision model"
-function model_decision_agents_SIR(placementFunction;seed=1234,
-    space = Agents.Graphspace(SimpleGraph(10,30)),
-	scheduler = Agents.Schedulers.fastest,
-	schedulerIndex=1,
-	kwargsPlacement = (),
-    #general parameters
-	externalRationalInfluence = 0.5,
-	neighbourhoodExtent = 1, # distance of neighbours to be considered
-	tauRational = 1, #weight of rational influence
-	tauSocial = 1, #weight of social influence
-    switchingLimit=0.005, #limited number of state switching per timestep
-	numberSwitched=0,
-	switchingBoundary=0.5, # bound for affinity to switch state
-    lowerAffinityBound = 0.0,
-    upperAffinityBound = 1.0,
-    scenario=0.,
-    timepoint=0.,
-	#SIR parameters
-	infectionPeriod = 30,
-	detectionTime = 7,
-	deathRate = 0.03,
-	reinfectionProtection = 180,
-	transmissionUndetected = 0.75, # improve this estimate, but a little tricky since no 1:1 relation to e.g. effective R 
-	transmissionDetected = 0.05,
-	initialInfected = 0.03, # estimated from German Data
-	detectionProbability = 0.963, #according to Gutenberg study of U Mainz, 42.4% undetected overall ==> since multiple days of possible detection, lower individual detection probability.
-	#  0.963^23 approx 0.42 TODO: more realistic detection prob. depending on latency status etc.
-	meanLatentDays = 5 # estimate of days with latent infection 
-	)
-	
-	properties = ModelParametersSIR(
-            externalRationalInfluence,
-			neighbourhoodExtent,
-            tauRational,
-			tauSocial,
-            switchingLimit,
-			numberSwitched,
-            switchingBoundary,
-            lowerAffinityBound,
-            upperAffinityBound,
-            scenario,
-            timepoint,
-			infectionPeriod,
-			detectionTime,
-			deathRate,
-			reinfectionProtection,
-			transmissionUndetected,
-			transmissionDetected,
-			initialInfected,
-			detectionProbability,
-			meanLatentDays
-    )
-
-	if (scheduler==Agents.Schedulers.fastest)
-		defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:affinity),Agents.Schedulers.by_property(lowAffinityFirst)]
-		scheduler = defaultSchedulers[schedulerIndex]
-	end
-
-	model = ABM(
-		        DecisionAgentGraphSIR,
-		        space;rng=(Random.seed!(seed)),
-				scheduler=scheduler,
-		        properties = properties
-		    )
-
-    placementFunction(model;SIR=true,kwargsPlacement...)
     return model
 end
 

@@ -37,25 +37,22 @@ addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project 
 # set parameters to be varied in the ensemble
     parameters = Dict(
         :space => [barabasi_albert_space],
-        #:switchingLimit => [node_number*0.005], # assuming that 0.5 percent of population can be vaccinated per timestep
-        #:schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
-        #:neighbourhoodExtent => 1,
+        :constantAvantgarde => 0.75,
+        :switchingLimit => [node_number*0.005], # assuming that 0.5 percent of population can be vaccinated per timestep
+        :schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
+        :neighbourhoodExtent => 1,
         :tauSocial => [0.5],
         #:switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity,
-        :transmissionUndetected => [0.3,0.5,0.9,1.1],
-        #:transmissionDetected => [0.05,0.01],
-        :detectionProbability => [0.97,0.98],
-        #:meanLatentDays => [7,3]
     )
     # data to be tracked for each agent
-    adata = [:affinity,:SIR_status]
+    adata = [:affinity]
 end
 timesteps = 500
 # perform parameter scan for varying models
-ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize_SIR; adata,agent_step! = agent_step_SIR_latent!,model_step!, n = timesteps, parallel = true)
+ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; adata,agent_step! = agent_step!,model_step!, n = timesteps, parallel = true)
 # safe to datadir
 #identify by date
 using Dates
 date = Dates.now()
-identifier = "transmission_ensemble_"*string(date)*".csv"
+identifier = "avantgarde_ensemble_"*string(date)*".csv"
 CSV.write(datadir(identifier),ensemble_agent_data_frame)
