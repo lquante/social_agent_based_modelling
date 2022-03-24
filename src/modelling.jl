@@ -23,15 +23,15 @@ end
 
 
 "function to place one agent at each position of the models space"
-function mixed_population(model;SIR=false)
+function mixed_population(model)
 	if typeof(model.space)<:Agents.GraphSpace
 		for node in 1:length(model.space.s)
-			create_agent(model,node;SIR=SIR)
+			create_agent(model,node)
 	    end
     end
 	if typeof(model.space)<:Agents.GridSpace
 		for pos in positions(model)
-			create_agent(model,pos;SIR=SIR)
+			create_agent(model,pos)
 		end
 	end
 end
