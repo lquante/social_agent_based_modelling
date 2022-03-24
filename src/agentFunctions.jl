@@ -84,7 +84,7 @@ end
 "directed weighting scheme (influencers make opinions)"
 function neighbourWeight(agent,neighbour,model)
         if typeof(model.space)<:Agents.GraphSpace
-                return(agent.degree/neighbour.degree)
+            return 1 # equal weighting for simplicity
         else
             return 1 # no weighting of neighbours in grid space
         end
