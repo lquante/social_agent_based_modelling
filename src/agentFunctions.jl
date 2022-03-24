@@ -22,7 +22,6 @@ mutable struct DecisionAgentGraph <:AbstractAgent
     state_old::Int
     affinity::Float64
     affinity_old::Float64
-    degree::Int
 end
 
 
