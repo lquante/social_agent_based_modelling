@@ -1,65 +1,119 @@
 using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using Distributed
-numberCPUS = floor(Int, length(Sys.cpu_info())/2) # get number of available physical CPUS
-addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project on the distributed workers (https://stackoverflow.com/questions/60934852/why-does-multiprocessing-julia-break-my-module-imports)
+numberCPUS = floor(Int, length(Sys.cpu_info())/4) # get number of available physical CPUS
+addprocs(numberCPUS-1; exeflags="--project") # avoiding non-initialized project on the distributed workers (https://stackoverflow.com/questions/60934852/why-does-multiprocessing-julia-break-my-module-import)
+
+using Printf
 
 @everywhere begin
     using DrWatson
-    using Agents, Random, DataFrames, LightGraphs
-    using Distributions: Poisson, DiscreteNonParametric
-    using GraphPlot
-    using DelimitedFiles
+    using Agents, Random, Graphs
     using CSV
     include(srcdir("agentFunctions.jl"))
     include(srcdir("modelling.jl"))
 
     Random.seed!(1234)
 
-    # define model(s) to be used
-    network_number = 1
-    network_seeds = rand((0:10000),network_number)
+    ## define model(s) to be used
+    #network_number = 1
+    #network_seeds = rand((0:10),network_number)
 
-    ensemble_spaces = [] #TODO: define properly typed container
-    #network params
-    k = 10 # number of neighbours of each node before randomization if even, otherwise k-1
-    beta = 0.8 # probability for an edge to be rewired to another node, i.e.  a share beta of edges will be rewired
+    #ensemble_spaces = [] #TODO: define properly typed container
+    ##network params
+    #k = 10 # number of neighbours of each node before randomization if even, otherwise k-1
+    #beta = 0.8 # probability for an edge to be rewired to another node, i.e.  a share beta of edges will be rewired
+
+    node_number = 100 # number of nodes in the random networks
+   
+    ##for testing
+    # watts_strogatz_space = Agents.GraphSpace(watts_strogatz(node_number,k,beta,seed=network_seeds[1]))
+    # barabasi_albert_space = Agents.GraphSpace(barabasi_albert(node_number,2,seed=network_seeds[1]))
+    # dorogovtsev_mendes_space = Agents.GraphSpace(dorogovtsev_mendes(node_number,seed=network_seeds[1]))
+    
+    spaceDims = (20, 20)
+    grid_space = Agents.GridSpace(spaceDims; periodic = true, metric = :chebyshev)
 
 
+    # range for array of varying tauSocials
+    # tauSocialVariation = range(0., 2.5, step=1)
 
-    node_number = 1000 # number of nodes in the random networks
-    #for testing
-    barabasi_albert_space = Agents.GraphSpace(barabasi_albert(node_number,k,5))
-    dorogovtsev_mendes_space = Agents.GraphSpace(dorogovtsev_mendes(node_number))
-
-
-    for i_seed in network_seeds
-        push!(ensemble_spaces,Agents.GraphSpace(watts_strogatz(node_number,k,beta,seed=i_seed)))
-    end
-
-# range for array of varying tauSocials
-    tauSocialVariation = range(0.25, 2.5, step=0.025)
-
-# set parameters to be varied in the ensemble
+    # set parameters to be varied in the ensemble
     parameters = Dict(
-        :space => dorogovtsev_mendes_space,
-        :switchingLimit => [node_number*0.01], # assuming that 1 percent of population can be vaccinated per timestep
-        #:schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
-        #:neighbourhoodExtent => 1,
-        :tauSocial => [i for i in tauSocialVariation],
-        :tauRational => 1,
-        #:switchingBoundary => [0.5], #varying vaccine decision boundary to check for sensitivity
-        :seed => 1910, # fixed seed to to enough variation by network composition
+        :space => [grid_space],
+        :constantAvantgarde => 0.0,
+        :switchingLimit => [Inf], # assuming that 0.5 percent of population can be vaccinated per timestep
+        :schedulerIndex => [1], #only standard fastest scheduler by agent id, no affinity ordering (index 2) or lowAffinityFirst (index 3)
+        :neighbourhoodExtent => 1,
+        :tauSocial => [0.5],
+        :switchingBoundary => [0.9], #varying vaccine decision boundary to check for sensitivity,
     )
     # data to be tracked for each agent
     adata = [:affinity,:state]
 end
-timesteps = 500
+
+function GetMeanAffinity(model)
+    summedAffinity = 0.0
+    counts = 0
+    for agentPair in getproperty(model, :agents)
+        agent = agentPair.second
+        summedAffinity += agent.affinity
+        counts += 1
+    end
+    return summedAffinity / counts
+end
+
+function GetStandardDeviationAffinity(model, mean)
+    summedDeltaAffinity = 0.0
+    counts = 0
+    for agentPair in getproperty(model, :agents)
+        agent = agentPair.second
+        diff = (agent.affinity - mean)
+        summedDeltaAffinity += diff * diff
+        counts += 1
+    end
+    return sqrt(summedDeltaAffinity / counts)
+end
+
+
+spaceDims = (10, 10)
+grid_space = Agents.GridSpace(spaceDims; periodic = true, metric = :chebyshev)
+a = 0.0
+tau = 1.5
+threshold = 0.9
+model = initialize(; space=grid_space, constantAvantgarde=a, tauSocial=tau, switchingBoundary=threshold) 
+mdata = [:constantAvantgarde,:tauSocial,:switchingBoundary]
+adata = [:affinity]
+df_agent = init_agent_dataframe(model, adata)
+df_model = init_model_dataframe(model, mdata)
+
+timesteps = 2500
+collectTime = 25
+firstSteps = 25
+global c = 0 # counter
+global k = 0 # collect counter
+while c < timesteps
+    if k <= 0 || c <= firstSteps # record first steps
+        collect_agent_data!(df_agent, model, adata, c)
+        collect_model_data!(df_model, model, mdata, c)
+        k = collectTime
+        # display(get_affinity_matrix(model))
+        mean = GetMeanAffinity(model)
+        stdv = GetStandardDeviationAffinity(model, mean)
+        @printf "Step %2i:   Affinity: %.5f +- %.5f \n" c mean stdv   
+    end
+    step!(model, agent_step!, model_step!, 1)
+    global c += 1
+    global k -= 1
+end
+
+###
 # perform parameter scan for varying models
-ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; adata,agent_step! = agent_step!,model_step!, n = timesteps, parallel = true)
+# ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; adata, agent_step!=agent_step!, model_step!, n=timesteps, parallel=true)
+
 # safe to datadir
-#identify by date
+# identify by date
 using Dates
 date = Dates.now()
-identifier = "social_ensemble_dorogotsev_"*string(date)*".csv"
-CSV.write(datadir(identifier),ensemble_agent_data_frame)
+identifierAgent = "data_test2.csv" # "data_metric=chebyshev_avantgarde=n=100_tau=1.50_step=25.csv"
+CSV.write(datadir("avantgarde", identifierAgent), df_agent)

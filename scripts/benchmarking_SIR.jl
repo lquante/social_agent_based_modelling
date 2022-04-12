@@ -3,7 +3,7 @@ using DrWatson
 @quickactivate "Social Agent Based Modelling"
 using ProgressMeter
 using BenchmarkTools
-using LightGraphs
+using Graphs
 include(srcdir("agentFunctions.jl"))
 include(srcdir("modelling.jl"))
 

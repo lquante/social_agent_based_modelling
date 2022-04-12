@@ -8,7 +8,7 @@ using YAML
 "custom struct as a container of model parameters"
 Base.@kwdef mutable struct ModelParameters
 	#general parameters
-	externalRationalInfluence::Real #starting value of general rational influence on decision
+	constantAvantgarde::Real #constant value of avantgarde
 	neighbourhoodExtent::Real # gives the extent of the neighbourhood: for grid spaces, euclidean distance, for networks: n-th neighbours
 	tauRational::Real # weight for the rational influence
 	tauSocial::Real #weight for the social influence
@@ -21,41 +21,28 @@ Base.@kwdef mutable struct ModelParameters
 	timepoint::Int
 end
 
-"custom struct as a container of model parameters coupled with SIR model"
-Base.@kwdef mutable struct ModelParametersSIR
-	#general parameters
-	externalRationalInfluence::Real #starting value of general rational influence on decision
-	neighbourhoodExtent::Real # gives the extent of the neighbourhood: for grid spaces, euclidean distance, for networks: n-th neighbours
-	tauRational::Real # weight for the rational influence
-	tauSocial::Real #weight for the social influence
-	switchingLimit::Real #limited number of state changes possible (per timestep)
-	numberSwitched::Real #umber of state changes occured (per timestep)
-	switchingBoundary::Real # lower boundary for affinity to have a state switch
-	lowerAffinityBound::Real
-	upperAffinityBound::Real
-	scenario::Bool # help variable to trigger use of scenarios, i.e. dynamic change of model parameters
-	timepoint::Int
-	infectionPeriod::Int
-	detectionTime::Int
-	deathRate::Float64
-	reinfectionProtection::Int
-	transmissionUndetected::Float64
-	transmissionDetected::Float64
-	initialInfected::Float64
-	detectionProbability::Float64
-end
 
 "function to place one agent at each position of the models space"
-function mixed_population(model;SIR=false)
+function mixed_population(model)
 	if typeof(model.space)<:Agents.GraphSpace
 		for node in 1:length(model.space.s)
-			create_agent(model,node;SIR=SIR)
+			create_agent(model,node)
 	    end
     end
 	if typeof(model.space)<:Agents.GridSpace
 		for pos in positions(model)
-			create_agent(model,pos;SIR=SIR)
+			create_agent(model,pos)
 		end
+    
+        notSelectedCondition(agent) = agent.avantgarde == 0.0
+        
+        pioneer = random_agent(model, notSelectedCondition)
+        pioneer.avantgarde = 0.8
+        
+        for i = 1:5
+            pioneer = random_agent(model, notSelectedCondition)
+            pioneer.avantgarde = -0.8
+        end
 	end
 end
 
@@ -76,7 +63,7 @@ function model_decision_agents(placementFunction;seed=1234,
 	schedulerIndex=1,
 	kwargsPlacement = (),
     #general parameters
-	externalRationalInfluence = 0.5,
+	constantAvantgarde = 0.5,
 	neighbourhoodExtent = 1, # distance of neighbours to be considered
 	tauRational = 1, #weight of rational influence
 	tauSocial = 1, #weight of social influence
@@ -89,7 +76,7 @@ function model_decision_agents(placementFunction;seed=1234,
     timepoint=0.)
 
 	properties = ModelParameters(
-            externalRationalInfluence,
+			constantAvantgarde,
 			neighbourhoodExtent,
             tauRational,
 			tauSocial,
@@ -130,78 +117,6 @@ function model_decision_agents(placementFunction;seed=1234,
     return model
 end
 
-"initialize function for model creation, needed for paramscan methods"
-function initialize_SIR(;args ...)
-    return model_decision_agents_SIR(mixed_population;args ...)
-end
-
-"creating a coupled SIR - decision model"
-function model_decision_agents_SIR(placementFunction;seed=1234,
-    space = Agents.Graphspace(SimpleGraph(10,30)),
-	scheduler = Agents.Schedulers.fastest,
-	schedulerIndex=1,
-	kwargsPlacement = (),
-    #general parameters
-	externalRationalInfluence = 0.5,
-	neighbourhoodExtent = 1, # distance of neighbours to be considered
-	tauRational = 1, #weight of rational influence
-	tauSocial = 1, #weight of social influence
-    switchingLimit=Inf, #limited number of state switching per timestep
-	numberSwitched=0,
-	switchingBoundary=0.5, # bound for affinity to switch state
-    lowerAffinityBound = 0.0,
-    upperAffinityBound = 1.0,
-    scenario=0.,
-    timepoint=0.,
-	#SIR parameters
-	infectionPeriod = 30,
-	detectionTime = 7,
-	deathRate = 0.02,
-	reinfectionProtection = 180,
-	transmissionUndetected = 0.5,
-	transmissionDetected = 0.05,
-	initialInfected = 0.1,
-	detectionProbability = 0.5
-	)
-
-	properties = ModelParametersSIR(
-            externalRationalInfluence,
-			neighbourhoodExtent,
-            tauRational,
-			tauSocial,
-            switchingLimit,
-			numberSwitched,
-            switchingBoundary,
-            lowerAffinityBound,
-            upperAffinityBound,
-            scenario,
-            timepoint,
-			infectionPeriod,
-			detectionTime,
-			deathRate,
-			reinfectionProtection,
-			transmissionUndetected,
-			transmissionDetected,
-			initialInfected,
-			detectionProbability
-    )
-
-	if (scheduler==Agents.Schedulers.fastest)
-		defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:affinity),Agents.Schedulers.by_property(lowAffinityFirst)]
-		scheduler = defaultSchedulers[schedulerIndex]
-	end
-
-	model = ABM(
-		        DecisionAgentGraphSIR,
-		        space;rng=(Random.seed!(seed)),
-				scheduler=scheduler,
-		        properties = properties
-		    )
-
-    placementFunction(model;SIR=true,kwargsPlacement...)
-    return model
-end
-
 "constant switching limit"
 function constantSwitchingLimit(model,timepoint)
 	return model.switchingLimit
@@ -219,11 +134,16 @@ end
 "stepping function for updating model parameters"
 function model_step!(model,switchingLimitFunction=constantSwitchingLimit)
     model.timepoint += 1
+    
+    for agent in allagents(model)
+        agent.affinity_old = agent.affinity
+    end
+
 	model.numberSwitched=0
     if model.scenario != false
         apply_scenario!(model)
     end
-	model.switchingLimit = switchingLimitFunction(model,model.timepoint)
+	model.switchingLimit = switchingLimitFunction(model, model.timepoint)
 end
 
 
@@ -244,7 +164,7 @@ end
 
 "function to get a matrix of all affinities of the agents"
 function get_affinity_matrix(model)
-	if (model.space<:Agents.GridSpace)
+	if (typeof(model.space)<:Agents.GridSpace)
 		position_matrix = model.space.s
 	    property_matrix = zeros(size(position_matrix))
 	    @inbounds for i_position in position_matrix
