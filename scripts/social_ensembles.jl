@@ -49,7 +49,7 @@ using Printf
         :switchingBoundary => [0.9], #varying vaccine decision boundary to check for sensitivity,
     )
     # data to be tracked for each agent
-    adata = [:affinity,:state]
+    adata = [:affinity,:state,:avantgarde]
 end
 
 function GetMeanAffinity(model)
@@ -76,27 +76,29 @@ function GetStandardDeviationAffinity(model, mean)
 end
 
 
-spaceDims = (10, 10)
+spaceDims =(40, 40) #(100, 100)
 grid_space = Agents.GridSpace(spaceDims; periodic = true, metric = :chebyshev)
 a = 0.0
-tau = 1.5
+tau = 10.0
 threshold = 0.9
 model = initialize(; space=grid_space, constantAvantgarde=a, tauSocial=tau, switchingBoundary=threshold) 
 mdata = [:constantAvantgarde,:tauSocial,:switchingBoundary]
-adata = [:affinity]
+adata = [:affinity,:avantgarde,:state]
 df_agent = init_agent_dataframe(model, adata)
 df_model = init_model_dataframe(model, mdata)
 
-timesteps = 2500
-collectTime = 25
-firstSteps = 25
+timesteps = 100
+collectTime = 2
+firstSteps = 0
 global c = 0 # counter
 global k = 0 # collect counter
 while c < timesteps
     if k <= 0 || c <= firstSteps # record first steps
         collect_agent_data!(df_agent, model, adata, c)
         collect_model_data!(df_model, model, mdata, c)
-        k = collectTime
+        if k <= 0
+            k = collectTime
+        end
         # display(get_affinity_matrix(model))
         mean = GetMeanAffinity(model)
         stdv = GetStandardDeviationAffinity(model, mean)
@@ -115,5 +117,5 @@ end
 # identify by date
 using Dates
 date = Dates.now()
-identifierAgent = "data_test2.csv" # "data_metric=chebyshev_avantgarde=n=100_tau=1.50_step=25.csv"
+identifierAgent =  "data_po_N-1600_Np-15_Nf-0nn2_No-x_tau-10.0_step-2_ap-0.5_ao-0.5_bounded_init-beta-0.6-4.0.csv" # "data_metric=chebyshev_avantgarde=n=100_tau=1.50_step=25.csv"
 CSV.write(datadir("avantgarde", identifierAgent), df_agent)

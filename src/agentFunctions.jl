@@ -52,7 +52,7 @@ function randomAffinity(model,distribution=Beta(2,3))
 end
 
 "get random affinity on decision, skewed by inverted beta dist"
-function randomAffinityNormal(model,distribution=Beta(0.4, 6)) # truncated(Normal(0.5,0.5),0,1))
+function randomAffinityNormal(model,distribution=Beta(0.6, 4.)) # truncated(Normal(0.5,0.5),0,1))
     return rand(model.rng,distribution)
 end
 
@@ -106,6 +106,21 @@ function neighbourWeight(agent,neighbour,model)
         end
 end
 
+function RiemannTheta(x)
+    if x >= 0
+        return 1
+    else
+        return 0
+    end
+end
+
+function Sgn(x)
+    if x >=0
+        return 1
+    else
+        return -1
+    end
+end
 
 "social influence based on neighbours affinity"
 function affinity_social_influence(agent, model::AgentBasedModel)
@@ -123,8 +138,14 @@ function affinity_social_influence(agent, model::AgentBasedModel)
         affinitySocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
     end
 
-    #adjust by avantgarde factor
-    avantgardedInfluence = (1-agent.avantgarde)*affinitySocialInfluence + agent.avantgarde*(1-affinitySocialInfluence)
+    # adjust by avantgarde factor
+    crowdBehaviour = (1 - abs(agent.avantgarde)) * affinitySocialInfluence
+    soloBehaviour = agent.avantgarde * (1 - abs(affinitySocialInfluence)) #* RiemannTheta((-1) * agent.avantgarde * affinitySocialInfluence)
+    avantgardedInfluence = crowdBehaviour + soloBehaviour
+    
+#    if (Sgn(agent.avantgarde) * Sgn(affinitySocialInfluence) != -1) && (agent.avantgarde != 0)
+#        @printf "agent anormal a=%.5f W=%.5f\n" agent.avantgarde affinitySocialInfluence
+#    end
 
     # adjust by tauSocial 
     return avantgardedInfluence / model.tauSocial

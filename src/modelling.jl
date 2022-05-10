@@ -34,15 +34,40 @@ function mixed_population(model)
 			create_agent(model,pos)
 		end
     
-        notSelectedCondition(agent) = agent.avantgarde == 0.0
+        notSelectedCondition(agent) = agent.avantgarde == -0.5
         
-        pioneer = random_agent(model, notSelectedCondition)
-        pioneer.avantgarde = 0.8
+        #pioneer = random_agent(model, notSelectedCondition)
+        #pioneer.avantgarde = 0.8
         
-        for i = 1:5
-            pioneer = random_agent(model, notSelectedCondition)
-            pioneer.avantgarde = -0.8
+        for agent in allagents(model)
+            agent.avantgarde = -0.5
         end
+
+        
+        for i = 1:15
+            pioneer = random_agent(model, notSelectedCondition)
+            pioneer.avantgarde = 0.5
+            
+            # set neighbours conforming the opinion
+            count = 0
+            n = 2
+            limit = 100
+            while count < n
+                neighbour = random_nearby_agent(pioneer, model, model.neighbourhoodExtent)               
+                if neighbour.avantgarde != 0.0
+                    neighbour.avantgarde = 0.0 # slighty different for analysis
+                    count += 1
+                end
+                if count > limit
+                    break
+                end
+            end
+        end
+
+#        for i = 1:22
+#            opponent = random_agent(model, notSelectedCondition)
+#            opponent.avantgarde = -0.2
+#        end
 	end
 end
 
