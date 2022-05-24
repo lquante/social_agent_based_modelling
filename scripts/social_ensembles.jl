@@ -13,7 +13,7 @@ using Printf
     include(srcdir("agentFunctions.jl"))
     include(srcdir("modelling.jl"))
 
-    Random.seed!(1234)
+    #Random.seed!(101)
 
     ## define model(s) to be used
     #network_number = 1
@@ -76,19 +76,20 @@ function GetStandardDeviationAffinity(model, mean)
 end
 
 
-spaceDims =(40, 40) #(100, 100)
+spaceDims = (100, 100)
 grid_space = Agents.GridSpace(spaceDims; periodic = true, metric = :chebyshev)
 a = 0.0
 tau = 10.0
 threshold = 0.9
-model = initialize(; space=grid_space, constantAvantgarde=a, tauSocial=tau, switchingBoundary=threshold) 
+seedNumber = parse(Int, ARGS[1])
+model = initialize(;seed=seedNumber, space=grid_space, constantAvantgarde=a, tauSocial=tau, switchingBoundary=threshold) 
 mdata = [:constantAvantgarde,:tauSocial,:switchingBoundary]
-adata = [:affinity,:avantgarde,:state]
+adata = [:affinity,:avantgarde]
 df_agent = init_agent_dataframe(model, adata)
 df_model = init_model_dataframe(model, mdata)
 
-timesteps = 100
-collectTime = 2
+timesteps = 600
+collectTime = 4
 firstSteps = 0
 global c = 0 # counter
 global k = 0 # collect counter
@@ -117,5 +118,5 @@ end
 # identify by date
 using Dates
 date = Dates.now()
-identifierAgent =  "data_po_N-1600_Np-15_Nf-0nn2_No-x_tau-10.0_step-2_ap-0.5_ao-0.5_bounded_init-beta-0.6-4.0.csv" # "data_metric=chebyshev_avantgarde=n=100_tau=1.50_step=25.csv"
-CSV.write(datadir("avantgarde", identifierAgent), df_agent)
+identifierAgent = "data_avantgarde-uniform-0.3_affinity-uniform" * string(seedNumber) * ".csv" # "data_Np-25_Nf-x_No-25_mix_real_tau-10.0_ap-0.5_ao-0.5_init-beta-4.0-4.0_seed_" * string(seedNumber) * ".csv" # "data_metric=chebyshev_avantgarde=n=100_tau=1.50_step=25.csv"
+CSV.write(datadir("avantgarde/po100k", identifierAgent), df_agent)

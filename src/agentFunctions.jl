@@ -33,12 +33,13 @@ end
 
 "get varying avantgarde factor"
 function getAvantgarde(model)
-    avantgarde = 0.0    
-    rnd = rand(model.rng, Uniform(0.0, 1.0))
-    p = 0.01
-    if rnd < p
-        avantgarde = 1.0
-    end
+    # avantgarde = 0.0    
+    rnd = rand(model.rng, Uniform(-0.3, 0.3)) # truncated(Normal(0.0, 0.3), -0.9999, 0.9999))# Uniform(-1.0, 1.0))
+    # p = 0.01
+    # if rnd < p
+    #     avantgarde = 1.0
+    # end
+    avantgarde = rnd
     return avantgarde
 end
 
@@ -52,16 +53,16 @@ function randomAffinity(model,distribution=Beta(2,3))
 end
 
 "get random affinity on decision, skewed by inverted beta dist"
-function randomAffinityNormal(model,distribution=Beta(0.6, 4.)) # truncated(Normal(0.5,0.5),0,1))
+function randomAffinityNormal(model,distribution=Uniform(0, 1)) # truncated(Normal(0.5,0.5),0,1))
     return rand(model.rng,distribution)
 end
 
 function constantAffinity(model)
-    return 0.1
+    return 0.5
 end
 
 "function to add an agent to a space based on position"
-function create_agent(model,position;initializeAvantgarde=constantAvantgarde,initializeAffinity=randomAffinityNormal)
+function create_agent(model,position;initializeAvantgarde=getAvantgarde,initializeAffinity=randomAffinityNormal)
     initialAvantgarde=initializeAvantgarde(model)
     initialAffinity = initializeAffinity(model)
     initialState = 0
@@ -92,7 +93,7 @@ function neighbourDistance(agent,neighbour,model)
                 return length(a_star(model.space.graph,agent.pos,neighbour.pos)) # get shortest path between a and neighbour
             end
         else
-        error("distance for this space type not yet implemented")
+            error("distance for this space type not yet implemented")
         end
     end
 end
@@ -128,6 +129,7 @@ function affinity_social_influence(agent, model::AgentBasedModel)
     affinitySocialInfluence = 0.0
     sumNeighbourWeights = 0
     neighbours = nearby_agents(agent,model,model.neighbourhoodExtent)
+                      
     @inbounds for n in neighbours
         nWeight = 1 # neighbourWeight(agent,n,model)
         affinitySocialInfluence += (n.affinity_old-agent.affinity) * nWeight

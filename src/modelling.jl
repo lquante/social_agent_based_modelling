@@ -31,44 +31,33 @@ function mixed_population(model)
     end
 	if typeof(model.space)<:Agents.GridSpace
 		for pos in positions(model)
-			create_agent(model,pos)
+			create_agent(model, pos)
 		end
     
-        notSelectedCondition(agent) = agent.avantgarde == -0.5
+        # notSelectedCondition(agent) = agent.avantgarde == 0.0
         
-        #pioneer = random_agent(model, notSelectedCondition)
-        #pioneer.avantgarde = 0.8
+        # pioneer = random_agent(model, notSelectedCondition)
+        # pioneer.avantgarde = 0.8
         
-        for agent in allagents(model)
-            agent.avantgarde = -0.5
-        end
-
-        
-        for i = 1:15
-            pioneer = random_agent(model, notSelectedCondition)
-            pioneer.avantgarde = 0.5
-            
-            # set neighbours conforming the opinion
-            count = 0
-            n = 2
-            limit = 100
-            while count < n
-                neighbour = random_nearby_agent(pioneer, model, model.neighbourhoodExtent)               
-                if neighbour.avantgarde != 0.0
-                    neighbour.avantgarde = 0.0 # slighty different for analysis
-                    count += 1
-                end
-                if count > limit
-                    break
-                end
-            end
-        end
-
-#        for i = 1:22
-#            opponent = random_agent(model, notSelectedCondition)
-#            opponent.avantgarde = -0.2
-#        end
+        # for agent in allagents(model)
+        #     agent.avantgarde = 0.0
+        # end
 	end
+end
+
+function setNNeighboursAvantgarde(model, agent, avantgarde, n)
+    k = 0
+    neighbours = shuffle(collect(nearby_agents(agent, model, model.neighbourhoodExtent)))
+    iter_neighbours = Iterators.Stateful(neighbours)
+    for neighbour in iter_neighbours
+        if k >= n
+            break
+        end
+        if neighbour.avantgarde == 0.0 #neighbour.avantgarde != avantgarde && neighbour.avantgarde != avantgarde - 0.01
+           neighbour.avantgarde = avantgarde - 0.01
+           k += 1
+        end
+    end
 end
 
 "initialize function for model creation, needed for paramscan methods"
@@ -83,7 +72,7 @@ end
 
 "creating a model with some plausible default parameters"
 function model_decision_agents(placementFunction;seed=1234,
-    space = Agents.GridSpace((10, 10); periodic = false, metric = :euclidean),
+    space = Agents.GridSpace((10, 10); periodic=false, metric=:euclidean),
 	scheduler = Agents.Schedulers.fastest,
 	schedulerIndex=1,
 	kwargsPlacement = (),
@@ -137,7 +126,6 @@ function model_decision_agents(placementFunction;seed=1234,
 			error("type of space not yet implemented")
 		end
 	end
-
     placementFunction(model;kwargsPlacement...)
     return model
 end
