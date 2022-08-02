@@ -6,8 +6,10 @@
 data
 videos
 plots
-notebooks
+# notebooks
+notebooks/.ipynb_checkpoints
 _research
+images
 
 ################################################################################
 #                                    Julia                                     #
