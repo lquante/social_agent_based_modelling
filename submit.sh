@@ -11,7 +11,7 @@ echo $jobid1
 
 wait
 
-latest_file=$(ls -t data/avantgarde | head -n1)
+latest_file=$(ls -t data/avantgardeGoal/100k | head -n1)
 
 # rename slurm output files
 cd log/

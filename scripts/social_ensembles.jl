@@ -84,12 +84,12 @@ threshold = 0.9
 seedNumber = parse(Int, ARGS[1])
 model = initialize(;seed=seedNumber, space=grid_space, constantAvantgarde=a, tauSocial=tau, switchingBoundary=threshold) 
 mdata = [:constantAvantgarde,:tauSocial,:switchingBoundary]
-adata = [:affinity,:avantgarde]
+adata = [:affinity,:avantgarde,:affinityGoal]
 df_agent = init_agent_dataframe(model, adata)
 df_model = init_model_dataframe(model, mdata)
 
-timesteps = 600
-collectTime = 4
+timesteps = 200
+collectTime = 2
 firstSteps = 0
 global c = 0 # counter
 global k = 0 # collect counter
@@ -118,5 +118,5 @@ end
 # identify by date
 using Dates
 date = Dates.now()
-identifierAgent = "data_avantgarde-uniform-0.3_affinity-uniform" * string(seedNumber) * ".csv" # "data_Np-25_Nf-x_No-25_mix_real_tau-10.0_ap-0.5_ao-0.5_init-beta-4.0-4.0_seed_" * string(seedNumber) * ".csv" # "data_metric=chebyshev_avantgarde=n=100_tau=1.50_step=25.csv"
-CSV.write(datadir("avantgarde/po100k", identifierAgent), df_agent)
+identifierAgent = "data_e-2_avantgarde-uniform_affinity-uniform_goal-uniform" * string(seedNumber) * ".csv" # "data_Np-25_Nf-x_No-25_mix_real_tau-10.0_ap-0.5_ao-0.5_init-beta-4.0-4.0_seed_" * string(seedNumber) * ".csv" # "data_metric=chebyshev_avantgarde=n=100_tau=1.50_step=25.csv"
+CSV.write(datadir("avantgardeGoal/100k/radius", identifierAgent), df_agent)

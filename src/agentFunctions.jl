@@ -8,6 +8,7 @@ mutable struct DecisionAgentGrid <:AbstractAgent
     id::Int
     pos::Tuple{Int64,Int64}
     avantgarde::Float64
+    affinityGoal::Float64
     state::Int
     state_old::Int
     affinity::Float64
@@ -19,6 +20,7 @@ mutable struct DecisionAgentGraph <:AbstractAgent
     id::Int
     pos::Int
     avantgarde::Float64
+    affinityGoal::Float64
     state::Int
     state_old::Int
     affinity::Float64
@@ -34,11 +36,8 @@ end
 "get varying avantgarde factor"
 function getAvantgarde(model)
     # avantgarde = 0.0    
-    rnd = rand(model.rng, Uniform(-0.3, 0.3)) # truncated(Normal(0.0, 0.3), -0.9999, 0.9999))# Uniform(-1.0, 1.0))
-    # p = 0.01
-    # if rnd < p
-    #     avantgarde = 1.0
-    # end
+    #    rnd = rand(model.rng, truncated(Beta(5.0, 1.0), 0.0, 1.0)) # truncated(Normal(0.0, 0.3), -0.9999, 0.9999))# Uniform(-1.0, 1.0))
+    rnd = rand(Uniform(0.0, 1.0))
     avantgarde = rnd
     return avantgarde
 end
@@ -61,15 +60,22 @@ function constantAffinity(model)
     return 0.5
 end
 
+function getAffinityGoal(model, distribution=Uniform(0, 1))               # truncated(Normal(0.6, 0.2), 0.0, 1.0))
+    rnd = rand(model.rng, distribution)
+    return rnd
+end
+
 "function to add an agent to a space based on position"
-function create_agent(model,position;initializeAvantgarde=getAvantgarde,initializeAffinity=randomAffinityNormal)
-    initialAvantgarde=initializeAvantgarde(model)
+function create_agent(model,position;initializeAvantgarde=getAvantgarde,initializeAffinity=randomAffinityNormal, initializeAffinityGoal=getAffinityGoal)
+    initialAvantgarde = initializeAvantgarde(model)
+    initialAffinityGoal = initializeAffinityGoal(model)
     initialAffinity = initializeAffinity(model)
     initialState = 0
     add_agent!(position,
         model,
         #general parameters
         initialAvantgarde,
+        initialAffinityGoal,
         initialState,
         initialState,
         initialAffinity,
@@ -141,13 +147,10 @@ function affinity_social_influence(agent, model::AgentBasedModel)
     end
 
     # adjust by avantgarde factor
-    crowdBehaviour = (1 - abs(agent.avantgarde)) * affinitySocialInfluence
-    soloBehaviour = agent.avantgarde * (1 - abs(affinitySocialInfluence)) #* RiemannTheta((-1) * agent.avantgarde * affinitySocialInfluence)
+    crowdBehaviour = (1 - agent.avantgarde) * affinitySocialInfluence
+    alpha = 1
+    soloBehaviour = agent.avantgarde * alpha * (agent.affinityGoal - agent.affinity) * (abs(affinitySocialInfluence)) #* RiemannTheta((-1) * agent.avantgarde * affinitySocialInfluence)
     avantgardedInfluence = crowdBehaviour + soloBehaviour
-    
-#    if (Sgn(agent.avantgarde) * Sgn(affinitySocialInfluence) != -1) && (agent.avantgarde != 0)
-#        @printf "agent anormal a=%.5f W=%.5f\n" agent.avantgarde affinitySocialInfluence
-#    end
 
     # adjust by tauSocial 
     return avantgardedInfluence / model.tauSocial
