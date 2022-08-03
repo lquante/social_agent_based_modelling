@@ -33,43 +33,27 @@ function constantAvantgarde(model)
     return model.constantAvantgarde
 end
 
-"get varying avantgarde factor"
-function getAvantgarde(model)
-    # avantgarde = 0.0    
-    #    rnd = rand(model.rng, truncated(Beta(5.0, 1.0), 0.0, 1.0)) # truncated(Normal(0.0, 0.3), -0.9999, 0.9999))# Uniform(-1.0, 1.0))
-    rnd = rand(Uniform(0.0, 1.0))
-    avantgarde = rnd
+function initializeAvantgarde(rng, distribution=Uniform(0, 1))
+    avantgarde = rand(rng, distribution)
     return avantgarde
 end
 
-"get random avantgarde factor, skewed by inverted beta dist"
-function randomAvantgarde(model,distribution=Beta(2,3))
-    return 1-rand(model.rng,distribution)
-end
-"get random affinity on decision, skewed by inverted beta dist"
-function randomAffinity(model,distribution=Beta(2,3))
-    return 1-rand(model.rng,distribution)
+function initializeAffinity(rng, distribution=Uniform(0, 1))
+    affinity = rand(rng, distribution)
+    return affinity
 end
 
-"get random affinity on decision, skewed by inverted beta dist"
-function randomAffinityNormal(model,distribution=Uniform(0, 1)) # truncated(Normal(0.5,0.5),0,1))
-    return rand(model.rng,distribution)
-end
-
-function constantAffinity(model)
-    return 0.5
-end
-
-function getAffinityGoal(model, distribution=Uniform(0, 1))               # truncated(Normal(0.6, 0.2), 0.0, 1.0))
-    rnd = rand(model.rng, distribution)
+function initializeAffinityGoal(rng, distribution=Uniform(0, 1))  # truncated(Normal(0.6, 0.2), 0.0, 1.0))
+    rnd = rand(rng, distribution)
     return rnd
 end
 
+
 "function to add an agent to a space based on position"
-function create_agent(model,position;initializeAvantgarde=getAvantgarde,initializeAffinity=randomAffinityNormal, initializeAffinityGoal=getAffinityGoal)
-    initialAvantgarde = initializeAvantgarde(model)
-    initialAffinityGoal = initializeAffinityGoal(model)
-    initialAffinity = initializeAffinity(model)
+function create_agent(model,position)
+    initialAvantgarde = initializeAvantgarde(model.rng)
+    initialAffinityGoal = initializeAffinityGoal(model.rng)
+    initialAffinity = initializeAffinity(model.rng)
     initialState = 0
     add_agent!(position,
         model,
