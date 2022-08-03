@@ -1,0 +1,11 @@
+  Activating environment at `/p/projects/compacts/projects/DeMo/social_agent_based_modelling/Project.toml`
+WARNING: Method definition __init__() in module Agents at /home/quante/.julia/packages/Agents/doYeo/src/deprecations.jl:12 overwritten at /home/quante/.julia/packages/Agents/doYeo/src/Agents.jl:51.
+  ** incremental compilation may be fatally broken for this module **
+
+┌ Warning: The call to compilecache failed to create a usable precompiled cache file for Agents [46ada45e-f475-11e8-01d0-f70cc89e6671]
+│   exception = Required dependency OpenStreetMapX [86cd37e6-c0ff-550b-95fe-21d72c8d4fc9] failed to load from a cache file.
+└ @ Base loading.jl:1033
+┌ Warning: The call to compilecache failed to create a usable precompiled cache file for Agents [46ada45e-f475-11e8-01d0-f70cc89e6671]
+│   exception = Required dependency JLD2 [033835bb-8acc-5ee8-8aae-3f567f8a3819] failed to load from a cache file.
+└ @ Base loading.jl:1033
+Progress:  17%|██████▉                                  |  ETA: 0:01:56[KProgress:  33%|█████████████▋                           |  ETA: 0:01:37[KProgress:  42%|█████████████████▏                       |  ETA: 0:01:08[KProgress:  50%|████████████████████▌                    |  ETA: 0:00:52[KProgress:  58%|███████████████████████▉                 |  ETA: 0:00:51[KProgress:  67%|███████████████████████████▍             |  ETA: 0:00:38[KProgress:  75%|██████████████████████████████▊          |  ETA: 0:00:27[KProgress:  83%|██████████████████████████████████▏      |  ETA: 0:00:21[KProgress:  92%|█████████████████�
