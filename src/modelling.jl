@@ -75,15 +75,15 @@ end
 
 "creating a model with some plausible default parameters"
 function model_decision_agents(placementFunction;seed=1234,
-    space = Agents.GridSpace((10, 10); periodic=false, metric=:euclidean),
+    space = Agents.GridSpace((100, 100); periodic = true, metric = :chebyshev),
 	scheduler = Agents.Schedulers.fastest,
 	schedulerIndex=1,
 	kwargsPlacement = (),
     #general parameters
 	constantAvantgarde = 0.5,
-	neighbourhoodExtent = 3, # distance of neighbours to be considered
+	neighbourhoodExtent = 1, # distance of neighbours to be considered
 	tauRational = 1, #weight of rational influence
-	tauSocial = 1, #weight of social influence
+	tauSocial = 10, #weight of social influence
     switchingLimit=Inf, #limited number of state switching per timestep
 	numberSwitched=0,
 	switchingBoundary=0.5, # bound for affinity to switch state
