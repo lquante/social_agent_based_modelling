@@ -1,4 +1,3 @@
-# Social agent based modelling
-Project to facilitate the modelling of (social) agent-based models of social questions based on [Agents.jl](https://github.com/JuliaDynamics/Agents.jl).
-## Aim:
-Basic influence factors on decisions like agents rational decision, opinion, information about opinion and decisions of neighbours, etc. are combined in an integrated framework to model societal decision dynamics.
+# DeMo: a simple generic model for making decisions influenced by friends
+Decisions are rarely made in solitude. Here we present a very simple model based on [Agents.jl](https://github.com/JuliaDynamics/Agents.jl) that balances the inner drive towards an individual optimum with the influence of the neighbors in a social network.
+As a third element the model incorporates inertia towards change.
