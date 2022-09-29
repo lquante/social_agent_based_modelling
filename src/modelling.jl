@@ -14,9 +14,9 @@ Base.@kwdef mutable struct ModelParameters
 	tauSocial::Real #weight for the social influence
 	switchingLimit::Real #limited number of state changes possible (per timestep)
 	numberSwitched::Real #umber of state changes occured (per timestep)
-	switchingBoundary::Real # lower boundary for affinity to have a state switch
-	lowerAffinityBound::Real
-	upperAffinityBound::Real
+	switchingBoundary::Real # lower boundary for currentChoice to have a state switch
+	lowerChoiceBound::Real
+	upperChoiceBound::Real
 	scenario::Bool # help variable to trigger use of scenarios, i.e. dynamic change of model parameters
 	timepoint::Int
 end
@@ -33,18 +33,16 @@ function mixed_population(model)
 		for pos in positions(model)
 			create_agent(model, pos)
 		end
-        
-        # setBubbleArea(model, 0, 3)
 	end
 end
 
-"function to initialize bubble areas (key = 0, 1 deteremines affinity tendency)"
+"function to initialize bubble areas (key = 0, 1 deteremines currentChoice tendency)"
 function setBubbleArea(model, key, radius)
     centerAgent = getindex(model, 1) # random_agent(model)
-    centerAgent.affinityGoal = 0.5 * centerAgent.affinityGoal + key * 0.5
+    centerAgent.intrinsicBelief = 0.5 * centerAgent.intrinsicBelief + key * 0.5
 
     for agent in nearby_agents(centerAgent, model, radius)
-        agent.affinityGoal = agent.affinityGoal * 0.5 + key * 0.5
+        agent.intrinsicBelief = agent.intrinsicBelief * 0.5 + key * 0.5
     end
 end
 
@@ -68,9 +66,9 @@ function initialize(;args ...)
     return model_decision_agents(mixed_population;args ...)
 end
 
-"schedule agents by inverse affinity, thus the most sceptical agents get to switch first with the (potentially) limited switching capacity"
-function lowAffinityFirst(agent)
-	return 1-agent.affinity
+"schedule agents by inverse currentChoice, thus the most sceptical agents get to switch first with the (potentially) limited switching capacity"
+function lowChoiceFirst(agent)
+	return 1-agent.currentChoice
 end
 
 "creating a model with some plausible default parameters"
@@ -86,9 +84,9 @@ function model_decision_agents(placementFunction;seed=1234,
 	tauSocial = 10, #weight of social influence
     switchingLimit=Inf, #limited number of state switching per timestep
 	numberSwitched=0,
-	switchingBoundary=0.5, # bound for affinity to switch state
-    lowerAffinityBound = 0.0,
-    upperAffinityBound = 1.0,
+	switchingBoundary=0.5, # bound for currentChoice to switch state
+    lowerChoiceBound = 0.0,
+    upperChoiceBound = 1.0,
     scenario=0.,
     timepoint=0.)
 
@@ -100,14 +98,14 @@ function model_decision_agents(placementFunction;seed=1234,
             switchingLimit,
 			numberSwitched,
             switchingBoundary,
-            lowerAffinityBound,
-            upperAffinityBound,
+            lowerChoiceBound,
+            upperChoiceBound,
             scenario,
             timepoint
     )
 
 	if (scheduler==Agents.Schedulers.fastest)
-		defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:affinity),Agents.Schedulers.by_property(lowAffinityFirst)]
+		defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:currentChoice),Agents.Schedulers.by_property(lowChoiceFirst)]
 		scheduler = defaultSchedulers[schedulerIndex]
 	end
 	if typeof(space)<:GridSpace
@@ -152,7 +150,7 @@ function model_step!(model,switchingLimitFunction=constantSwitchingLimit)
     model.timepoint += 1
     
     for agent in allagents(model)
-        agent.affinity_old = agent.affinity
+        agent.previousChoice = agent.currentChoice
     end
 
 	model.numberSwitched=0
@@ -179,13 +177,13 @@ function apply_scenario!(model)
 end
 
 "function to get a matrix of all affinities of the agents"
-function get_affinity_matrix(model)
+function get_currentChoice_matrix(model)
 	if (typeof(model.space)<:Agents.GridSpace)
 		position_matrix = model.space.s
 	    property_matrix = zeros(size(position_matrix))
 	    @inbounds for i_position in position_matrix
 	        agent = model.agents[i_position[1]]
-	        property_matrix[agent.pos[1],agent.pos[2]] = agent.affinity
+	        property_matrix[agent.pos[1],agent.pos[2]] = agent.currentChoice
 	    end
 	    return property_matrix
 	else

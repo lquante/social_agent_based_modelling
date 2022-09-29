@@ -8,11 +8,11 @@ mutable struct DecisionAgentGrid <:AbstractAgent
     id::Int
     pos::Tuple{Int64,Int64}
     avantgarde::Float64
-    affinityGoal::Float64
+    intrinsicBelief::Float64
     state::Int
     state_old::Int
-    affinity::Float64
-    affinity_old::Float64
+    currentChoice::Float64
+    previousChoice::Float64
 end
 
 "define an agent for graph space"
@@ -20,13 +20,12 @@ mutable struct DecisionAgentGraph <:AbstractAgent
     id::Int
     pos::Int
     avantgarde::Float64
-    affinityGoal::Float64
+    intrinsicBelief::Float64
     state::Int
     state_old::Int
-    affinity::Float64
-    affinity_old::Float64
+    currentChoice::Float64
+    previousChoice::Float64
 end
-
 
 "get fixed avantgarde factor"
 function constantAvantgarde(model)
@@ -38,12 +37,12 @@ function initializeAvantgarde(rng, distribution=Uniform(0, 1))
     return avantgarde
 end
 
-function initializeAffinity(rng, distribution=Uniform(0, 1))
-    affinity = rand(rng, distribution)
-    return affinity
+function initializecurrentChoice(rng, distribution=Uniform(0, 1))
+    currentChoice = rand(rng, distribution)
+    return currentChoice
 end
 
-function initializeAffinityGoal(rng, distribution=Uniform(0, 1))  # truncated(Normal(0.6, 0.2), 0.0, 1.0))
+function initializeintrinsicBelief(rng, distribution=Uniform(0, 1))  # truncated(Normal(0.6, 0.2), 0.0, 1.0))
     rnd = rand(rng, distribution)
     return rnd
 end
@@ -52,18 +51,18 @@ end
 "function to add an agent to a space based on position"
 function create_agent(model,position)
     initialAvantgarde = initializeAvantgarde(model.rng)
-    initialAffinityGoal = initializeAffinityGoal(model.rng)
-    initialAffinity = initializeAffinity(model.rng)
+    initialintrinsicBelief = initializeintrinsicBelief(model.rng)
+    initialcurrentChoice = initializecurrentChoice(model.rng)
     initialState = 0
     add_agent!(position,
         model,
         #general parameters
         initialAvantgarde,
-        initialAffinityGoal,
+        initialintrinsicBelief,
         initialState,
         initialState,
-        initialAffinity,
-        initialAffinity
+        initialcurrentChoice,
+        initialcurrentChoice
     )
 end
 
@@ -114,27 +113,27 @@ function Sgn(x)
 end
 
 
-"social influence based on neighbours affinity"
-function affinity_social_influence(agent, model::AgentBasedModel)
+"social influence based on neighbours currentChoice"
+function currentChoice_social_influence(agent, model::AgentBasedModel)
     #calculate neighbours maximum distance based on
-    affinitySocialInfluence = 0.0
+    currentChoiceSocialInfluence = 0.0
     sumNeighbourWeights = 0
     neighbours = nearby_agents(agent,model,model.neighbourhoodExtent)
                       
     @inbounds for n in neighbours
         nWeight = 1 # neighbourWeight(agent,n,model)
-        affinitySocialInfluence += (n.affinity_old-agent.affinity) * nWeight
+        currentChoiceSocialInfluence += (n.previousChoice-agent.currentChoice) * nWeight
         sumNeighbourWeights +=nWeight
     end
     if sumNeighbourWeights>0
-        # sumNeighbourWeights = 0.5 / (affinitySocialInfluence + 1)
-        affinitySocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
+        # sumNeighbourWeights = 0.5 / (currentChoiceSocialInfluence + 1)
+        currentChoiceSocialInfluence /= sumNeighbourWeights #such that the maximum social influence is 1
     end
 
     # adjust by avantgarde factor
-    crowdBehaviour = (1 - agent.avantgarde) * affinitySocialInfluence
+    crowdBehaviour = (1 - agent.avantgarde) * currentChoiceSocialInfluence
     alpha = 1
-    soloBehaviour = agent.avantgarde * alpha * (agent.affinityGoal - agent.affinity) * (abs(affinitySocialInfluence)) #* RiemannTheta((-1) * agent.avantgarde * affinitySocialInfluence)
+    soloBehaviour = agent.avantgarde * alpha * (agent.intrinsicBelief - agent.currentChoice) * (abs(currentChoiceSocialInfluence)) #* RiemannTheta((-1) * agent.avantgarde * currentChoiceSocialInfluence)
     avantgardedInfluence = crowdBehaviour + soloBehaviour
 
     # adjust by tauSocial 
@@ -143,26 +142,25 @@ end
 
 "step function for agents"
 function agent_step!(agent, model)
-    # one way decision, no change for already "yes" decision, Q: should affinity still change?
-    # compute new affinity    
+    # one way decision, no change for already "yes" decision, Q: should currentChoice still change?
+    # compute new currentChoice    
 
-    deltaAffinity = affinity_social_influence(agent, model) 
-    unbounded_affinity = agent.affinity + deltaAffinity
+    deltaCurrentChoice = currentChoice_social_influence(agent, model) 
+    unboundedCurrentChoice = agent.currentChoice + deltaCurrentChoice
     
-    # set new affinity respecting the bounds for the affinity
+    # set new currentChoice respecting the bounds for the currentChoice
     
-    agent.affinity = min(model.upperAffinityBound, max(model.lowerAffinityBound,unbounded_affinity))
+    agent.currentChoice = min(model.uppercurrentChoiceBound, max(model.lowercurrentChoiceBound,unboundedCurrentChoice))
     if agent.state===0 
-        #change state if affinity large enough & switching still possible
+        #change state if currentChoice large enough & switching still possible
         if model.numberSwitched < model.switchingLimit
-            if (agent.affinity >= model.switchingBoundary)
+            if (agent.currentChoice >= model.switchingBoundary)
                 set_state!(1,agent)
                 model.numberSwitched+=1
             end
         end
     end
 
-    #store affinity and state for social influence in next timestep
-    #agent.affinity_old = agent.affinity
+    #store state for social influence in next timestep
     agent.state_old = agent.state
 end
