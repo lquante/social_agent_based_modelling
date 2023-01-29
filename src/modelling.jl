@@ -4,6 +4,7 @@ using Agents
 using Distributions
 using Random
 using YAML
+using Printf
 
 "custom struct as a container of model parameters"
 Base.@kwdef mutable struct ModelParameters
@@ -23,28 +24,16 @@ end
 
 
 "function to place one agent at each position of the models space"
-function mixed_population(model)
-	if typeof(model.space)<:Agents.GraphSpace
-		for node in 1:length(model.space.s)
-			create_agent(model, node)
-	    end
-    end
-	if typeof(model.space)<:Agents.GridSpace
-		for pos in positions(model)
-			create_agent(model, pos)
-		end
-        
-        # setBubbleArea(model, 0, 3)
+function mixed_population(model; kwargs...)
+    if typeof(model.space)<:Agents.GraphSpace
+	for node in 1:length(model.space.s)
+	    create_agent(model, node; kwargs...)
 	end
-end
-
-"function to initialize bubble areas (key = 0, 1 deteremines affinity tendency)"
-function setBubbleArea(model, key, radius)
-    centerAgent = getindex(model, 1) # random_agent(model)
-    centerAgent.affinityGoal = 0.5 * centerAgent.affinityGoal + key * 0.5
-
-    for agent in nearby_agents(centerAgent, model, radius)
-        agent.affinityGoal = agent.affinityGoal * 0.5 + key * 0.5
+    end
+    if typeof(model.space)<:Agents.GridSpace
+        for pos in positions(model)
+	    create_agent(model, pos; kwargs...)
+        end
     end
 end
 
@@ -74,62 +63,67 @@ function lowAffinityFirst(agent)
 end
 
 "creating a model with some plausible default parameters"
-function model_decision_agents(placementFunction;seed=1234,
+function model_decision_agents(
+    placementFunction;
+    seed=1234,
     space = Agents.GridSpace((100, 100); periodic = true, metric = :chebyshev),
-	scheduler = Agents.Schedulers.fastest,
-	schedulerIndex=1,
-	kwargsPlacement = (),
-    #general parameters
-	constantAvantgarde = 0.5,
-	neighbourhoodExtent = 1, # distance of neighbours to be considered
-	tauRational = 1, #weight of rational influence
-	tauSocial = 10, #weight of social influence
+    scheduler = Agents.Schedulers.fastest,
+    schedulerIndex=1,
+    # general parameters
+    constantAvantgarde = 0.5,
+    neighbourhoodExtent = 1, # distance of neighbours to be considered
+    tauRational = 1, #weight of rational influence
+    tauSocial = 1, #weight of social influence
     switchingLimit=Inf, #limited number of state switching per timestep
-	numberSwitched=0,
-	switchingBoundary=0.5, # bound for affinity to switch state
+    numberSwitched=0,
+    switchingBoundary=0.5, # bound for affinity to switch state
     lowerAffinityBound = 0.0,
     upperAffinityBound = 1.0,
     scenario=0.,
-    timepoint=0.)
+    timepoint=0.,
+    kwargs...)
+        
+    # reset seed
+    seed = floor(Int64, seed)
+    @printf("seed= %d\n", seed)    
 
-	properties = ModelParameters(
-			constantAvantgarde,
-			neighbourhoodExtent,
-            tauRational,
-			tauSocial,
-            switchingLimit,
-			numberSwitched,
-            switchingBoundary,
-            lowerAffinityBound,
-            upperAffinityBound,
-            scenario,
-            timepoint
-    )
+    # seed = rand((1:10000))
+    
+    properties = ModelParameters(
+        constantAvantgarde,
+	neighbourhoodExtent,
+        tauRational,
+	tauSocial,
+        switchingLimit,
+	numberSwitched,
+        switchingBoundary,
+        lowerAffinityBound,
+        upperAffinityBound,
+        scenario,
+        timepoint)
 
 	if (scheduler==Agents.Schedulers.fastest)
-		defaultSchedulers = [Agents.Schedulers.fastest,Agents.Schedulers.by_property(:affinity),Agents.Schedulers.by_property(lowAffinityFirst)]
-		scheduler = defaultSchedulers[schedulerIndex]
+	    defaultSchedulers = [
+                    Agents.Schedulers.fastest, 
+                    Agents.Schedulers.by_property(:affinity), 
+                    Agents.Schedulers.by_property(lowAffinityFirst)
+                    ]
+	    scheduler = defaultSchedulers[schedulerIndex]
 	end
 	if typeof(space)<:GridSpace
-	    model = ABM(
-	        DecisionAgentGrid,
-	        space;rng=(Random.seed!(seed)),
-			scheduler=scheduler,
-	        properties = properties
-	    )
+	    model = ABM(DecisionAgentGrid, space;
+                rng=(Random.seed!(seed)),
+		scheduler=scheduler,
+	        properties = properties)
 	else
 		if typeof(space)<:GraphSpace
-			model = ABM(
-		        DecisionAgentGraph,
-		        space;rng=(Random.seed!(seed)),
-				scheduler=scheduler,
-		        properties = properties
-		    )
+		    model = ABM(DecisionAgentGraph, space;
+                        rng=(Random.seed!(seed)), scheduler=scheduler, properties=properties)
 		else
-			error("type of space not yet implemented")
+		    error("type of space not yet implemented")
 		end
 	end
-    placementFunction(model;kwargsPlacement...)
+    placementFunction(model; kwargs...)
     return model
 end
 

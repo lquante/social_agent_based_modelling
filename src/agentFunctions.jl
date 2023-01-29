@@ -33,27 +33,35 @@ function constantAvantgarde(model)
     return model.constantAvantgarde
 end
 
-function initializeAvantgarde(rng, distribution=Uniform(0, 1))
+function initializeAvantgarde(rng; distribution=Uniform(0.0, 1))
     avantgarde = rand(rng, distribution)
+    #b = 0.2
+    #avantgarde *= 2 * b
+    #if avantgarde >= b
+    #    avantgarde += 1 - b
+    #end
     return avantgarde
 end
 
-function initializeAffinity(rng, distribution=Uniform(0, 1))
+function initializeAffinity(rng; distribution=Uniform(0, 1))
     affinity = rand(rng, distribution)
     return affinity
 end
 
-function initializeAffinityGoal(rng, distribution=Uniform(0, 1))  # truncated(Normal(0.6, 0.2), 0.0, 1.0))
+function initializeAffinityGoal(rng; distribution=Uniform(0, 1))  # truncated(Normal(0.6, 0.2), 0.0, 1.0))
     rnd = rand(rng, distribution)
     return rnd
 end
 
 
 "function to add an agent to a space based on position"
-function create_agent(model,position)
-    initialAvantgarde = initializeAvantgarde(model.rng)
-    initialAffinityGoal = initializeAffinityGoal(model.rng)
-    initialAffinity = initializeAffinity(model.rng)
+function create_agent(model, position; alpha=0., beta=0., kwargs...)
+    #if alpha == 0
+    #    throw(ArgumentError("Invalid alpha"))
+    #end
+    initialAvantgarde = initializeAvantgarde(model.rng) #, distribution=truncated(Beta(alpha, beta), 0.0, 1.0))
+    initialAffinityGoal = initializeAffinityGoal(model.rng) #, distribution=truncated(Beta(alpha, beta), 0.0, 1.0))
+    initialAffinity = initializeAffinity(model.rng) #, distribution=truncated(Beta(alpha, beta), 0.0, 1.0))
     initialState = 0
     add_agent!(position,
         model,
@@ -133,7 +141,7 @@ function affinity_social_influence(agent, model::AgentBasedModel)
     # adjust by avantgarde factor
     crowdBehaviour = (1 - agent.avantgarde) * affinitySocialInfluence
     alpha = 1
-    soloBehaviour = agent.avantgarde * alpha * (agent.affinityGoal - agent.affinity) * (abs(affinitySocialInfluence)) #* RiemannTheta((-1) * agent.avantgarde * affinitySocialInfluence)
+    soloBehaviour = agent.avantgarde * alpha * (agent.affinityGoal - agent.affinity) * (abs(affinitySocialInfluence))
     avantgardedInfluence = crowdBehaviour + soloBehaviour
 
     # adjust by tauSocial 

@@ -1,0 +1,600 @@
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.0
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.1
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.2
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.3
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.4
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.5
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.6
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.7
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.8
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.9
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.10
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.11
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.12
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.13
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.14
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.15
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.16
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.17
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.18
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.19
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.20
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.21
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.22
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.23
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.24
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.25
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.26
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.27
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.28
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.29
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.30
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.31
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.32
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.33
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.34
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.35
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.36
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.37
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.38
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.39
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.40
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.41
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.42
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.43
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.44
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.45
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.46
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.47
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.48
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.49
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.50
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.51
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.52
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.53
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.54
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.55
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.56
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.57
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.58
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: UndefVarError: rnd not defined
+Stacktrace:
+ [1] ApplyShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:28
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-i14c02b01: task 0: Exited with exit code 1
+srun: Terminating job step 25522865.59

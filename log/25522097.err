@@ -1,0 +1,338 @@
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.0
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.1
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.2
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.3
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.4
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.5
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.6
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.7
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.8
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.9
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.10
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.11
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.12
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.13
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.14
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.15
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.16
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.17
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.18
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.19
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.20
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+ERROR: LoadError: MethodError: no method matching keys(::Base.Generator{Base.Iterators.Flatten{Base.Generator{Base.Generator{Vector{CartesianIndex{2}}, Agents.var"#55#56"{CartesianIndex{2}, Agents.Hood{2}}}, Agents.var"#61#62"{Matrix{Vector{Int64}}}}}, Agents.var"#30#31"{AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}}})
+Closest candidates are:
+  keys(!Matched::Union{Tables.AbstractColumns, Tables.AbstractRow}) at /home/damianho/.julia/packages/Tables/PxO1m/src/Tables.jl:184
+  keys(!Matched::JLD2.Group) at /home/damianho/.julia/packages/JLD2/k9Gt0/src/groups.jl:195
+  keys(!Matched::DataFrames.DataFrameColumns) at /home/damianho/.julia/packages/DataFrames/vuMM8/src/abstractdataframe/iteration.jl:228
+  ...
+Stacktrace:
+ [1] ApplyLocalShock(model::AgentBasedModel{GridSpace{2, true}, DecisionAgentGrid, typeof(Agents.Schedulers.fastest), ModelParameters, MersenneTwister}, n_agents::Int64)
+   @ Main ~/projects/social_agent_based_modelling/scripts/run.jl:42
+ [2] top-level scope
+   @ ~/projects/social_agent_based_modelling/scripts/run.jl:88
+in expression starting at /home/damianho/projects/social_agent_based_modelling/scripts/run.jl:73
+srun: error: cs-h14c01b03: task 0: Exited with exit code 1
+srun: Terminating job step 25522097.21
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`
+  Activating environment at `~/projects/social_agent_based_modelling/Project.toml`

@@ -6,9 +6,10 @@
 #SBATCH --account=compacts
 #SBATCH --output=log/%j.out
 #SBATCH --error=log/%j.err
-#SBATCH --workdir=/p/projects/compacts/projects/DeMo/Damians_code/social_agent_based_modelling/
-#SBATCH --time=0-04:00:00
+#SBATCH --workdir=/p/projects/compacts/projects/DeMo/social_agent_based_modelling/
+#SBATCH --time=0-05:00:00
 
 module load julia/1.6.1
-simulation='/p/projects/compacts/projects/DeMo/Damians_code/social_agent_based_modelling/scripts/social_ensembles.jl'
-srun julia $simulation 100 #change ensemble size via argument
+simulation='/home/damianho/projects/social_agent_based_modelling/scripts/social_ensembles.jl'
+
+srun julia $simulation 2.0 2.0 0.5 
