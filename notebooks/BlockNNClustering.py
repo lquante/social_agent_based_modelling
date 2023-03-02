@@ -1,31 +1,46 @@
 import numpy as np
 
 class BlockNNClustering:
+    """Block clustering class.
     
+    Provides an interface for clustering a 2-dim. array.
+    
+    Parameters:
+    -----------
+        min_cluster_size: int, default=0
+            Additional threshold on minimum cluster size. If smaller 
+            than the block size (2*2=4) this has no effects on the clustering.
+    """
     def __init__(self, min_cluster_size=0):
         self.min_cluster_size = min_cluster_size
         self.noise_label = -1
         self.alien_label = -2
         
-    """ Get block clusters.
+    """Get block clusters.
     
-        Returns 2d array of labels indicating different clusters
-        for each value in X. The following labels are used:
-            -2 : Xi has different value
-            -1 : Xi is not part of any cluster (noise)
-          0..n : cluster numbering
+    Returns 2d array of labels indicating different clusters
+    for each value in X. The following labels are used:
+        -2 : Xi has different value
+        -1 : Xi is not part of any cluster (noise)
+      0..n : cluster numbering
+      
+    Parameters:
+    -----------
+        X: np.ndarray(int), 2-dim
+            Data array.
     """
-    def fit(self, X): # X is 2d array with integer values
+    def fit(self, X):
         all_labels = []
         X = np.int32(X)
         values = np.unique(X.flatten())
         for val in values:
-            labels = self.label_clusters(X, val)
+            labels = self.__label_clusters(X, val)
             all_labels.append(labels)
             
         return values, all_labels
 
-    def label_clusters(self, X, val):
+    """Iterate the not visted array and identify clusters."""
+    def __label_clusters(self, X, val):
         Ni, Nj = X.shape
         visited = np.zeros(X.shape)
         labels = np.ones(X.shape) * self.alien_label
@@ -34,12 +49,13 @@ class BlockNNClustering:
         for i in range(Ni):
             for j in range(Nj):
                 if not visited[i, j] and X[i, j] == val:
-                    is_noise = self.flood_fill_blocks(X, i, j, visited, labels, current_label)
+                    is_noise = self.__flood_fill_blocks(X, i, j, visited, labels, current_label)
                     if not is_noise:
                         current_label += 1
         return labels
 
-    def flood_fill_blocks(self, X, i, j, visited, labels, current_label):
+    """Flood fill algorithm requiring unified blocks for cluster expansion."""
+    def __flood_fill_blocks(self, X, i, j, visited, labels, current_label):
         x = X[i, j]
         Ni, Nj = X.shape
 
