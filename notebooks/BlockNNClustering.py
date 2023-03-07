@@ -33,6 +33,7 @@ class BlockNNClustering:
         all_labels = []
         X = np.int32(X)
         values = np.unique(X.flatten())
+        values.sort()
         for val in values:
             labels = self.__label_clusters(X, val)
             all_labels.append(labels)
