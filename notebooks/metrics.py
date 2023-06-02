@@ -67,7 +67,7 @@ def satisfaction(dataframe, mapping, weights=None):
     df_merged = df_exploded.merge(df_affinity, left_on='relevant_ids', right_on='id', suffixes=('', '_match'))
     # keep only with same seed, step
     df_merged = df_merged[(df_merged["seed"] == df_merged["seed_match"]) & (df_merged["step"] == df_merged["step_match"])]
-    attitudes = df_merged.groupby(["step", "id", "seed"]).mean().get("affinity_match")
+    attitudes = df_merged.groupby(["step", "id", "seed"]).mean(numeric_only=True).get("affinity_match")
     final = pd.concat([df.set_index(["step", 'id', 'seed']), attitudes], axis=1).reset_index()
     attitudes = final["affinity"]
     neighbours_attitudes = final["affinity_match"]
