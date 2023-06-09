@@ -56,7 +56,7 @@ for low_share in low_share_range
     for low in low_range
         for high in high_range
             @printf "Simulation running with grouped self-reliance low_share-%.2f low-%.2f high-%.2f\n" low_share low  high
-            Simulate(;low_self_reliance=low,share_low_self_reliance=share_low_self_reliance,high_self_reliance=high)
+            Simulate(;low_self_reliance=low,share_low_self_reliance=low_share,high_self_reliance=high)
         end
     end
 end
