@@ -25,22 +25,22 @@ end
 
 function Simulate(;mu=0.5, sigma=0.1, kwargs...)
     
-    #@everywhere begin
-    mu=mu
-    sigma=sigma
-    seeds = collect(100:109)
-    parameters = Dict(:seed => seeds, :mu => mu, :sigma => sigma,)
-    mdata = [:seed,:lambda]
-    adata = [:attitude,:self_reliance,:fixed_attitude]
-    timesteps = 1000
-    #end
-    
-    function shouldSaveData(model, s)
-        return s % 1000 == 0
-    end    
+    @everywhere begin
+        mu=mu
+        sigma=sigma
+        seeds = collect(100:109)
+        parameters = Dict(:seed => seeds, :mu => mu, :sigma => sigma,)
+        mdata = [:seed,:lambda]
+        adata = [:attitude,:self_reliance,:fixed_attitude]
+        timesteps = 1000
+        
+        function shouldSaveData(model, s)
+            return s % 1000 == 0
+        end
+    end  
     
     ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; 
-        adata, agent_step!, model_step!, parallel=False, n=timesteps, when=shouldSaveData)
+        adata, agent_step!, model_step!, parallel=True, n=timesteps, when=shouldSaveData)
 
     parameter_str = @sprintf "mu-%.2f_sigma-%.2f" mu sigma
     stringkey = "data_normal-self_reliance_" * parameter_str
@@ -52,11 +52,11 @@ function Simulate(;mu=0.5, sigma=0.1, kwargs...)
 end
 
 # define parameter ranges
-mu = collect(range(0.05, 0.95, step=0.05))
-sigma = collect(range(0.01, 0.2, step=0.01))
+mu_range = collect(range(0.05, 0.95, step=0.05))
+sigma_range = collect(range(0.01, 0.2, step=0.01))
 
 # call simulations
-for (index, parameters) in enumerate(zip(mu, sigma))
+for (index, parameters) in enumerate(zip(mu_range, sigma_range))
     mu_p, sigma_p = parameters   
     @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
     Simulate(;mu=mu_p, sigma=sigma_p)
