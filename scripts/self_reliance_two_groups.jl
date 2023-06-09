@@ -38,7 +38,7 @@ function Simulate(;low_self_reliance=0.5,share_low_self_reliance=0.95,high_self_
     ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; 
         adata, agent_step!, model_step!, parallel=false, n=timesteps, when=shouldSaveData)
 
-    parameter_str = @sprintf "low_share-%.2f_low-%.2f_high-%.2f"share_low_self_reliance low_self_reliance  high_self_reliance
+    parameter_str = @sprintf "low_share-%.2f_low-%.2f_high-%.2f" share_low_self_reliance low_self_reliance  high_self_reliance
     stringkey = "data_two_group-self_reliance_" * parameter_str
 
     filename = "agent_" * stringkey * ".csv" 
