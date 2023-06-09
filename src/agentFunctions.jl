@@ -77,22 +77,6 @@ function neighbourDistance(agent,neighbour,model)
     end
 end
 
-function RiemannTheta(x)
-    if x >= 0
-        return 1
-    else
-        return 0
-    end
-end
-
-function Sgn(x)
-    if x >=0
-        return 1
-    else
-        return -1
-    end
-end
-
 "social influence based on neighbours attitude"
 function attitude_social_influence(agent, model::AgentBasedModel)
     #calculate neighbours maximum distance based on
@@ -111,7 +95,7 @@ function attitude_social_influence(agent, model::AgentBasedModel)
 
     # adjust by self-reliance factor
     social_attitude_change = (1 - agent.self_reliance) * social_influence
-    individual_attitude_change = agent.self_reliance * (agent.attitude_old - agent.attitude) * (abs(social_influence))
+    individual_attitude_change = agent.self_reliance * (agent.fixed_attitude - agent.attitude) * (abs(social_influence))
     combined_attitude_change = social_attitude_change + individual_attitude_change
 
     # adjust by scaling factor lambda 
