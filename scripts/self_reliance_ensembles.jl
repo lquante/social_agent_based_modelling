@@ -22,19 +22,19 @@ addprocs(nprocs - 1; exeflags="--project")
 end
 
 function Simulate(;mu=0.5, sigma=0.1, kwargs...)
-    @everywhere begin
-        seeds = collect(100:109)
-        parameters = Dict(:seed => seeds, :mu => mu, :sigma => sigma,)
-        mdata = [:seed,:lambda]
-        adata = [:attitude,:self_reliance,:fixed_attitude]
-        timesteps = 1000
-        function shouldSaveData(model, s)
-            return s % 1000 == 0
-        end
-    end  
+
+    seeds = collect(100:109)
+    parameters = Dict(:seed => seeds, :mu => mu, :sigma => sigma,)
+    mdata = [:seed,:lambda]
+    adata = [:attitude,:self_reliance,:fixed_attitude]
+    timesteps = 1000
+    function shouldSaveData(model, s)
+        return s % 1000 == 0
+    end
+
     
     ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; 
-        adata, agent_step!, model_step!, parallel=True, n=timesteps, when=shouldSaveData)
+        adata, agent_step!, model_step!, parallel=False, n=timesteps, when=shouldSaveData)
 
     parameter_str = @sprintf "mu-%.2f_sigma-%.2f" mu sigma
     stringkey = "data_normal-self_reliance_" * parameter_str
