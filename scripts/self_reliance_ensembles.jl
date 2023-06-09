@@ -42,7 +42,7 @@ function Simulate(;mu=0.5, sigma=0.1, kwargs...)
     filename = "agent_" * stringkey * ".csv" 
     CSV.write(datadir("self_reliance_ensembles", filename), ensemble_agent_data_frame)
     filename = "model_" * stringkey * ".csv" 
-    CSV.write(datadir("paramstest", filename), ensemble_model_data)
+    CSV.write(datadir("self_reliance_ensembles", filename), ensemble_model_data)
 end
 
 # define parameter ranges
