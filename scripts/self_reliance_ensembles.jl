@@ -18,24 +18,20 @@ addprocs(nprocs - 1; exeflags="--project")
     using Graphs
     using CSV
     using Printf
-    
     using Base
-
-    # path = $path    
-
     include(srcdir("agentFunctions.jl"))
     include(srcdir("modelling.jl"))
 end
 
-function Simulate(;alpha=0.0, beta=0.0, beta_mean=0.0, kwargs...)
+function Simulate(;mean=0.5, sigma=0.1, kwargs...)
     
     @everywhere begin
-        alpha = $alpha
-        beta = $beta
+        mean = mean
+        sigma = sigma
         seeds = collect(100:109)
-        parameters = Dict(:seed => seeds, :alpha => alpha, :beta => beta,)
-        mdata = [:seed,:tauSocial]
-        adata = [:affinity,:avantgarde,:affinityGoal]
+        parameters = Dict(:seed => seeds, :mean => mean, :sigma => sigma,)
+        mdata = [:seed,:lambda]
+        adata = [:attitude,:self_reliance,:fixed_attitude]
         timesteps = 1000
     end
     
@@ -46,28 +42,22 @@ function Simulate(;alpha=0.0, beta=0.0, beta_mean=0.0, kwargs...)
     ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; 
         adata, agent_step!, model_step!, parallel=true, n=timesteps, when=shouldSaveData)
 
-    parameter_str = @sprintf "a-%.2f_b-%.2f_m-%.2f" alpha beta beta_mean
-    stringkey = "data_beta-affinity_" * parameter_str
+    parameter_str = @sprintf "mean-%.2f_sigma-%.2f" mean sigma
+    stringkey = "data_normal-self_reliance_" * parameter_str
 
     filename = "agent_" * stringkey * ".csv" 
-    CSV.write(datadir("paramstest", filename), ensemble_agent_data_frame)
-
+    CSV.write(datadir("self_reliance_ensembles", filename), ensemble_agent_data_frame)
     filename = "model_" * stringkey * ".csv" 
-    # CSV.write(datadir("paramstest", filename), ensemble_model_data)
+    CSV.write(datadir("paramstest", filename), ensemble_model_data)
 end
 
 # define parameter ranges
-mm = collect(range(0.1, 0.9, step=0.1))
-c = 5
-aa = [m <= 0.5 ? c : c * m / (1 - m) for m in mm]
-bb = [m > 0.5 ? c : c * (1- m) / m for m in mm]
+mean = collect(range(0.05, 0.95, step=0.05))
+sigma = collect(range(0.01, 0.2, step=0.01))
 
 # call simulations
-for (index, parameters) in enumerate(zip(mm, aa, bb))
-    m, alpha, beta = parameters
-    
-    # logging    
-    @printf "Simulation running with parameters m=%.2f, alpha=%.2f, beta=%.2f\n" m alpha beta
-
-    Simulate(;alpha=alpha, beta=beta, beta_mean=m)
+for (index, parameters) in enumerate(zip(mean, sigma))
+    mean, sigma = parameters   
+    @printf "Simulation running with normal distributed self-reliance mean=%.2f, sigma=%.2f\n" mean sigma
+    Simulate(;mean=mean, sigma=sigma)
 end
