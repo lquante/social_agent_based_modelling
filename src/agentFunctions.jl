@@ -47,7 +47,7 @@ function create_agent(model, position; mean=0.5, sigma=0.1, two_levels_self_reli
         share_high_self_reliance = 1- share_low_self_reliance
         high_or_low_self_reliance = rand(model.rng,Bernoulli(share_high_self_reliance))
         initial_self_reliance = high_or_low_self_reliance*high_self_reliance + (1-high_or_low_self_reliance)*low_self_reliance
-
+    end
     # uniform distributed inital and fixed attitude
     initial_fixed_attitude = initialize_attitude(model.rng) 
     initial_attitude = initialize_attitude(model.rng)
