@@ -8,7 +8,7 @@ mutable struct DecisionAgentGrid <:AbstractAgent
     id::Int
     pos::Tuple{Int64,Int64}
     self_reliance::Float64
-    fixedAttitude::Float64
+    fixed_attitude::Float64
     attitude::Float64
     attitude_old::Float64
 end
