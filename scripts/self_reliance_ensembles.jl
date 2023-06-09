@@ -22,16 +22,12 @@ addprocs(nprocs - 1; exeflags="--project")
 end
 
 function Simulate(;mu=0.5, sigma=0.1, kwargs...)
-    
     @everywhere begin
-        mu=mu
-        sigma=sigma
         seeds = collect(100:109)
         parameters = Dict(:seed => seeds, :mu => mu, :sigma => sigma,)
         mdata = [:seed,:lambda]
         adata = [:attitude,:self_reliance,:fixed_attitude]
         timesteps = 1000
-
         function shouldSaveData(model, s)
             return s % 1000 == 0
         end
