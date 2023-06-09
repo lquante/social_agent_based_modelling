@@ -83,7 +83,7 @@ function model_decision_agents(
 end
 
 "stepping function for updating model parameters"
-function model_step!(model,switchingLimitFunction=constantSwitchingLimit)
+function model_step!(model)
     model.timepoint += 1
     for agent in allagents(model)
         agent.attitude_old = agent.attitude
