@@ -49,8 +49,8 @@ end
 mu_range = collect(range(0.1, 0.9, step=0.1))
 sigma_range = collect(range(0.01, 0.1, step=0.01))
 # call simulations
-for mu_p in mu_range:
-    for sigma_p in sigma_range:  
+for mu_p in mu_range
+    for sigma_p in sigma_range
         @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
         Simulate(;mu=mu, sigma=sigma)
     end
