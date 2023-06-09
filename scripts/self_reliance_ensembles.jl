@@ -23,13 +23,13 @@ addprocs(nprocs - 1; exeflags="--project")
     include(srcdir("modelling.jl"))
 end
 
-function Simulate(;mean=0.5, sigma=0.1, kwargs...)
+function Simulate(;mu_p=0.5, sigma_p=0.1, kwargs...)
     
     @everywhere begin
-        mean = mean
-        sigma = sigma
+        mu=mu_p
+        sigma=sigma_p
         seeds = collect(100:109)
-        parameters = Dict(:seed => seeds, :mean => mean, :sigma => sigma,)
+        parameters = Dict(:seed => seeds, :mu => mu_p, :sigma => sigma_p,)
         mdata = [:seed,:lambda]
         adata = [:attitude,:self_reliance,:fixed_attitude]
         timesteps = 1000
@@ -42,7 +42,7 @@ function Simulate(;mean=0.5, sigma=0.1, kwargs...)
     ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; 
         adata, agent_step!, model_step!, parallel=true, n=timesteps, when=shouldSaveData)
 
-    parameter_str = @sprintf "mean-%.2f_sigma-%.2f" mean sigma
+    parameter_str = @sprintf "mu-%.2f_sigma-%.2f" mu sigma
     stringkey = "data_normal-self_reliance_" * parameter_str
 
     filename = "agent_" * stringkey * ".csv" 
@@ -52,12 +52,12 @@ function Simulate(;mean=0.5, sigma=0.1, kwargs...)
 end
 
 # define parameter ranges
-mean = collect(range(0.05, 0.95, step=0.05))
+mu = collect(range(0.05, 0.95, step=0.05))
 sigma = collect(range(0.01, 0.2, step=0.01))
 
 # call simulations
-for (index, parameters) in enumerate(zip(mean, sigma))
-    mean, sigma = parameters   
-    @printf "Simulation running with normal distributed self-reliance mean=%.2f, sigma=%.2f\n" mean sigma
-    Simulate(;mean=mean, sigma=sigma)
+for (index, parameters) in enumerate(zip(mu, sigma))
+    mu, sigma = parameters   
+    @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu sigma
+    Simulate(;mu=mu, sigma=sigma)
 end
