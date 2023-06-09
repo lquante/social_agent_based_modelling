@@ -52,6 +52,7 @@ sigma_range = collect(range(0.01, 0.2, step=0.01))
 for (index, parameters) in enumerate(zip(mu_range, sigma_range))
     mu_p, sigma_p = parameters   
     @printf "Simulation scheduled with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
+end
 for (index, parameters) in enumerate(zip(mu_range, sigma_range))
     @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
     Simulate(;mu=mu_p, sigma=sigma_p)
