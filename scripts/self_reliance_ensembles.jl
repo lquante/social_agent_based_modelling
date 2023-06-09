@@ -4,7 +4,7 @@ using Printf
 
 using Distributed
 
-nprocs = floor(Int, length(Sys.cpu_info())/4) # get number of available physical CPUS
+nprocs = 1#floor(Int, length(Sys.cpu_info())/4) # get number of available physical CPUS
 addprocs(nprocs - 1; exeflags="--project")
 
 @everywhere using DrWatson
