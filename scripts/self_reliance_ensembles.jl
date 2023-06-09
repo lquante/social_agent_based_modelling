@@ -24,7 +24,7 @@ end
 function Simulate(;mu=0.5, sigma=0.1, kwargs...)
 
     seeds = collect(100:109)
-    parameters = Dict(:seed => seeds, :mu => mu, :sigma => sigma,)
+    parameters = Dict(:seed => seeds, :mean => mu, :sigma => sigma,)
     mdata = [:seed,:lambda]
     adata = [:attitude,:self_reliance,:fixed_attitude]
     timesteps = 1000
@@ -48,10 +48,11 @@ end
 # define parameter ranges
 mu_range = collect(range(0.05, 0.95, step=0.05))
 sigma_range = collect(range(0.01, 0.2, step=0.01))
-
 # call simulations
 for (index, parameters) in enumerate(zip(mu_range, sigma_range))
     mu_p, sigma_p = parameters   
+    @printf "Simulation scheduled with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
+for (index, parameters) in enumerate(zip(mu_range, sigma_range))
     @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
     Simulate(;mu=mu_p, sigma=sigma_p)
 end
