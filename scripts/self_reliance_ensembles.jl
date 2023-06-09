@@ -23,13 +23,13 @@ addprocs(nprocs - 1; exeflags="--project")
     include(srcdir("modelling.jl"))
 end
 
-function Simulate(;mu_p=0.5, sigma_p=0.1, kwargs...)
+function Simulate(;mu=0.5, sigma=0.1, kwargs...)
     
     @everywhere begin
-        mu=mu_p
-        sigma=sigma_p
+        mu=mu
+        sigma=sigma
         seeds = collect(100:109)
-        parameters = Dict(:seed => seeds, :mu => mu_p, :sigma => sigma_p,)
+        parameters = Dict(:seed => seeds, :mu => mu, :sigma => sigma,)
         mdata = [:seed,:lambda]
         adata = [:attitude,:self_reliance,:fixed_attitude]
         timesteps = 1000
@@ -57,7 +57,7 @@ sigma = collect(range(0.01, 0.2, step=0.01))
 
 # call simulations
 for (index, parameters) in enumerate(zip(mu, sigma))
-    mu, sigma = parameters   
-    @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu sigma
-    Simulate(;mu=mu, sigma=sigma)
+    mu_p, sigma_p = parameters   
+    @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
+    Simulate(;mu=mu_p, sigma=sigma_p)
 end
