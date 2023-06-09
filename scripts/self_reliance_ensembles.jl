@@ -2,12 +2,10 @@ using DrWatson
 using Printf
 @quickactivate "Social Agent Based Modelling"
 
-#using Distributed
+using Distributed
 
-#nprocs = floor(Int, length(Sys.cpu_info())/4) # get number of available physical CPUS
-#addprocs(nprocs - 1; exeflags="--project")
-# avoiding non-initialized project on the distributed workers 
-# (https://stackoverflow.com/questions/60934852/why-does-multiprocessing-julia-break-my-module-import)
+nprocs = floor(Int, length(Sys.cpu_info())/4) # get number of available physical CPUS
+addprocs(nprocs - 1; exeflags="--project")
 
 @everywhere using DrWatson
 
@@ -33,7 +31,7 @@ function Simulate(;mu=0.5, sigma=0.1, kwargs...)
         mdata = [:seed,:lambda]
         adata = [:attitude,:self_reliance,:fixed_attitude]
         timesteps = 1000
-        
+
         function shouldSaveData(model, s)
             return s % 1000 == 0
         end
