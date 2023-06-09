@@ -46,8 +46,8 @@ function Simulate(;mu=0.5, sigma=0.1, kwargs...)
 end
 
 # define parameter ranges
-mu_range = collect(range(0.05, 0.95, step=0.05))
-sigma_range = [0.01,0.05,0.1,0.15,0.2]
+mu_range = collect(range(0.1, 0.9, step=0.1))
+sigma_range = [0.05,0.1,0.15,0.2]
 # call simulations
 for mu_p in mu_range
     for sigma_p in sigma_range
