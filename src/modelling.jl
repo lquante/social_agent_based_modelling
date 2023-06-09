@@ -65,9 +65,6 @@ function model_decision_agents(
         scenario,
         timepoint)
 
-
-	scheduler = defaultSchedulers[schedulerIndex]
-
 	if typeof(space)<:GridSpace
 	    model = ABM(DecisionAgentGrid, space;
                 rng=(Random.seed!(seed)),
