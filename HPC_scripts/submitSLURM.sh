@@ -12,4 +12,4 @@
 module load julia/1.6.1
 simulation='/p/projects/compacts/projects/DeMo/social_agent_based_modelling/scripts/self_reliance_ensembles.jl'
 
-srun julia -p 12 $simulation
+srun julia -p 4 $simulation
