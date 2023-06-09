@@ -46,14 +46,11 @@ function Simulate(;mu=0.5, sigma=0.1, kwargs...)
 end
 
 # define parameter ranges
-mu_range = collect(range(0.05, 0.95, step=0.05))
-sigma_range = collect(range(0.01, 0.2, step=0.01))
+mu_range = collect(range(0.1, 0.9, step=0.1))
+sigma_range = collect(range(0.01, 0.1, step=0.01))
 # call simulations
-for (index, parameters) in enumerate(zip(mu_range, sigma_range))
-    mu_p, sigma_p = parameters   
-    @printf "Simulation scheduled with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
-end
-for (index, parameters) in enumerate(zip(mu_range, sigma_range))
-    @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
-    Simulate(;mu=mu_p, sigma=sigma_p)
+for mu_p in mu_range:
+    for sigma_p in sigma_range:  
+        @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
+        Simulate(;mu=mu, sigma=sigma)
 end
