@@ -4,7 +4,7 @@ using Printf
 
 using Distributed
 
-nprocs = 1#floor(Int, length(Sys.cpu_info())/4) # get number of available physical CPUS
+nprocs = 1 #floor(Int, length(Sys.cpu_info())/4) # get number of available physical CPUS
 addprocs(nprocs - 1; exeflags="--project")
 
 @everywhere using DrWatson
@@ -23,13 +23,13 @@ end
 
 function Simulate(;mu=0.5, sigma=0.1, kwargs...)
 
-    seeds = collect(100:109)
+    seeds = collect(100:199)
     parameters = Dict(:seed => seeds, :mean => mu, :sigma => sigma,)
     mdata = [:seed,:lambda]
     adata = [:attitude,:self_reliance,:fixed_attitude]
     timesteps = 1000
     function shouldSaveData(model, s)
-        return s % 1000 == 0
+        return s % timesteps == 0
     end
 
     
@@ -46,8 +46,8 @@ function Simulate(;mu=0.5, sigma=0.1, kwargs...)
 end
 
 # define parameter ranges
-mu_range = collect(range(0.1, 0.9, step=0.1))
-sigma_range = [0.05,0.1,0.15,0.2]
+mu_range = collect(range(0.25, 0.95, step=0.05))
+sigma_range = [range(0.025, 0.25, step=0.025)]
 # call simulations
 for mu_p in mu_range
     for sigma_p in sigma_range
