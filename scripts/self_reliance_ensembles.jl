@@ -40,18 +40,18 @@ function Simulate(;mu=0.5, sigma=0.1, kwargs...)
     stringkey = "data_normal-self_reliance_" * parameter_str
 
     filename = "agent_" * stringkey * ".csv" 
-    CSV.write(datadir("self_reliance_ensembles", filename), ensemble_agent_data_frame)
+    CSV.write(datadir("self_reliance_large_ensembles", filename), ensemble_agent_data_frame)
     filename = "model_" * stringkey * ".csv" 
-    CSV.write(datadir("self_reliance_ensembles", filename), ensemble_model_data)
+    CSV.write(datadir("self_reliance_large_ensembles", filename), ensemble_model_data)
 end
 
 # define parameter ranges
-mu_range = collect(range(0.25, 0.95, step=0.05))
-sigma_range = collect(range(0.025, 0.25, step=0.025))
+mu_range = collect(range(0.35, 0.95, step=0.05))
+sigma_range = collect(range(0.05, 0.20, step=0.05))
 # call simulations
 for mu_p in mu_range
     for sigma_p in sigma_range
-        @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.2f\n" mu_p sigma_p
+        @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.3f\n" mu_p sigma_p
         Simulate(;mu=mu_p, sigma=sigma_p)
     end
 end
