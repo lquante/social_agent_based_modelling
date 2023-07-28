@@ -36,7 +36,7 @@ function Simulate(;mu=0.5, sigma=0.1, kwargs...)
     ensemble_agent_data_frame, ensemble_model_data = paramscan(parameters, initialize; 
         adata, agent_step!, model_step!, parallel=false, n=timesteps, when=shouldSaveData)
 
-    parameter_str = @sprintf "mu-%.2f_sigma-%.2f" mu sigma
+    parameter_str = @sprintf "mu-%.2f_sigma-%.3f" mu sigma
     stringkey = "data_normal-self_reliance_" * parameter_str
 
     filename = "agent_" * stringkey * ".csv" 
