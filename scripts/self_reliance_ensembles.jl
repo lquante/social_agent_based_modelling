@@ -47,7 +47,7 @@ end
 
 # define parameter ranges
 mu_range = collect(range(0.25, 0.95, step=0.05))
-sigma_range = [range(0.025, 0.25, step=0.025)]
+sigma_range = collect(range(0.025, 0.25, step=0.025))
 # call simulations
 for mu_p in mu_range
     for sigma_p in sigma_range
