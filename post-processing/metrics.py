@@ -40,15 +40,15 @@ def map_ids(ids, index_to_ids_mapping):
 # metrics definitions
 #############################
 def attitude_deviation(dataframe):
-    attitudes = dataframe.get("affinity").values
-    fixed_attitudes = dataframe.get("affinityGoal").values
+    attitudes = dataframe.get("attitude").values
+    fixed_attitudes = dataframe.get("fixed_attitude").values
     return np.abs(fixed_attitudes - attitudes)
 
 
 def decision_alignment(dataframe):
     threshold = 0.5
-    decisions = dataframe.get("affinity").values >= threshold
-    intrinsic_decisions = dataframe.get("affinityGoal").values >= threshold
+    decisions = dataframe.get("attitude").values >= threshold
+    intrinsic_decisions = dataframe.get("fixed_attitude").values >= threshold
     return decisions == intrinsic_decisions
 
 
@@ -62,17 +62,17 @@ def magnetisation(array):
 def satisfaction(dataframe, mapping, weights=None):
     df = dataframe.copy()
     df.loc[:, 'relevant_ids'] = map_ids(df['id'].values, mapping).tolist()
-    df_affinity = df[['id', 'affinity', 'step', 'seed']].copy()
+    df_attitude = df[['id', 'attitude', 'step', 'seed']].copy()
     df_exploded = df.explode('relevant_ids')
-    df_merged = df_exploded.merge(df_affinity, left_on='relevant_ids', right_on='id', suffixes=('', '_match'))
+    df_merged = df_exploded.merge(df_attitude, left_on='relevant_ids', right_on='id', suffixes=('', '_match'))
     # keep only with same seed, step
     df_merged = df_merged[(df_merged["seed"] == df_merged["seed_match"]) & (df_merged["step"] == df_merged["step_match"])]
-    attitudes = df_merged.groupby(["step", "id", "seed"]).mean(numeric_only=True).get("affinity_match")
+    attitudes = df_merged.groupby(["step", "id", "seed"]).mean(numeric_only=True).get("attitude_match")
     final = pd.concat([df.set_index(["step", 'id', 'seed']), attitudes], axis=1).reset_index()
-    attitudes = final["affinity"]
-    neighbours_attitudes = final["affinity_match"]
-    fixed_attitudes = final["affinityGoal"]
-    self_reliances = final["avantgarde"]
+    attitudes = final["attitude"]
+    neighbours_attitudes = final["attitude_match"]
+    fixed_attitudes = final["fixed_attitude"]
+    self_reliances = final["self_reliance"]
     if weights is None:
         x1 = (1-np.abs(fixed_attitudes - attitudes))
         a = -(7/16)
@@ -88,15 +88,15 @@ def satisfaction(dataframe, mapping, weights=None):
 def friends_count(dataframe, index_mapping):
     df = dataframe.copy()
     df.loc[:, 'relevant_ids'] = index_mapping[df['id'].values-1].tolist()
-    df_affinity = df[['id', 'affinity', 'step', 'seed']].copy()
+    df_attitude = df[['id', 'attitude', 'step', 'seed']].copy()
     df_exploded = df.explode('relevant_ids')
-    df_merged = df_exploded.merge(df_affinity, left_on='relevant_ids', right_on='id', suffixes=('', '_match'))
-    df_merged.loc[:, "decision_match"] = df_merged["affinity_match"] >= 0.5
+    df_merged = df_exploded.merge(df_attitude, left_on='relevant_ids', right_on='id', suffixes=('', '_match'))
+    df_merged.loc[:, "decision_match"] = df_merged["attitude_match"] >= 0.5
     # keep only with same seed, step
     df_merged = df_merged[(df_merged["seed"] == df_merged["seed_match"]) & (df_merged["step"] == df_merged["step_match"])]
     attitudes = df_merged.groupby(["step", "id", "seed"]).sum().get("decision_match")
     final = pd.concat([df.set_index(["step", 'id', 'seed']), attitudes], axis=1).reset_index()
-    decision = final["affinity"] >= 0.5
+    decision = final["attitude"] >= 0.5
     n_neighbours = index_mapping[np.array([0])-1][0].size
     friend_count = decision * final["decision_match"] + ~decision * (n_neighbours-final["decision_match"])
     return friend_count.values

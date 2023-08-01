@@ -5,6 +5,23 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.ticker import PercentFormatter
+
+
+def histogram(sample, ax, color, label=None, alpha=0.25, bins=100,median=True):
+    samplesize = len(sample)
+    n, bins, patches = ax.hist(sample, bins=bins, alpha=alpha, color=color, weights=np.ones_like(sample) * (1 / samplesize),
+                        label=label)
+    bin_centers = 0.5 * (bins[:-1] + bins[1:])
+    ax.plot(bin_centers, n, color=color)
+
+    ax.yaxis.set_major_formatter(PercentFormatter(xmax=1))
+    if median:
+        ax.axvline(0.5, ls="dashed", color="black")
+        ax.axvline(np.median(sample), color=color)
+    return histogram
+
+
 
 # plot affinity Nk dependence
 def LoadSimulation(path, columns=['id','avantgarde', 'affinity', 'affinityGoal', 'step']):
