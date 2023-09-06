@@ -49,7 +49,7 @@ function create_agent(model, position; mean=0.5, sigma=0.1, two_levels_self_reli
     end
     # uniform distributed inital and fixed attitude
     initial_fixed_attitude = initialize_attitude(model.rng) 
-    initial_attitude = initialize_attitude(model.rng)
+    initial_attitude = initial_fixed_attitude # experimental to test what happens if A* = A in t=0
     add_agent!(position,
         model,
         #general parameters
