@@ -100,3 +100,7 @@ def friends_count(dataframe, index_mapping):
     n_neighbours = index_mapping[np.array([0])-1][0].size
     friend_count = decision * final["decision_match"] + ~decision * (n_neighbours-final["decision_match"])
     return friend_count.values
+
+def attitude_percentile (dataframe,threshold):
+    return np.percentile(["attitude"],threshold)
+
