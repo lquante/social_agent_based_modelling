@@ -24,7 +24,7 @@ end
 function Simulate(;kwargs...)
 
     seeds = collect(100:199)
-    parameters = Dict(:seed => seeds, :uniform_self_reliance => true)
+    parameters = Dict(:seed => seeds, :)
     mdata = [:seed,:lambda]
     adata = [:attitude,:self_reliance,:fixed_attitude]
     timesteps = 1000
@@ -45,5 +45,5 @@ function Simulate(;kwargs...)
 end
 
 
-Simulate()
+Simulate(;uniform_self_reliance =true)
 end
