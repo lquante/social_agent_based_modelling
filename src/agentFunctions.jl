@@ -44,7 +44,7 @@ function create_agent(model, position; mean=0.5, sigma=0.1, uniform_self_relianc
     
     if uniform_self_reliance
         initial_self_reliance = initialize_self_reliance(model.rng)
-
+    end 
     # uniform distributed inital = fixed attitude
     initial_fixed_attitude = initialize_attitude(model.rng) 
     initial_attitude = initial_fixed_attitude #A* = A in t=0
