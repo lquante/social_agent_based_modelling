@@ -38,18 +38,16 @@ end
 
 
 "function to add an agent to a space based on position"
-function create_agent(model, position; mean=0.5, sigma=0.1, two_levels_self_reliance = false,low_self_reliance=0.5,share_low_self_reliance=0.95,high_self_reliance=0.95, kwargs...)
+function create_agent(model, position; mean=0.5, sigma=0.1, uniform_self_reliance = false, kwargs...)
     # truncated at 0 1 normal distributed self reliance
     initial_self_reliance = initialize_self_reliance(model.rng,distribution=truncated(Normal(mean,sigma),0.0,1.0))
+    
+    if uniform_self_reliance
+        initial_self_reliance = initialize_self_reliance(model.rng)
 
-    # second option to create partitioned population 
-    if two_levels_self_reliance
-        flag_low_self_reliance = rand(model.rng,Bernoulli(share_low_self_reliance))
-        initial_self_reliance = (1-flag_low_self_reliance)*high_self_reliance + flag_low_self_reliance*low_self_reliance
-    end
-    # uniform distributed inital and fixed attitude
+    # uniform distributed inital = fixed attitude
     initial_fixed_attitude = initialize_attitude(model.rng) 
-    initial_attitude = initial_fixed_attitude # experimental to test what happens if A* = A in t=0
+    initial_attitude = initial_fixed_attitude #A* = A in t=0
     add_agent!(position,
         model,
         #general parameters
