@@ -24,7 +24,7 @@ end
 function Simulate(;kwargs...)
 
     seeds = collect(100:199)
-    parameters = Dict(:seed => seeds, :)
+    parameters = Dict(:seed => seeds)
     mdata = [:seed,:lambda]
     adata = [:attitude,:self_reliance,:fixed_attitude]
     timesteps = 1000
