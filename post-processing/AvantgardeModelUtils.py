@@ -1,9 +1,8 @@
-import numpy as np
-import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.ticker import PercentFormatter
 
@@ -31,14 +30,14 @@ def LoadSimulation(path, columns=['id','avantgarde', 'affinity', 'affinityGoal',
 
 def Choice(data, step=-1):
     if step == -1:
-        return np.array(data["affinity"])
-    return np.array(data[data["step"] == step]["affinity"])
+        return np.array(data["attitude"])
+    return np.array(data[data["step"] == step]["attitude"])
 
 
 def Belief(data, step=-1):
     if step == -1:
-        return np.array(data["affinityGoal"])
-    return np.array(data.query("step == @step").get("affinityGoal"))
+        return np.array(data["fixedAttitude"])
+    return np.array(data.query("step == @step").get("fixedAttitude"))
 
 
 def Avantgarde(data, step=-1):

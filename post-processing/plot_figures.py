@@ -227,9 +227,10 @@ for sigma in sigma_values:
     plt.tight_layout()
     plt.savefig(os.path.join(figuredir, ident + "_sigma_" + sigma_key + "_spread_by_self_reliance_bins.pdf"), dpi=300)
 
-percentile_thresholds = [0.075, (1 / 6), 1 / 4, 1 / 2, 3 / 4, (5 / 6), 0.925]
+percentile_thresholds = [0.05, 0.1, 1 / 4, 1 / 2, 3 / 4, 0.9, 0.95]
 
 
+# functions to summarise large ensemble data
 def process_file(file):
     print(f"Working on: {file}")
     data = LoadSimulation(file, columns=["seed", "id", "self_reliance", "attitude", "fixed_attitude", "step"])
@@ -271,6 +272,7 @@ for sigma in sigma_values:
         dict_avantgarde_means[sigma_key].append(avantgarde_mean)
 
 
+# helpers for plots
 def analytical_decision_alignment(gamma):
     prob_n_positive = 4 / 8
     prob_n_negative = prob_n_positive
@@ -308,23 +310,43 @@ def get_y_values_c_percentile(x_values, datadict, sigma, key, percentile, ci):
     return mean, lower_ci, upper_ci
 
 
+def get_y_values_c_percentile_spread(x_values, datadict, sigma, key, percentile, ci):
+    mean = []
+    lower_ci = []
+    upper_ci = []
+    for x_value in x_values:
+        values = datadict[sigma, x_value][key]
+        index_low = percentile_thresholds.index(percentile)
+        percentile_values_low = [i_value[index_low] for i_value in values]
+        index_high = percentile_thresholds.index(1 - percentile)
+        percentile_values_high = [i_value[index_high] for i_value in values]
+
+        spread = np.array(percentile_values_high) - np.array(percentile_values_low)
+        mean.append(np.mean(spread))
+        lower_ci.append(np.percentile(spread, ci[0]))
+        upper_ci.append(np.percentile(spread, ci[1]))
+    return mean, lower_ci, upper_ci
+
+
+#plotting for various percentile levels
+
 confidence_interval_bounds = [5, 95]
 
-for percentile in percentile_thresholds:
+for percentile in percentile_thresholds[0:4]:
     percentile_label = str(round(percentile * 100, 1))
     for sigma in sigma_values:
         sigma_key = format(sigma, ".3f")
         fig, axes = plt.subplots(1, 2, figsize=(15 * cm, 10 * cm), constrained_layout=True)
 
-        gammas = np.arange(0.5, 1.025, 0.025)
+        gammas = np.arange(0.5, 1.025, 0.001)
 
         x_values = np.sort(dict_avantgarde_means[sigma_key])
 
-        y_values_decision_alingment = get_y_values_ci(x_values, results_by_distr_mean_avantgarde, sigma_key,
+        y_values_decision_alignment = get_y_values_ci(x_values, results_by_distr_mean_avantgarde, sigma_key,
                                                       "decision_mean", confidence_interval_bounds)
 
-        axes[0].plot(x_values, y_values_decision_alingment[0], color="tab:blue", lw=1, marker=".", ms=3)
-        axes[0].fill_between(x_values, y_values_decision_alingment[1], y_values_decision_alingment[2], color="tab:blue",
+        axes[0].plot(x_values, y_values_decision_alignment[0], color="tab:blue", lw=1, marker=".", ms=3)
+        axes[0].fill_between(x_values, y_values_decision_alignment[1], y_values_decision_alignment[2], color="tab:blue",
                              alpha=0.25)
 
         axes[0].set_ylabel("Decision Alignment")
@@ -332,18 +354,60 @@ for percentile in percentile_thresholds:
 
         axes[0].plot(gammas, analytical_decision_alignment(gammas), color="grey", lw=1, ls=":")
 
-        y_values_percentile = get_y_values_c_percentile(x_values, results_by_distr_mean_avantgarde, sigma_key,
-                                                        "attitude_percentiles", percentile, confidence_interval_bounds)
+        y_values_percentile_spread = get_y_values_c_percentile_spread(x_values, results_by_distr_mean_avantgarde,
+                                                                      sigma_key,
+                                                                      "attitude_percentiles", percentile,
+                                                                      confidence_interval_bounds)
 
-        axes[1].plot(x_values, (np.array(y_values_percentile[0])), color="tab:orange", lw=1, marker=".", ms=3)
-        axes[1].fill_between(x_values, (np.array(y_values_percentile[1])), (np.array(y_values_percentile[2])),
+        axes[1].plot(x_values, (np.array(y_values_percentile_spread[0])), color="tab:orange", lw=1, marker=".", ms=3)
+        axes[1].fill_between(x_values, (np.array(y_values_percentile_spread[1])),
+                             (np.array(y_values_percentile_spread[2])),
                              color="tab:orange", alpha=0.25)
-        axes[1].set_ylabel(percentile_label + "th percentile of attitude")
+        axes[1].set_ylabel("Opinion spread")
 
         for i, ax in enumerate(axes):
             ax.set_xlabel(r"Mean self-reliance $\langle \gamma \rangle$")
             ax.set_xlim((0.45, 0.9))
             ax.text(-0.075, 1.075, chr(ord('a') + i), transform=ax.transAxes, size=fontsize)
         plt.savefig(os.path.join(figuredir,
-                                 ident + "_sigma_" + sigma_key + "_alignment_" + percentile_label + "_percentile.pdf"),
+                                 ident + "_sigma_" + sigma_key + "_alignment_" + percentile_label + "_percentile_spread.pdf"),
+                    dpi=300)
+
+# plotting x decision alignment y opinion spread
+
+for percentile in percentile_thresholds:
+    percentile_label = str(round(percentile * 100, 1))
+    for sigma in sigma_values:
+        sigma_key = format(sigma, ".3f")
+        fig = plt.figure(figsize=(8.5 * cm, 8.5 * cm))
+        gs = GridSpec(1, 2, width_ratios=[1, 0.1])
+        axs = []
+        for index in range(0, 2):
+            axs.append(plt.subplot(gs[index]))
+
+        gammas = np.arange(0.5, 1.025, 0.025)
+
+        avantgarde_means = np.sort(dict_avantgarde_means[sigma_key])
+
+        decision_alignment = get_y_values_ci(avantgarde_means, results_by_distr_mean_avantgarde, sigma_key,
+                                             "decision_mean", confidence_interval_bounds)
+
+        opinion_spread = get_y_values_c_percentile_spread(avantgarde_means, results_by_distr_mean_avantgarde, sigma_key,
+                                                          "attitude_percentiles", percentile,
+                                                          confidence_interval_bounds)
+
+        scatter = axs[0].scatter(decision_alignment[0], opinion_spread[0], c=avantgarde_means, cmap='viridis',
+                                 marker='x')
+
+        axs[0].set_xlabel("Decision alignment")
+        axs[0].set_ylabel("Opinion spread")
+
+        axs[0].set_aspect('equal')
+
+        colorbar = plt.colorbar(scatter, cax=axs[1])
+        colorbar.set_label(r"Mean self-reliance $\langle \gamma \rangle$")
+
+        plt.tight_layout()
+        plt.savefig(os.path.join(figuredir,
+                                 ident + "_sigma_" + sigma_key + "_alignment_" + percentile_label + "_scatter.pdf"),
                     dpi=300)
