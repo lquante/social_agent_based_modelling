@@ -328,7 +328,7 @@ def get_y_values_c_percentile_spread(x_values, datadict, sigma, key, percentile,
     return mean, lower_ci, upper_ci
 
 
-#plotting for various percentile levels
+# plotting for various percentile levels
 
 confidence_interval_bounds = [5, 95]
 
