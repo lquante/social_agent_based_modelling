@@ -227,7 +227,7 @@ for sigma in sigma_values:
     plt.tight_layout()
     plt.savefig(os.path.join(figuredir, ident + "_sigma_" + sigma_key + "_spread_by_self_reliance_bins.pdf"), dpi=300)
 
-percentile_thresholds = [0.05, 0.1, 1 / 4, 1 / 2, 3 / 4, 0.9, 0.95]
+percentile_thresholds = [0.05, 0.1, 1 / 4, 3 / 4, 0.9, 0.95]
 
 
 # functions to summarise large ensemble data
@@ -332,11 +332,11 @@ def get_y_values_c_percentile_spread(x_values, datadict, sigma, key, percentile,
 
 confidence_interval_bounds = [5, 95]
 
-for percentile in percentile_thresholds[0:4]:
+for percentile in [0.05, 0.1, 0.25]:
     percentile_label = str(round(percentile * 100, 1))
     for sigma in sigma_values:
         sigma_key = format(sigma, ".3f")
-        fig, axes = plt.subplots(1, 2, figsize=(15 * cm, 10 * cm), constrained_layout=True)
+        fig, axes = plt.subplots(1, 2, figsize=(17 * cm, 8.5 * cm), constrained_layout=True)
 
         gammas = np.arange(0.5, 1.025, 0.001)
 
@@ -375,7 +375,7 @@ for percentile in percentile_thresholds[0:4]:
 
 # plotting x decision alignment y opinion spread
 
-for percentile in percentile_thresholds:
+for percentile in [0.05, 0.1, 0.25]:
     percentile_label = str(round(percentile * 100, 1))
     for sigma in sigma_values:
         sigma_key = format(sigma, ".3f")
@@ -402,7 +402,6 @@ for percentile in percentile_thresholds:
         axs[0].set_xlabel("Decision alignment")
         axs[0].set_ylabel("Opinion spread")
 
-        axs[0].set_aspect('equal')
 
         colorbar = plt.colorbar(scatter, cax=axs[1])
         colorbar.set_label(r"Mean self-reliance $\langle \gamma \rangle$")
