@@ -19,16 +19,20 @@ from metrics import *
 # TODO: adjust paths for your environment
 datadir = "/home/quante/mnt/cluster/p/projects/compacts/projects/DeMo/social_agent_based_modelling/data"
 
+# TODO: adjust to subfolder with the respective data - main results "initial_attitude_fixed_ensembles", alternative randomised attitudes = "self_reliance_large_ensembles"
 ensemble = "initial_attitude_fixed_ensembles"
 
+# TODO: where the figures should be saved
 figuredir = "/home/quante/PIK_Cloud/paper/genericSocialDynamics/figures"
 
+#identifiers for the figures
 ident = "fixed_equal_initial_attitude"
 
 gamma_means = np.linspace(0.35, 0.95, 13)
 
 sigma_values = np.linspace(0.05, 0.20, 4)
 
+#uniform data
 file_uniform = os.path.join(datadir,
                             "uniform_self_reliance_ensembles/agent_data_uniform_distributed-self_reliance_.csv")
 
