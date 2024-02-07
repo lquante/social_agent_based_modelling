@@ -21,9 +21,9 @@ end
 "function to place one agent at each position of the models space"
 function mixed_population(model; kwargs...)
     if typeof(model.space)<:Agents.GraphSpace
-	for node in 1:length(model.space.s)
-	    create_agent(model, node; kwargs...)
-	end
+        for node in 1:length(model.space.s)
+            create_agent(model, node; kwargs...)
+        end
     end
     if typeof(model.space)<:Agents.GridSpace
         for pos in positions(model)
@@ -32,9 +32,32 @@ function mixed_population(model; kwargs...)
     end
 end
 
+"function to place one agent at positions of the models space with probability placement_probability"
+function mixed_population_placement(model; placement_probability=1.0,kwargs...)
+    if typeof(model.space)<:Agents.GraphSpace
+        for node in 1:length(model.space.s)
+            if rand() <= placement_probability
+                create_agent(model, node; kwargs...)
+            end
+        end
+    end
+    if typeof(model.space)<:Agents.GridSpace
+        for pos in positions(model)
+            if rand() <= placement_probability
+                create_agent(model, pos; kwargs...)
+            end
+        end
+    end
+end
+
+
 "initialize function for model creation, needed for paramscan methods"
 function initialize(;args ...)
     return model_decision_agents(mixed_population;args ...)
+end
+
+function initalize_placement(;args ...)
+    return model_decision_agents(mixed_population_placement;args ...)
 end
 
 
