@@ -10,6 +10,6 @@
 #SBATCH --time=0-23:59:00
 
 module load julia/1.6.1
-simulation='/p/projects/compacts/projects/DeMo/social_agent_based_modelling/scripts/self_reliance_random_placement.jl'
+simulation='/p/projects/compacts/projects/DeMo/social_agent_based_modelling/scripts/self_reliance_random_placement_ensembles.jl'
 
 srun julia $simulation
