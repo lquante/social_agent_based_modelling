@@ -21,7 +21,7 @@ addprocs(nprocs - 1; exeflags="--project")
     include(srcdir("modelling.jl"))
 end
 
-function Simulate(;mu=0.5, sigma=0.1 placement_probability=1.0, kwargs...)
+function Simulate(;mu=0.5, sigma=0.1, placement_probability=1.0, kwargs...)
 
     seeds = collect(100:199)
     parameters = Dict(:seed => seeds, :mean => mu, :sigma => sigma, :placement_probability => placement_probability)
