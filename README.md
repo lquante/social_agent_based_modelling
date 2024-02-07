@@ -1,4 +1,4 @@
-## Code for the manuscript "Quante, Stechemesser et al. 2023"
+## Code for the manuscript "Convolution of individual and group identity: self-reliance increases polarisation in basic opinion model, 2023"
 
 ### Simulations
 
