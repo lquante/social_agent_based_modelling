@@ -26,7 +26,7 @@ function Simulate(;mu=0.5, sigma=0.1, placement_probability=1.0, kwargs...)
     seeds = collect(100:199)
     parameters = Dict(:seed => seeds, :mean => mu, :sigma => sigma, :placement_probability => placement_probability)
     mdata = [:seed,:lambda]
-    adata = [:attitude,:self_reliance,:fixed_attitude]
+    adata = [:pos,:attitude,:self_reliance,:fixed_attitude]
     timesteps = 1000
     function shouldSaveData(model, s)
         return s % timesteps == 0
