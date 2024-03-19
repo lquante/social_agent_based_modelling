@@ -48,15 +48,15 @@ end
 
 # define parameter ranges
 mu_range = collect(range(0.35, 0.95, step=0.05))
-sigma_range = collect(range(0.05, 0.20, step=0.05))
+sigma_range = [0.1] #fix sigma for this sensitivity check #collect(range(0.05, 0.20, step=0.05))
 
-placement_probability_range = collect(range(0.5, 0.96, step=0.05))
+placement_probability_range = collect(range(0.45, 0.96, step=0.10))
 # call simulations
 for mu_p in mu_range
     for sigma_p in sigma_range
         for placement_probability in placement_probability_range
-        @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.3f\n and placement prob p=%.2f" mu_p sigma_p placement_probability
-        Simulate(;mu=mu_p, sigma=sigma_p, placement_probability=placement_probability)
+            @printf "Simulation running with normal distributed self-reliance mu=%.2f, sigma=%.3f\n and placement prob p=%.2f" mu_p sigma_p placement_probability
+            Simulate(;mu=mu_p, sigma=sigma_p, placement_probability=placement_probability)
         end
     end
 end
